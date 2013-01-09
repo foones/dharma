@@ -125,7 +125,7 @@ Definition ids_card (a : ids) : nat := List.length a.
 
 (*
  * Returns the set of the first "n" identifiers in the
- * universe
+ * variable universe.
  *)
 Fixpoint ids_up_to (n : nat) : ids :=
   match n with
@@ -134,20 +134,72 @@ Fixpoint ids_up_to (n : nat) : ids :=
   end.
 
 (*
-Fixpoint ids_least (
-
+ * Returns "n" elements of the given set.
+ *)
 Fixpoint ids_take (n : nat) (a : ids) : ids :=
   match n with
-  | O => empty_set
-  | 
-*)
+  | O   => ids_empty
+  | S m => match a with
+           | List.nil       => ids_empty
+           | List.cons x xs => ids_add x (ids_take m xs)
+           end
+  end.
 
 (*
  * Returns a set of "n" ids not in the forbidden set.
  *)
-(*
 Fixpoint fresh_ids (n : nat) (forbidden : ids) :=
   ids_take n (ids_diff (ids_up_to (ids_card forbidden + n)) forbidden).
 
-Lemma 
-*)
+Lemma ids_up_to_bounded :
+  forall n : nat, forall x : id, ids_In x (ids_up_to n) -> x <= n.
+Proof.
+  intros n x.
+  induction n.
+    (* Base case *)
+    compute.
+    intro. contradiction.
+    (* Induction *)
+    unfold ids_up_to. fold ids_up_to.
+    unfold ids_In, ids_add.
+    intro hyp.
+    apply set_add_elim in hyp.
+    decompose [or] hyp.      
+           SearchPattern (_ <= _).
+           SearchAbout le.
+
+     (* second goal *)
+        unfold ids_In in IHn.
+        apply lt_le_weak.
+        apply le_lt_n_Sm.
+        apply IHn.
+        assumption.
+        
+
+
+      
+
+
+Lemma ids_up_to_card :
+  forall n : nat, ids_card (ids_up_to n) = n.
+Proof.
+  intros n.
+  unfold ids_up_to.
+  induction n.
+    (* Base case *)
+    compute. trivial.
+    (* Induction *)
+    fold ids_up_to in IHn.
+    fold ids_up_to.
+    unfold ids_add.
+
+
+Lemma ids_diff_card :
+  forall a b : ids, ids_card (ids_diff a b)
+
+Lemma fresh_ids_card :
+        forall n : nat, forall forbidden : ids,
+          ids_card (fresh_ids n forbidden) = n.
+Proof.
+  intros n forbidden.
+  
