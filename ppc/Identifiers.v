@@ -1,5 +1,6 @@
 Require Import ListSet.
 Require Import Arith.
+Require Import NatOrderedType.
 
 (* Identifiers *)
 Definition id := nat.
@@ -14,8 +15,11 @@ Definition ids_diff : ids -> ids -> ids := set_diff id_eq_dec.
 Definition ids_inter : ids -> ids -> ids := set_inter id_eq_dec.
 Definition ids_In (x : id) (a : ids) : Prop := set_In x a.
 Definition ids_mem : id -> ids -> bool := set_mem id_eq_dec.
-Definition ids_union_map (f : id -> ids) (a : ids) : ids :=
-    set_fold_right ids_union (set_map f a) ids_empty.
+Fixpoint ids_union_map (f : id -> ids) (a : ids) : ids :=
+    match a with
+    | List.nil       => ids_empty
+    | List.cons x xs => ids_union (f x) (ids_union_map f xs)
+    end.
 Definition ids_is_empty (a : ids) : Prop := forall x : id, not (ids_In x a).
 Definition ids_disjoint (a b : ids) : Prop := ids_is_empty (ids_inter a b).
 (* Another characterization of set disjointness *)
@@ -151,6 +155,16 @@ Fixpoint ids_take (n : nat) (a : ids) : ids :=
 Fixpoint fresh_ids (n : nat) (forbidden : ids) :=
   ids_take n (ids_diff (ids_up_to (ids_card forbidden + n)) forbidden).
 
+Lemma nat_eq_implies_le : forall x y : nat, x = y -> x <= y.
+Proof.
+    intros x y.
+    assert (x <= y <-> x < y \/ x = y).
+    apply NatOrder.TO.le_lteq.
+    destruct H.
+    intro Heq.
+    apply H0. right. assumption.
+Qed.
+
 Lemma ids_up_to_bounded :
   forall n : nat, forall x : id, ids_In x (ids_up_to n) -> x <= n.
 Proof.
@@ -164,21 +178,15 @@ Proof.
     unfold ids_In, ids_add.
     intro hyp.
     apply set_add_elim in hyp.
-    decompose [or] hyp.      
-           SearchPattern (_ <= _).
-           SearchAbout le.
-
-     (* second goal *)
+    decompose [or] hyp.
+        (* x is the given id *)
+        apply nat_eq_implies_le. assumption.
+        (* x is the recursive result *)
         unfold ids_In in IHn.
         apply lt_le_weak.
         apply le_lt_n_Sm.
-        apply IHn.
-        assumption.
-        
-
-
-      
-
+        apply IHn. assumption.
+Qed.
 
 Lemma ids_up_to_card :
   forall n : nat, ids_card (ids_up_to n) = n.
