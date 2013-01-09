@@ -119,3 +119,35 @@ Proof.
   apply set_union_intro2.
   assumption.
 Qed.
+
+(* Cardinality of a set *)
+Definition ids_card (a : ids) : nat := List.length a.
+
+(*
+ * Returns the set of the first "n" identifiers in the
+ * universe
+ *)
+Fixpoint ids_up_to (n : nat) : ids :=
+  match n with
+  | O     => ids_empty
+  | (S m) => ids_add (S m) (ids_up_to m)
+  end.
+
+(*
+Fixpoint ids_least (
+
+Fixpoint ids_take (n : nat) (a : ids) : ids :=
+  match n with
+  | O => empty_set
+  | 
+*)
+
+(*
+ * Returns a set of "n" ids not in the forbidden set.
+ *)
+(*
+Fixpoint fresh_ids (n : nat) (forbidden : ids) :=
+  ids_take n (ids_diff (ids_up_to (ids_card forbidden + n)) forbidden).
+
+Lemma 
+*)

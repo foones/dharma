@@ -214,31 +214,49 @@ Definition apart_weakening_app2
  * result of applying "s" to "t".
  *)
 Fixpoint subst_apply_safe (s : subst) (t : term) : apart s t -> term :=
-  match t return apart s t -> term with
-  | ConT        => fun _ => ConT
+  match s with
+  | None      => fun _ => t
+  | Subst _ _ =>
+      match t return apart s t -> term with
+      | ConT        => fun _ => ConT
 
-  | VarT x      => fun _ =>
-                      if ids_mem x (subst_domain s)
-                          then subst_apply_to_id s x
-                          else VarT x
+      | VarT x      => fun _ =>
+                          if ids_mem x (subst_domain s)
+                              then subst_apply_to_id s x
+                              else VarT x
 
-  | LamT p th a => fun apart_st =>
-                     LamT
-                       (subst_apply_safe s p (apart_weakening_lam_pattern p th a s apart_st))
-                       th
-                       (subst_apply_safe s a (apart_weakening_lam_body p th a s apart_st))
+      | LamT p th a => fun apart_st =>
+                         LamT
+                           (subst_apply_safe s p
+                             (apart_weakening_lam_pattern p th a s apart_st))
+                           th
+                           (subst_apply_safe s a
+                             (apart_weakening_lam_body p th a s apart_st))
 
-  | AppT a b    => fun apart_st =>
-                     AppT
-                       (subst_apply_safe s a (apart_weakening_app1 a b s apart_st))
-                       (subst_apply_safe s b (apart_weakening_app2 a b s apart_st))
+      | AppT a b    => fun apart_st =>
+                         AppT
+                           (subst_apply_safe s a
+                             (apart_weakening_app1 a b s apart_st))
+                           (subst_apply_safe s b
+                             (apart_weakening_app2 a b s apart_st))
+      end
   end.
 
-Fixpoint rename_apart (t : term) (forbidden : ids) : term :=
+(*
+ * "fresh_ids" takes a set of "source" ids and a set
+ * of "forbidden" ids and returns a substitution "s" s.t.:
+ * "s" maps distinct source ids to distinct variables, which are
+ * not in the forbidden set.
+ *)
+Fixpoint substitution_fresh_ids (source : ids) (forbidden : ids) :=
+  fresh_ids (ids_card source) forbidden.
+
+(*
   match t with
   | ConT        => ConT
   | VarT x      => VarT x
   | LamT p th a => 
+*)
 
 Fixpoint alpha_equivalent (t1 : term) (t2 : term) :=
   match t1 with
