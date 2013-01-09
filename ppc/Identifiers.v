@@ -74,6 +74,30 @@ Proof.
   apply AB. apply BC. assumption.
 Qed.
 
+Lemma ids_union_intro1 :
+  forall A B : ids,
+  forall x : id,
+    ids_In x A -> ids_In x (ids_union A B).
+Proof.
+  intros A B x x_in_A.
+  unfold ids_In in x_in_A.
+  unfold ids_In, ids_union.
+  apply set_union_intro1.
+  assumption.
+Qed.
+
+Lemma ids_union_intro2 :
+  forall A B : ids,
+  forall x : id,
+    ids_In x B -> ids_In x (ids_union A B).
+Proof.
+  intros A B x x_in_B.
+  unfold ids_In in x_in_B.
+  unfold ids_In, ids_union.
+  apply set_union_intro2.
+  assumption.
+Qed.
+
 Lemma ids_includes_union1 :
   forall A B : ids,
     ids_includes (ids_union A B) A.
@@ -91,7 +115,7 @@ Lemma ids_includes_union2 :
 Proof.
   intros A B.
   unfold ids_includes.
-  intros x xA.
+  intros x xB.
   apply set_union_intro2.
   assumption.
 Qed.

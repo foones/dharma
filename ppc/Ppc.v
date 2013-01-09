@@ -1,63 +1,4 @@
-Require Import ListSet.
-Require Import Arith.
-
-(* Identifiers *)
-Definition id := nat.
-Definition id_eq_dec := eq_nat_dec.
-
-(* Sets of identifiers *)
-Definition ids : Type := set id.
-Definition ids_empty : ids := empty_set id.
-Definition ids_add : id -> ids -> ids := set_add id_eq_dec.
-Definition ids_union : ids -> ids -> ids := set_union id_eq_dec.
-Definition ids_diff : ids -> ids -> ids := set_diff id_eq_dec.
-Definition ids_inter : ids -> ids -> ids := set_inter id_eq_dec.
-Definition ids_In (x : id) (a : ids) : Prop := set_In x a.
-Definition ids_mem : id -> ids -> bool := set_mem id_eq_dec.
-Definition ids_union_map (f : id -> ids) (a : ids) : ids :=
-    set_fold_right ids_union (set_map f a) ids_empty.
-Definition ids_is_empty (a : ids) : Prop := forall x : id, not (ids_In x a).
-Definition ids_disjoint (a b : ids) : Prop := ids_is_empty (ids_inter a b).
-(* Another characterization of set disjointness *)
-Definition ids_disjoint2 (a b : ids) : Prop :=
-  forall x : id, ids_In x a -> not (ids_In x b).
-Definition ids_includes (a b : ids) : Prop :=
-  forall x : id, ids_In x b -> ids_In x a.
-
-Lemma ids_disjoint_implies_ids_disjoint2 :
-    forall A B : ids,
-      ids_disjoint A B -> ids_disjoint2 A B.
-Proof.
-  intros A B hyp.
-  unfold ids_disjoint2.
-  intros x H H2.
-  unfold ids_disjoint, ids_is_empty in hyp.
-  specialize hyp with x.
-  unfold ids_In in hyp.
-  assert (set_In x (ids_inter A B)).
-      apply (set_inter_intro id_eq_dec).
-      assumption. assumption.
-  contradiction.
-Qed.
-
-Lemma ids_disjoint2_implies_ids_disjoint :
-    forall A B : ids,
-      ids_disjoint2 A B -> ids_disjoint A B.
-Proof.
-  intros A B hyp.
-  unfold ids_disjoint, ids_inter, ids_is_empty.
-  intros x H.
-  unfold ids_disjoint2 in hyp.
-  specialize hyp with x.
-  unfold ids_In in H.
-  assert (set_In x A /\ set_In x B) as H_conj.
-      apply (set_inter_elim id_eq_dec).
-      assumption.
-  decompose [and] H_conj.
-  assert (~(set_In x B)).
-      apply hyp. assumption.
-  contradiction.
-Qed.
+Load Identifiers.
 
 (* Terms *)
 Inductive term : Type :=
@@ -81,6 +22,72 @@ Fixpoint bound_vars (t : term) : ids :=
   | LamT p th a => ids_union (ids_union (bound_vars p) (bound_vars a)) th
   | AppT a b    => ids_union (bound_vars a) (bound_vars b)
   end.
+
+(* Bound variables of subterms *)
+
+Lemma bound_vars_lam :
+    forall p : term, forall th : ids, forall a : term,
+      ids_includes (bound_vars (LamT p th a))
+                   (ids_union (bound_vars p)
+                              (bound_vars a)).
+Proof.
+  intros p th a.
+  unfold ids_includes.
+  intros x x_in_bvp.
+  unfold bound_vars. fold bound_vars.
+  apply ids_union_intro1.
+  assumption.
+Qed.
+
+Lemma bound_vars_lam_pattern :
+    forall p : term, forall th : ids, forall a : term,
+      ids_includes (bound_vars (LamT p th a))
+                   (bound_vars p).
+Proof.
+  intros p th a.
+  apply ids_includes_transitivity
+     with (B := (ids_union (bound_vars p) (bound_vars a))).
+  apply bound_vars_lam.
+  apply ids_includes_union1.
+Qed.
+
+Lemma bound_vars_lam_body :
+    forall p : term, forall th : ids, forall a : term,
+      ids_includes (bound_vars (LamT p th a))
+                   (bound_vars a).
+Proof.
+  intros p th a.
+  apply ids_includes_transitivity
+     with (B := (ids_union (bound_vars p) (bound_vars a))).
+  apply bound_vars_lam.
+  apply ids_includes_union2.
+Qed.
+
+Lemma bound_vars_app1 :
+  forall t1 t2 : term,
+    ids_includes (bound_vars (AppT t1 t2))
+                 (bound_vars t1).
+Proof.
+  intros t1 t2.
+  unfold ids_includes.
+  intros x x_in_bv_t1.
+  unfold bound_vars. fold bound_vars.
+  apply ids_union_intro1.
+  assumption.
+Qed.
+
+Lemma bound_vars_app2 :
+  forall t1 t2 : term,
+    ids_includes (bound_vars (AppT t1 t2))
+                 (bound_vars t2).
+Proof.
+  intros t1 t2.
+  unfold ids_includes.
+  intros x x_in_bv_t2.
+  unfold bound_vars. fold bound_vars.
+  apply ids_union_intro2.
+  assumption.
+Qed.
 
 (* Substitutions *)
 Inductive subst : Type :=
@@ -114,8 +121,7 @@ Definition subst_apply_to_id (s : subst) (x : id) : term :=
  *
  * - First, define the *safe* application of a substitution to
  *   a term. An application is safe if it can assume that variables
- *   are renamed apart. (It shall receive a proof of the fact that
- *   variables are renamed apart).
+ *   are renamed apart. (It shall receive a proof of this fact).
  *
  * - Define alpha-equivalence and renaming in terms of the
  *   safe substitution.
@@ -142,13 +148,12 @@ Definition apart (s : subst) (t : term) :=
  * "s" is also apart from a term with less bound variables.
  *)
 Lemma apart_weakening :
-    forall s : subst,
     forall t1 t2 : term,
       ids_includes (bound_vars t1) (bound_vars t2) ->
-      apart s t1 -> apart s t2.
+      forall s : subst, apart s t1 -> apart s t2.
 Proof.
   (* Unfold equivalent disjoint definitions *)
-  intros s t1 t2 incl hyp.
+  intros t1 t2 inclusion s hyp.
   unfold apart.
   unfold apart in hyp.
   assert (ids_disjoint2 (subst_variables s)
@@ -159,14 +164,14 @@ Proof.
   unfold ids_disjoint2 in hyp2.
   apply ids_disjoint2_implies_ids_disjoint.
   unfold ids_disjoint2.
-  unfold ids_includes in incl.
+  unfold ids_includes in inclusion.
 
   (* Suppose x is both in the substitution and in BV(t2) *)
   intros x x_in_s x_in_bv_t2.
   (* x is in BV(t1) *)
   assert (ids_In x (bound_vars t1)).
-      specialize incl with x.
-      apply incl.
+      specialize inclusion with x.
+      apply inclusion.
       assumption.
   (* x is not in BV(t1) *)
   specialize hyp2 with x.
@@ -176,72 +181,58 @@ Proof.
   contradiction.
 Qed.
 
-Lemma bound_vars_lam_pattern :
-  
+Definition apart_weakening_lam_pattern
+             (p : term) (th : ids) (a : term) :
+             forall s : subst,
+                 apart s (LamT p th a) -> apart s p
+  := apart_weakening (LamT p th a) p (bound_vars_lam_pattern p th a).
+
+Definition apart_weakening_lam_body
+             (p : term) (th : ids) (a : term) :
+             forall s : subst,
+                 apart s (LamT p th a) -> apart s a
+  := apart_weakening (LamT p th a) a (bound_vars_lam_body p th a).
+
+Definition apart_weakening_app1
+             (t1 t2 : term) :
+             forall s : subst,
+                 apart s (AppT t1 t2) -> apart s t1
+  := apart_weakening (AppT t1 t2) t1 (bound_vars_app1 t1 t2).
+
+Definition apart_weakening_app2
+             (t1 t2 : term) :
+             forall s : subst,
+                 apart s (AppT t1 t2) -> apart s t2
+  := apart_weakening (AppT t1 t2) t2 (bound_vars_app2 t1 t2).
 
 (*
- * Given a substitution apart from "(p ->th a)"
- * it is also apart from "p" and from "a".
+ * "subst_apply_safe" takes a substitution "s" and a term "t"
+ * and returns a resulting function.
+ *
+ * The resulting function requires a proof that
+ * "s" and "t" are renamed apart, and returns the
+ * result of applying "s" to "t".
  *)
-Lemma apart_lam_pattern :
-    forall s : subst,
-    forall p : term, forall th : ids, forall a : term,
-      apart s (LamT p th a) ->
-      (apart s p /\ apart s a).
-Proof.
-  (* Unfold equivalent disjoint definitions *)
-  intros s p th a h_lam.
-  unfold apart.
-  unfold apart in h_lam.
-  assert (ids_disjoint2 (subst_variables s)
-                        (bound_vars (LamT p th a)))
-         as h_lam2.
-      apply ids_disjoint_implies_ids_disjoint2.
-      assumption.
-  unfold bound_vars in h_lam2.
-  fold bound_vars in h_lam2.
-  unfold ids_disjoint2 in h_lam2.
+Fixpoint subst_apply_safe (s : subst) (t : term) : apart s t -> term :=
+  match t return apart s t -> term with
+  | ConT        => fun _ => ConT
 
-  split.
-  (* Apart from "p" *)
+  | VarT x      => fun _ =>
+                      if ids_mem x (subst_domain s)
+                          then subst_apply_to_id s x
+                          else VarT x
 
-      apply ids_disjoint2_implies_ids_disjoint.
-      unfold ids_disjoint2.
-      (* Suppose x is both in the substitution and in BV( p ) *)
-      intros x x_in_s x_in_bvp.
-      (* x is in BV( p ->th a ) *)
-      assert (ids_In x (ids_union
-                           (ids_union (bound_vars p)
-                                      (bound_vars a))
-                           th)).
-          apply set_union_intro1.
-          apply set_union_intro1.
-          assumption.
-      (* x is not in BV( p ->th a ) *)
-      specialize h_lam2 with x.
-      assert (~ ids_In x (ids_union (ids_union (bound_vars p)
-                                               (bound_vars a))
-                                    th)).
-          apply h_lam2.
-          assumption.
-      contradiction.
-Qed.
+  | LamT p th a => fun apart_st =>
+                     LamT
+                       (subst_apply_safe s p (apart_weakening_lam_pattern p th a s apart_st))
+                       th
+                       (subst_apply_safe s a (apart_weakening_lam_body p th a s apart_st))
 
-Fixpoint subst_apply_safe
-              (s : subst)
-              (t : term)
-              (apart_st : apart s t)
-              : term :=
-  match t with
-  | ConT       => ConT
-  | VarT x     => if ids_mem x (subst_domain s)
-                   then subst_apply_to_id s x
-                   else VarT x
-  | LamT p th a => LamT
-                     (subst_apply_safe s p disj) th (subst_apply_safe s a disj)
-  | AppT a b    => ConT
+  | AppT a b    => fun apart_st =>
+                     AppT
+                       (subst_apply_safe s a (apart_weakening_app1 a b s apart_st))
+                       (subst_apply_safe s b (apart_weakening_app2 a b s apart_st))
   end.
-
 
 Fixpoint rename_apart (t : term) (forbidden : ids) : term :=
   match t with
