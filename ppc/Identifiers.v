@@ -188,6 +188,73 @@ Proof.
         apply IHn. assumption.
 Qed.
 
+Lemma nat_gt_implies_not_le : forall x y : nat, x > y -> not (x <= y).
+Proof.
+  compute.
+  intros x y H1 H2.
+  assert (S y <= y) as Hc.
+    apply (le_trans (S y) x y).
+    assumption. assumption.
+  apply le_Sn_n in Hc.
+  contradiction.
+Qed.
+
+Lemma Sn_not_in_ids_up_to_n : forall n : nat,
+                                not (ids_In (S n) (ids_up_to n)).
+Proof.
+    intros n hyp.
+    assert (S n <= n).
+        apply ids_up_to_bounded.
+        assumption.
+    assert (not (S n <= n)).
+        apply le_Sn_n.
+    contradiction.
+Qed.
+
+Lemma ids_add_in_set :
+      forall x : id, forall A : ids,
+        not (ids_In x A) ->
+        ids_add x A = List.app A (List.cons x List.nil).
+Proof.
+  intros x A x_not_in_A.
+  induction A.
+    (* Base case *)
+    compute. trivial.
+    (* Induction *)
+    unfold ids_add.
+    unfold set_add.
+    case (id_eq_dec x a).
+        (* x = a *)
+        intro.
+        assert (ids_In x (List.cons a A)).
+            unfold ids_In, set_In, List.In.
+            left. symmetry. assumption.
+        contradiction.
+
+        (* x <> a *)
+        intro x_neq_a.
+        transitivity (List.cons a (List.app A (List.cons x List.nil))).
+        SearchAbout list.
+        (* Second goal *)
+        apply List.app_comm_cons.
+
+        
+         
+
+Lemma ids_card_in_set :
+        forall x : id, forall a : ids,
+          not (ids_In x a) ->
+          ids_card (ids_add x a) = 1 + ids_card a.
+Proof.
+  intros x a x_in_a.
+  induction a.
+    (* Base case *)
+    compute. trivial.
+    (* Induction *)
+    unfold ids_add. unfold ids_card.
+    unfold length.
+    
+
 Lemma ids_up_to_card :
   forall n : nat, ids_card (ids_up_to n) = n.
 Proof.
@@ -200,6 +267,9 @@ Proof.
     fold ids_up_to in IHn.
     fold ids_up_to.
     unfold ids_add.
+    unfold set_add.
+
+   
 
 
 Lemma ids_diff_card :
