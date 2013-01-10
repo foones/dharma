@@ -1,6 +1,52 @@
 Require Import ListSet.
 Require Import Arith.
-Require Import NatOrderedType.
+Require Import List.
+
+(* Auxiliary nat lemmas *)
+
+Lemma nat_eq_implies_le : forall x y : nat, x = y -> x <= y.
+Proof.
+    intros x y.
+    intro Heq.
+    replace y with x.
+    apply le_n.
+Qed.
+
+Lemma nat_gt_implies_not_le : forall x y : nat, x > y -> not (x <= y).
+Proof.
+  compute.
+  intros x y H1 H2.
+  assert (S y <= y) as Hc.
+    apply (le_trans (S y) x y).
+    assumption. assumption.
+  apply le_Sn_n in Hc.
+  contradiction.
+Qed.
+
+(* Auxiliary list lemmas *)
+Lemma list_eq_iff_head_tail_eq :
+        forall A : Type,
+          forall x y : A, forall xs ys : List.list A,
+            x = y -> xs = ys -> List.cons x xs = List.cons y ys.
+Proof.
+  intros A x y xs ys Hxy Hxys.
+  replace y with x.
+  replace ys with xs.
+  reflexivity.
+Qed.
+
+Lemma list_not_in_list_implies_not_in_tail :
+        forall A : Type,
+          forall y x : A, forall xs : List.list A,
+            not (List.In y (List.cons x xs)) ->
+            not (List.In y xs).
+Proof.
+  intros A y x xs y_not_in_list y_in_tail.
+  assert (List.In y (List.cons x xs)).
+      apply List.in_cons.
+      assumption.
+  contradiction.
+Qed.
 
 (* Identifiers *)
 Definition id := nat.
@@ -155,16 +201,6 @@ Fixpoint ids_take (n : nat) (a : ids) : ids :=
 Fixpoint fresh_ids (n : nat) (forbidden : ids) :=
   ids_take n (ids_diff (ids_up_to (ids_card forbidden + n)) forbidden).
 
-Lemma nat_eq_implies_le : forall x y : nat, x = y -> x <= y.
-Proof.
-    intros x y.
-    assert (x <= y <-> x < y \/ x = y).
-    apply NatOrder.TO.le_lteq.
-    destruct H.
-    intro Heq.
-    apply H0. right. assumption.
-Qed.
-
 Lemma ids_up_to_bounded :
   forall n : nat, forall x : id, ids_In x (ids_up_to n) -> x <= n.
 Proof.
@@ -188,17 +224,6 @@ Proof.
         apply IHn. assumption.
 Qed.
 
-Lemma nat_gt_implies_not_le : forall x y : nat, x > y -> not (x <= y).
-Proof.
-  compute.
-  intros x y H1 H2.
-  assert (S y <= y) as Hc.
-    apply (le_trans (S y) x y).
-    assumption. assumption.
-  apply le_Sn_n in Hc.
-  contradiction.
-Qed.
-
 Lemma Sn_not_in_ids_up_to_n : forall n : nat,
                                 not (ids_In (S n) (ids_up_to n)).
 Proof.
@@ -211,12 +236,12 @@ Proof.
     contradiction.
 Qed.
 
-Lemma ids_add_in_set :
+Lemma ids_add_not_in_set :
       forall x : id, forall A : ids,
         not (ids_In x A) ->
         ids_add x A = List.app A (List.cons x List.nil).
 Proof.
-  intros x A x_not_in_A.
+  intros x A x_not_in_aA.
   induction A.
     (* Base case *)
     compute. trivial.
@@ -230,30 +255,33 @@ Proof.
             unfold ids_In, set_In, List.In.
             left. symmetry. assumption.
         contradiction.
-
         (* x <> a *)
         intro x_neq_a.
         transitivity (List.cons a (List.app A (List.cons x List.nil))).
-        SearchAbout list.
-        (* Second goal *)
+        apply list_eq_iff_head_tail_eq.
+            reflexivity.
+            apply IHA.
+            apply (list_not_in_list_implies_not_in_tail id x a A).
+            assumption.
         apply List.app_comm_cons.
+Qed.     
 
-        
-         
-
-Lemma ids_card_in_set :
+Lemma ids_card_not_in_set :
         forall x : id, forall a : ids,
           not (ids_In x a) ->
-          ids_card (ids_add x a) = 1 + ids_card a.
+          ids_card (ids_add x a) = S (ids_card a).
 Proof.
   intros x a x_in_a.
-  induction a.
-    (* Base case *)
-    compute. trivial.
-    (* Induction *)
-    unfold ids_add. unfold ids_card.
-    unfold length.
-    
+  replace (ids_add x a) with (List.app a (List.cons x List.nil)).
+    unfold ids_card.
+    transitivity (length a + length (List.cons x List.nil)).
+        apply List.app_length.
+        simpl length.
+        apply plus_comm.        
+    symmetry.
+    apply ids_add_not_in_set.
+    assumption.
+Qed.
 
 Lemma ids_up_to_card :
   forall n : nat, ids_card (ids_up_to n) = n.
@@ -266,14 +294,23 @@ Proof.
     (* Induction *)
     fold ids_up_to in IHn.
     fold ids_up_to.
-    unfold ids_add.
-    unfold set_add.
-
-   
-
+    replace (ids_card (ids_add (S n) (ids_up_to n)))
+        with (S (ids_card (ids_up_to n))).
+        apply eq_S.
+        apply IHn.
+        symmetry.
+        apply ids_card_not_in_set.
+        apply Sn_not_in_ids_up_to_n.
+Qed.
 
 Lemma ids_diff_card :
-  forall a b : ids, ids_card (ids_diff a b)
+  forall a b : ids, ids_card (ids_diff a b) >= ids_card a - ids_card b.
+Proof.
+  intros a b.
+  induction a.
+    compute. trivial.
+    unfold ids_diff.
+    
 
 Lemma fresh_ids_card :
         forall n : nat, forall forbidden : ids,
