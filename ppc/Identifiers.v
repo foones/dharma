@@ -1,6 +1,7 @@
 Require Import ListSet.
 Require Import Arith.
 Require Import List.
+Require Import Max.
 
 (* Auxiliary nat lemmas *)
 
@@ -173,68 +174,83 @@ Qed.
 (* Cardinality of a set *)
 Definition ids_card (a : ids) : nat := List.length a.
 
-(*
- * Returns the set of the first "n" identifiers in the
- * variable universe.
- *)
-Fixpoint ids_up_to (n : nat) : ids :=
-  match n with
-  | O     => ids_empty
-  | (S m) => ids_add (S m) (ids_up_to m)
+(*******************************************************************)
+
+Fixpoint ids_max (A : ids) : id :=
+  match A with
+  | List.nil       => O
+  | List.cons x xs => max x (ids_max xs)
   end.
 
-(*
- * Returns "n" elements of the given set.
- *)
-Fixpoint ids_take (n : nat) (a : ids) : ids :=
-  match n with
-  | O   => ids_empty
-  | S m => match a with
-           | List.nil       => ids_empty
-           | List.cons x xs => ids_add x (ids_take m xs)
-           end
-  end.
+Definition ids_fresh_grow (A : ids) (forbidden : ids) : ids :=
+  ids_add (S (ids_max (ids_union A forbidden))) A.
 
-(*
- * Returns a set of "n" ids not in the forbidden set.
- *)
-Fixpoint fresh_ids (n : nat) (forbidden : ids) :=
-  ids_take n (ids_diff (ids_up_to (ids_card forbidden + n)) forbidden).
-
-Lemma ids_up_to_bounded :
-  forall n : nat, forall x : id, ids_In x (ids_up_to n) -> x <= n.
+Lemma le_max_r_1:
+  forall a b c : id, a <= c -> a <= max b c.
 Proof.
-  intros n x.
-  induction n.
+  intros a b c a_eq_c.
+  apply (le_trans a c (max b c)).
+      apply a_eq_c.
+      apply le_max_r.
+Qed.
+
+Lemma ids_max_bounded :
+  forall A : ids, forall x : id,
+    ids_In x A -> x <= ids_max A.
+Proof.
+  intros A x x_in_A.
+  unfold ids_max.
+  induction A.
     (* Base case *)
-    compute.
-    intro. contradiction.
+    unfold ids_In, set_In, List.In in x_in_A.
+    contradiction.
     (* Induction *)
-    unfold ids_up_to. fold ids_up_to.
-    unfold ids_In, ids_add.
-    intro hyp.
-    apply set_add_elim in hyp.
-    decompose [or] hyp.
-        (* x is the given id *)
-        apply nat_eq_implies_le. assumption.
-        (* x is the recursive result *)
-        unfold ids_In in IHn.
-        apply lt_le_weak.
-        apply le_lt_n_Sm.
-        apply IHn. assumption.
+    unfold ids_In, set_In, List.In in x_in_A.
+    destruct x_in_A.
+      (* x == a *)
+      replace x with a.
+      apply le_max_l.
+      (* In x A *)
+      apply le_max_r_1.
+      apply IHA. apply H.
+Qed.  
+
+Lemma ids_S_max_not_in_set :
+  forall A : ids, not (ids_In (S (ids_max A)) A).
+Proof.
+  intros A Hyp.
+  assert (S (ids_max A) <= ids_max A).
+  apply ids_max_bounded.
+  apply Hyp.
+  apply le_Sn_n in H.
+  contradiction.
 Qed.
 
-Lemma Sn_not_in_ids_up_to_n : forall n : nat,
-                                not (ids_In (S n) (ids_up_to n)).
+Lemma ids_S_max_union_not_in_set_l :
+  forall A B : ids, not (ids_In (S (ids_max (ids_union A B))) A).
 Proof.
-    intros n hyp.
-    assert (S n <= n).
-        apply ids_up_to_bounded.
-        assumption.
-    assert (not (S n <= n)).
-        apply le_Sn_n.
-    contradiction.
-Qed.
+  intros A B Hyp.
+  assert (not (ids_In (S (ids_max (ids_union A B)))
+                      (ids_union A B))).
+    apply ids_S_max_not_in_set.
+  assert (ids_In (S (ids_max (ids_union A B)))
+                      (ids_union A B)).
+    apply ids_union_intro1. apply Hyp.
+  contradiction.
+Qed.    
+
+Lemma ids_S_max_union_not_in_set_r :
+  forall A B : ids, not (ids_In (S (ids_max (ids_union A B))) B).
+Proof.
+  intros A B Hyp.
+  assert (not (ids_In (S (ids_max (ids_union A B)))
+                      (ids_union A B))).
+    apply ids_S_max_not_in_set.
+  assert (ids_In (S (ids_max (ids_union A B)))
+                      (ids_union A B)).
+    apply ids_union_intro2. apply Hyp.
+  contradiction.
+Qed.    
 
 Lemma ids_add_not_in_set :
       forall x : id, forall A : ids,
@@ -283,38 +299,69 @@ Proof.
     assumption.
 Qed.
 
-Lemma ids_up_to_card :
-  forall n : nat, ids_card (ids_up_to n) = n.
+Lemma ids_fresh_grow_card :
+  forall A : ids, forall forbidden : ids,
+    ids_card (ids_fresh_grow A forbidden) = S (ids_card A).
 Proof.
-  intros n.
-  unfold ids_up_to.
+  intros A forbidden.
+  unfold ids_fresh_grow.  
+  assert (not (ids_In (S (ids_max (ids_union A forbidden))) A)).
+      apply ids_S_max_union_not_in_set_l.
+  apply ids_card_not_in_set.
+  apply H.
+Qed.
+
+Lemma ids_fresh_grow_disj_forbidden :
+  forall A : ids, forall forbidden : ids,
+    ids_disjoint A forbidden ->
+    ids_disjoint (ids_fresh_grow A forbidden) forbidden.
+Proof.
+  intros A forbidden a_disj_f.
+  unfold ids_fresh_grow.
+  apply ids_disjoint2_implies_ids_disjoint.
+  unfold ids_disjoint2.
+  intros x x_in_add.
+  unfold ids_In, ids_add in x_in_add.
+  apply set_add_elim in x_in_add.
+  destruct x_in_add.
+      replace x with (S (ids_max (ids_union A forbidden))).
+      apply ids_S_max_union_not_in_set_r.
+      apply ids_disjoint_implies_ids_disjoint2 in a_disj_f.
+      apply a_disj_f. assumption.
+Qed.
+
+Fixpoint ids_fresh (n : nat) (forbidden : ids) : ids :=
+  match n with
+  | O   => ids_empty
+  | S m => ids_fresh_grow (ids_fresh m forbidden)
+                           forbidden
+  end.
+
+Lemma ids_fresh_card :
+  forall n : nat, forall forbidden : ids,
+    ids_card (ids_fresh n forbidden) = n.
+Proof.
+  intros n forbidden.
   induction n.
     (* Base case *)
     compute. trivial.
     (* Induction *)
-    fold ids_up_to in IHn.
-    fold ids_up_to.
-    replace (ids_card (ids_add (S n) (ids_up_to n)))
-        with (S (ids_card (ids_up_to n))).
-        apply eq_S.
-        apply IHn.
-        symmetry.
-        apply ids_card_not_in_set.
-        apply Sn_not_in_ids_up_to_n.
+    unfold ids_fresh. fold ids_fresh.
+    replace (S n) with (S (ids_card (ids_fresh n forbidden))).
+    apply ids_fresh_grow_card.
+    apply eq_S. assumption.
 Qed.
 
-Lemma ids_diff_card :
-  forall a b : ids, ids_card (ids_diff a b) >= ids_card a - ids_card b.
-Proof.
-  intros a b.
-  induction a.
-    compute. trivial.
-    unfold ids_diff.
-    
-
-Lemma fresh_ids_card :
-        forall n : nat, forall forbidden : ids,
-          ids_card (fresh_ids n forbidden) = n.
+Lemma ids_fresh_disj :
+  forall n : nat, forall forbidden : ids,
+    ids_disjoint (ids_fresh n forbidden) forbidden.
 Proof.
   intros n forbidden.
-  
+  induction n.
+    (* Base case *)
+    compute. trivial.
+    (* Induction *)
+    unfold ids_fresh. fold ids_fresh.
+    apply ids_fresh_grow_disj_forbidden.
+    assumption.
+Qed.
