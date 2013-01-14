@@ -51,6 +51,7 @@ Qed.
 
 (* Identifiers *)
 Definition id := nat.
+Definition id_eq := beq_nat.
 Definition id_eq_dec := eq_nat_dec.
 
 (* Sets of identifiers *)
@@ -169,6 +170,24 @@ Proof.
   intros x xB.
   apply set_union_intro2.
   assumption.
+Qed.
+
+Lemma ids_In_union_elim3 :
+        forall x : id, forall A B C : ids,
+          ids_In x (ids_union (ids_union A B) C) ->
+          (ids_In x A \/ ids_In x B) \/ ids_In x C.
+Proof.
+  intros x A B C Hyp.
+  assert (ids_In x (ids_union A B) -> ids_In x A \/ ids_In x B).
+      apply set_union_elim.
+  assert (ids_In x (ids_union A B) \/ ids_In x C).
+      apply (set_union_elim id_eq_dec).
+      assumption.
+  destruct H0.
+      assert (ids_In x A \/ ids_In x B).
+      apply H. assumption.
+      left. assumption.
+      right. assumption.
 Qed.
 
 (* Cardinality of a set *)
@@ -365,3 +384,4 @@ Proof.
     apply ids_fresh_grow_disj_forbidden.
     assumption.
 Qed.
+
