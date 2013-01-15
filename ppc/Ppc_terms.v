@@ -256,6 +256,23 @@ Fixpoint context_rename_id (ctx : context) (x : id) : option id :=
       end
   end.
 
+Fixpoint vars_sorted_by_position
+           (vars : ids)
+           (t : term) : ids :=
+  match t with
+  | ConT        => ids_empty
+  | VarT x      => if ids_mem x vars
+                    then ids_add x ids_empty
+                    else ids_empty
+  | LamT p th a => ids_diff
+                     (ids_union
+                       (vars_sorted_by_position vars p)
+                       (vars_sorted_by_position vars a))
+                     th
+  | AppT a b    => ids_union (vars_sorted_by_position vars a)
+                             (vars_sorted_by_position vars b)
+  end.
+  
 Fixpoint context_rename_term (t : term) (base : id) (ctx : context) : term :=
   match t with
   | ConT        => ConT
@@ -263,7 +280,7 @@ Fixpoint context_rename_term (t : term) (base : id) (ctx : context) : term :=
                    | None   => VarT x
                    | Some z => VarT (base + z)
                    end
-  | LamT p th a => let th2 := th in
+  | LamT p th a => let th2 := vars_sorted_by_position th (AppT p a) in
                    let ctx2 := List.app ctx th2 in
                      LamT (context_rename_term p base ctx2)
                           (seq (base + List.length ctx) (ids_card th))
@@ -343,8 +360,18 @@ Proof.
    apply ids_union_elim3 in x_in_bound_vars_lam.
    destruct x_in_bound_vars_lam.
    destruct H.
-     apply HI_pat with (ctx := List.app ctx th). assumption.
-     apply HI_body with (ctx := List.app ctx th). assumption.
+     apply HI_pat
+      with (ctx := List.app ctx
+                            (vars_sorted_by_position
+                                th
+                                (AppT pat body))).
+       assumption.
+     apply HI_body
+      with (ctx := List.app ctx
+                            (vars_sorted_by_position
+                                th
+                                (AppT pat body))).
+       assumption.
      apply (le_trans base (base + length ctx) x).
          apply le_plus_l.
          apply nat_In_seq_is_geq_start with (len := ids_card th).
