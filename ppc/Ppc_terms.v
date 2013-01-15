@@ -23,6 +23,36 @@ Fixpoint bound_vars (t : term) : ids :=
   | AppT a b    => ids_union (bound_vars a) (bound_vars b)
   end.
 
+Fixpoint all_vars (t : term) : ids :=
+  match t with
+  | ConT        => ids_empty
+  | VarT x      => ids_add x ids_empty
+  | LamT p th a => ids_union (ids_union (all_vars p) (all_vars a)) th
+  | AppT a b    => ids_union (all_vars a) (all_vars b)
+  end.
+
+(*
+Lemma all_vars_eq_free_union_bound :
+  forall t : term,
+  all_vars t = ids_union (free_vars t) (bound_vars t).
+Proof.
+  induction t.
+  (* ConT *)
+  compute. trivial.
+  (* VarT *)
+  compute. trivial.
+  (* LamT *)
+  unfold all_vars. fold all_vars.
+  unfold free_vars. fold free_vars.
+  unfold bound_vars. fold bound_vars.
+    (* ... *)
+  (* AppT *)
+  unfold all_vars. fold all_vars.
+  unfold free_vars. fold free_vars.
+  unfold bound_vars. fold bound_vars.
+    (* ... *)
+*)
+
 (* Bound variables of subterms *)
 
 Lemma bound_vars_lam :
@@ -272,7 +302,13 @@ Fixpoint vars_sorted_by_position
   | AppT a b    => ids_union (vars_sorted_by_position vars a)
                              (vars_sorted_by_position vars b)
   end.
-  
+
+(*
+ * Renames the bound variables of a term, canonicalizing
+ * alpha-equivalent terms. Bound variables are renamed to
+ * identifiers { base, base + 1, base + 2, ... }.
+ *
+ *)  
 Fixpoint context_rename_term (t : term) (base : id) (ctx : context) : term :=
   match t with
   | ConT        => ConT
@@ -287,7 +323,14 @@ Fixpoint context_rename_term (t : term) (base : id) (ctx : context) : term :=
                           (context_rename_term a base ctx2)
   | AppT a b    => AppT (context_rename_term a base ctx)
                         (context_rename_term b base ctx)
-  end.
+  end. 
+
+(****************************************************)
+
+(*
+ * The bound variables after renaming a term
+ * start from the given base id
+ *)
 
 Lemma list_not_In_nil : forall A : Type, forall x : A,
                           not (List.In x List.nil).
@@ -309,8 +352,10 @@ Proof.
   intros v base x ctx x_in_bound_vars.
   unfold context_rename_term in x_in_bound_vars.
   induction (context_rename_id ctx v).
+      (* var is in context *)
       apply (list_not_In_nil id x) in x_in_bound_vars.
       contradiction.
+      (* var is not in context *)
       apply (list_not_In_nil id x) in x_in_bound_vars.
       contradiction.
 Qed.
@@ -440,6 +485,182 @@ Proof.
     assumption. assumption. assumption.
 Qed.
 
+(****************************************************)
+
+(*
+ * Renaming of terms is idempotent.
+ *)
+
+Definition context_is_bounded (ctx : context) (upper : id) :=
+  forall x : id, List.In x ctx -> x < upper.
+
+Lemma context_gt_not_In_context_bounded :
+  forall ctx : context,
+  forall base : id,
+  context_is_bounded ctx base ->
+  forall x : id,
+  x >= base -> not (List.In x ctx).
+Proof.
+  intros ctx base ctx_bounded x x_ge_base Hyp.
+  assert (x < base).
+  apply ctx_bounded. assumption.
+  assert (not (x >= base)).
+  apply lt_not_le. assumption.
+  contradiction.
+Qed.
+
+Lemma context_bounded_trans :
+  forall ctx : context, forall a b : id,
+  a <= b ->
+  context_is_bounded ctx a ->
+  context_is_bounded ctx b.
+Proof.
+  intros ctx a b a_le_b Ha.
+  unfold context_is_bounded.
+  intros x x_in_ctx.
+  unfold context_is_bounded in Ha.
+  specialize Ha with x.
+  assert (x < a). apply Ha. assumption.
+  apply (lt_le_trans x a b).
+  assumption. assumption.
+Qed.
+
+Lemma context_rename_id_None :
+  forall ctx : context, forall x : id,
+  context_rename_id ctx x = None ->
+  not (List.In x ctx).
+Proof.
+  intros ctx x ren_is_None.
+  induction ctx.
+    (* Base case *)
+    compute. trivial.
+    (* Induction *)
+    intro Hyp.
+        unfold List.In in Hyp.
+        destruct Hyp.
+        (* x is first element in the context *)
+        unfold context_rename_id in ren_is_None.
+        fold context_rename_id in ren_is_None.
+        induction (context_rename_id ctx x).
+            (* context_rename_id ctx x = (Some z) *)
+            discriminate.
+            (* context_rename_id ctx x = None *)
+            replace a with x in ren_is_None.
+            replace (id_eq x x) with true in ren_is_None.
+            discriminate.
+            apply beq_nat_refl.
+        (* x is in the rest of the context *)
+        unfold context_rename_id in ren_is_None.
+        fold context_rename_id in ren_is_None.
+        induction (context_rename_id ctx x).
+            (* context_rename_id ctx x = (Some z) *)
+            discriminate.
+            (* context_rename_id ctx x = None *)
+            assert (not (In x ctx)).
+                apply IHctx. trivial.
+            assert (In x ctx).
+            apply H.
+            contradiction.
+Qed.
+
+Lemma context_rename_term_idempotent_VarT :
+  forall z : id,
+  forall ctx : context,
+  forall base : id, forall base_gt : z < base /\ context_is_bounded ctx base,
+  let t2 := context_rename_term (VarT z) base ctx in
+  let ctx2 := vars_sorted_by_position ctx t2 in
+    t2 = context_rename_term t2 base ctx2.
+Proof.
+  intros z ctx base base_gt.
+  unfold context_rename_term.
+  fold context_rename_term.
+  (*
+   * The following Coq syntax: "induction term as []_eqn:<identifier>"
+   * is used instead of "induction term as naming_intro_pattern"
+   * which does not work. See:
+   *
+   * http://www.lix.polytechnique.fr/coq/bugs/show_bug.cgi?id=2741
+   *)
+  induction (context_rename_id ctx z) as []_eqn:Hren_z_eq.
+    (* var is in context *)
+    unfold vars_sorted_by_position.
+    unfold context_rename_term.
+    assert (not (List.In (base + a) ctx)). 
+      apply context_gt_not_In_context_bounded
+       with (base := base + a).
+          assert (context_is_bounded ctx base). apply base_gt.
+          apply context_bounded_trans
+           with (a := base) (b := base + a).
+          apply le_plus_l.
+          assumption.
+          apply le_refl.
+    assert (ids_mem (base + a) ctx = false).
+      apply set_mem_complete2. assumption.
+    replace (ids_mem (base + a) ctx) with false.
+      simpl. trivial.
+    (* var is not in context *)
+    unfold vars_sorted_by_position.
+    unfold context_rename_term.
+    assert (not (ids_In z ctx)).
+        apply context_rename_id_None.
+        assumption.
+    replace (ids_mem z ctx) with false.
+      simpl.
+      trivial.
+      symmetry.
+      apply set_mem_complete2.
+      assumption.
+Qed.
+
+Definition term_is_bounded (t : term) (upper : id) :=
+  forall x : id, List.In x (all_vars t) -> x < upper.
+
+Lemma term_bounded_VarT :
+  forall z : id, forall upper : id,
+  term_is_bounded (VarT z) upper -> z < upper.
+Proof.
+  intros z upper.
+  compute.
+  intro Hyp.
+  specialize Hyp with z.
+  apply Hyp.
+  left. trivial.
+Qed.
+
+Lemma context_rename_term_idempotent :
+  forall t : term,
+  forall ctx : context,
+  forall base : id, forall base_gt : term_is_bounded t base /\ context_is_bounded ctx base,
+  let t2 := context_rename_term t base ctx in
+  let ctx2 := vars_sorted_by_position ctx t2 in
+    t2 = context_rename_term t2 base ctx2.
+Proof.
+  intro t.
+  induction t.
+    (* ConT *)
+    compute. trivial.
+    (* VarT *)
+    intros ctx base base_gt t2 ctx2.
+    apply context_rename_term_idempotent_VarT.
+        split.
+        assert (term_is_bounded (VarT i) base).
+            apply base_gt.
+        apply term_bounded_VarT. assumption.
+        apply base_gt.
+    (* LamT *)
+    (* AppT *)
+
+(***************)
+
+Definition alpha_canonicalize (t : term) : term :=
+ let base := S (ids_max (all_vars t)) in
+    context_rename_term t base List.nil. 
+
+Definition alpha_equivalent (t1 t2 : term) : Prop :=
+  let base := S (ids_max (ids_union (all_vars t1)
+                                    (all_vars t2))) in
+    context_rename_term t1 base List.nil =
+    context_rename_term t2 base List.nil.
 Eval compute in
     (context_rename_term
          (LamT ConT
@@ -478,4 +699,4 @@ Eval compute in
                      (VarT 2)))
          1000
          List.nil
-    ).
+    ).t
