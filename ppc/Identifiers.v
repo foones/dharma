@@ -172,7 +172,17 @@ Proof.
   assumption.
 Qed.
 
-Lemma ids_In_union_elim3 :
+Lemma ids_union_elim2 :
+        forall x : id, forall A B : ids,
+          ids_In x (ids_union A B) ->
+          ids_In x A \/ ids_In x B.
+Proof.
+  intros x A B Hyp.
+  apply (set_union_elim id_eq_dec).
+  assumption.
+Qed.
+
+Lemma ids_union_elim3 :
         forall x : id, forall A B C : ids,
           ids_In x (ids_union (ids_union A B) C) ->
           (ids_In x A \/ ids_In x B) \/ ids_In x C.

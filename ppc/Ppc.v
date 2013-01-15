@@ -247,13 +247,13 @@ Definition context := List.list id.
 Fixpoint context_rename_id (ctx : context) (x : id) : option id :=
   match ctx with
   | List.nil       => None
-  | List.cons y ys => if id_eq x y
-                       then Some 0
-                       else
-                         match context_rename_id ys x with
-                         | None   => None
-                         | Some z => Some (z + 1)
-                         end
+  | List.cons y ys =>
+      match context_rename_id ys x with
+      | Some z => Some (z + 1)
+      | None   => if id_eq x y
+                   then Some 0
+                   else None
+      end
   end.
 
 Fixpoint context_rename_term (t : term) (base : id) (ctx : context) : term :=
@@ -280,38 +280,137 @@ Proof.
   contradiction.
 Qed.
 
+Lemma context_rename_bound_vars_VarT :
+  forall v : id,
+  forall base : id,
+  forall x : id,
+  forall ctx : context,
+  ids_In x (bound_vars (context_rename_term (VarT v) base ctx)) ->
+  x >= base.
+Proof.
+  intros v base x ctx x_in_bound_vars.
+  unfold context_rename_term in x_in_bound_vars.
+  induction (context_rename_id ctx v).
+      apply (list_not_In_nil id x) in x_in_bound_vars.
+      contradiction.
+      apply (list_not_In_nil id x) in x_in_bound_vars.
+      contradiction.
+Qed.
+
+Lemma nat_In_seq_is_geq_start :
+  forall x len start : id, List.In x (seq start len) -> x >= start.
+Proof.
+  intros x len.
+  induction len.
+    (* Base case *)
+    intro start.
+    compute. intro. contradiction.
+    (* Induction step *)
+    intro start.
+    unfold seq. fold seq.
+    unfold In.
+    intro. destruct H.
+      replace start with x.
+      apply le_refl.
+      assert (x >= S start).
+        apply IHlen. assumption.
+        apply (le_trans start (S start) x).
+        apply le_n_Sn. assumption.
+Qed.
+
+Lemma context_rename_bound_vars_LamT :
+    forall pat : term, forall th : ids, forall body : term,
+    forall base : id,
+    forall x : id,
+    forall HI_pat :
+          forall ctx : context,
+          ids_In x (bound_vars (context_rename_term pat base ctx)) ->
+          x >= base,
+    forall HI_body :
+          forall ctx : context,
+          ids_In x (bound_vars (context_rename_term body base ctx)) ->
+          x >= base,
+    forall ctx : context,
+    ids_In x (bound_vars (context_rename_term (LamT pat th body) base ctx)) ->
+    x >= base.
+Proof.
+   intros pat th body base x HI_pat HI_body ctx x_in_bound_vars_lam.
+   unfold context_rename_term in x_in_bound_vars_lam.
+   fold context_rename_term in x_in_bound_vars_lam.
+   unfold bound_vars in x_in_bound_vars_lam.
+   fold bound_vars in x_in_bound_vars_lam.
+   apply ids_union_elim3 in x_in_bound_vars_lam.
+   destruct x_in_bound_vars_lam.
+   destruct H.
+     apply HI_pat with (ctx := List.app ctx th). assumption.
+     apply HI_body with (ctx := List.app ctx th). assumption.
+     apply (le_trans base (base + length ctx) x).
+         apply le_plus_l.
+         apply nat_In_seq_is_geq_start with (len := ids_card th).
+         assumption.
+Qed.
+
+Lemma context_rename_bound_vars_AppT :
+  forall a b : term,
+  forall base : id,
+  forall x : id,
+  forall HI_a :
+      forall ctx : context,
+      ids_In x (bound_vars (context_rename_term a base ctx)) ->
+      x >= base,
+  forall HI_b :
+      forall ctx : context,
+      ids_In x (bound_vars (context_rename_term b base ctx)) ->
+      x >= base,
+  forall ctx : context,
+  ids_In x (bound_vars (context_rename_term (AppT a b) base ctx)) ->
+  x >= base.
+Proof.
+  intros a b x base HI_a HI_b ctx x_in_bound_vars_app.
+  unfold context_rename_term in x_in_bound_vars_app.
+  fold context_rename_term in x_in_bound_vars_app.
+  unfold bound_vars in x_in_bound_vars_app.
+  fold bound_vars in x_in_bound_vars_app.
+  apply ids_union_elim2 in x_in_bound_vars_app.
+  destruct x_in_bound_vars_app.
+      apply HI_a with (ctx := ctx). assumption.
+      apply HI_b with (ctx := ctx). assumption.
+Qed.  
+
 Lemma context_rename_bound_vars :
   forall t : term, forall base : id,
   forall x : id,
-    ids_In x (bound_vars (context_rename_term t base List.nil)) ->
-    x >= base.
+  forall ctx : context,
+  ids_In x (bound_vars (context_rename_term t base ctx)) ->
+  x >= base.
 Proof.
-  intros t base x x_in_bound_vars.
+  intros t base x.
   induction t.
     (* ConT *)
+    intros ctx x_in_bound_vars.
     unfold context_rename_term, bound_vars, ids_In, set_In, ids_empty, empty_set in x_in_bound_vars.
     apply (list_not_In_nil id x) in x_in_bound_vars.
     contradiction.
     (* VarT *)
-    unfold context_rename_term in x_in_bound_vars.
-      induction (context_rename_id nil i).
-          (* var is in the context *)
-          unfold bound_vars, ids_In, set_In, ids_empty, empty_set in x_in_bound_vars.
-          apply (list_not_In_nil id x) in x_in_bound_vars.
-          contradiction.
-          (* var is not in the context *)
-          unfold bound_vars, ids_In, set_In, ids_empty, empty_set in x_in_bound_vars.
-          apply (list_not_In_nil id x) in x_in_bound_vars.
-          contradiction.
+    intros ctx x_in_bound_vars.
+    apply context_rename_bound_vars_VarT with (v := i) (ctx := ctx).
+        assumption.
     (* LamT *)
-    unfold context_rename_term in x_in_bound_vars.
-    fold context_rename_term in x_in_bound_vars.
-    unfold bound_vars in x_in_bound_vars.
-    fold bound_vars in x_in_bound_vars.
-    
-    SearchAbout set.
-    
-    
+    intros ctx x_in_bound_vars.
+    apply context_rename_bound_vars_LamT
+     with (pat := t1)
+          (th := i)
+          (body := t2)
+          (ctx := ctx).
+    assumption. assumption. assumption.
+    (* AppT *)
+    intros ctx x_in_bound_vars.
+    apply context_rename_bound_vars_AppT
+     with (a := t1)
+          (b := t2)
+          (ctx := ctx).
+    assumption. assumption. assumption.
+Qed.   
 
 Eval compute in
     (context_rename_term
@@ -323,94 +422,14 @@ Eval compute in
          List.nil
     ).
 
-
-
-
-Fixpoint rename_var (t : term) (x : id) (y : id) : term :=
-  match t with
-  | ConT        => ConT
-  | VarT z      => if id_eq x z
-                    then VarT y
-                    else VarT z
-  | LamT p th a => if ids_mem x th
-                    then LamT p th a
-                    else LamT (rename_var p x y)
-                              th
-                              (rename_var a x y)
-  | AppT a b    => AppT (rename_var a x y)
-                        (rename_var b x y)
-  end.
-
-Fixpoint rename_vars (t : term) (Xs : ids) (Ys : ids) : term :=
-  match Xs with
-  | List.nil       => t
-  | List.cons x xs =>
-      match Ys with
-      | List.nil       => t
-      | List.cons y ys => rename_vars (rename_var t x y) xs ys
-      end
-  end.
-
-Fixpoint rename_apart (t : term) (forbidden : ids) :=
-  match t with
-  | ConT        => ConT
-  | VarT z      => VarT z
-  | LamT p th a => let fresh := ids_fresh (ids_card th) (ids_union forbidden (free_vars (LamT p th a))) in
-                   let forbidden2 := ids_union forbidden fresh in
-                   let p2 := rename_apart p forbidden2 in
-                   let a2 := rename_apart a forbidden2 in
-                     LamT (rename_vars p2 th fresh)
-                          fresh
-                          (rename_vars a2 th fresh)
-  | AppT a b    => AppT (rename_apart a forbidden)
-                        (rename_apart b forbidden)
-  end.
-
 Eval compute in
-    (rename_apart
-         (AppT (VarT 7)
-               (LamT (AppT (VarT 2) (VarT 7)) (ids_add 7 ids_empty) (AppT (VarT 9) (VarT 7))))
-         (ids_add 1 ids_empty)
+    (context_rename_term
+         (LamT ConT
+               (ids_add 2 ids_empty)
+               (AppT (LamT ConT
+                        (ids_add 2 ids_empty)
+                        (VarT 2))
+                     (VarT 2)))
+         1000
+         List.nil
     ).
-
-(*************************************************************************)
-
-Definition ids_mapping_extend (mp : id -> id) (x : id) (y : id) : id -> id
-  := fun z : id =>
-         if id_eq x z
-          then y
-          else mp z.
-
-Fixpoint ids_mapping_build (old : ids) (new : ids) : id -> id :=
-  match old with
-  | List.nil  => fun z : id => z
-  | List.cons x xs =>
-       match new with
-       | List.nil       => fun z : id => z
-       | List.cons y ys => ids_mapping_extend (ids_mapping_build xs ys) x y
-       end
-  end.
-
-
-(*
- * "substitution_fresh_ids" takes a set of "source" ids and a set
- * of "forbidden" ids and returns a substitution "s" s.t.:
- * "s" maps distinct source ids to distinct variables, which are
- * not in the forbidden set.
- *)
-Definition substitution_fresh_ids (source : ids) (forbidden : ids) :=
-  subst_build source (ids_fresh (ids_card source) forbidden).
-
-(*
-  match t with
-  | ConT        => ConT
-  | VarT x      => VarT x
-  | LamT p th a => 
-*)
-
-Fixpoint alpha_equivalent (t1 : term) (t2 : term) :=
-  match t1 with
-  
-
-Check LamT (VarT 1) ids_empty (VarT 1).
-Check Subst (ids_add 1 ids_empty) (fun x : id => VarT x).
