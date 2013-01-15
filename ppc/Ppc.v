@@ -263,7 +263,8 @@ Fixpoint context_rename_term (t : term) (base : id) (ctx : context) : term :=
                    | None   => VarT x
                    | Some z => VarT (base + z)
                    end
-  | LamT p th a => let ctx2 := List.app ctx th in
+  | LamT p th a => let th2 := th in
+                   let ctx2 := List.app ctx th2 in
                      LamT (context_rename_term p base ctx2)
                           (seq (base + List.length ctx) (ids_card th))
                           (context_rename_term a base ctx2)
@@ -410,7 +411,25 @@ Proof.
           (b := t2)
           (ctx := ctx).
     assumption. assumption. assumption.
-Qed.   
+Qed.
+
+Eval compute in
+    (context_rename_term
+         (LamT ConT
+               (ids_add 1 (ids_add 2 ids_empty))
+               (AppT (VarT 1) (VarT 2)))
+         1000
+         List.nil
+    ).
+
+Eval compute in
+    (context_rename_term
+         (LamT ConT
+               (ids_add 2 (ids_add 1 ids_empty))
+               (AppT (VarT 1) (VarT 2)))
+         1000
+         List.nil
+    ).
 
 Eval compute in
     (context_rename_term
