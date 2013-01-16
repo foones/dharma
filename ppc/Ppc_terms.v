@@ -563,13 +563,20 @@ Proof.
             contradiction.
 Qed.
 
-Lemma context_rename_term_idempotent_VarT :
-  forall z : id,
+Definition term_is_bounded (t : term) (upper : id) :=
+  forall x : id, List.In x (all_vars t) -> x < upper.
+
+Definition prop_context_rename_term_is_idempotent (t : term) : Prop :=
   forall ctx : context,
-  forall base : id, forall base_gt : z < base /\ context_is_bounded ctx base,
-  let t2 := context_rename_term (VarT z) base ctx in
+  forall base : id,
+  forall base_gt : term_is_bounded t base /\ context_is_bounded ctx base,
+  let t2 := context_rename_term t base ctx in
   let ctx2 := vars_sorted_by_position ctx t2 in
     t2 = context_rename_term t2 base ctx2.
+
+Lemma context_rename_term_idempotent_VarT :
+  forall z : id,
+  prop_context_rename_term_is_idempotent (VarT z).
 Proof.
   intros z ctx base base_gt.
   unfold context_rename_term.
@@ -612,9 +619,6 @@ Proof.
       assumption.
 Qed.
 
-Definition term_is_bounded (t : term) (upper : id) :=
-  forall x : id, List.In x (all_vars t) -> x < upper.
-
 Lemma term_bounded_VarT :
   forall z : id, forall upper : id,
   term_is_bounded (VarT z) upper -> z < upper.
@@ -627,28 +631,44 @@ Proof.
   left. trivial.
 Qed.
 
+Lemma context_rename_term_idempotent_LamT :
+  forall p : term, forall th : ids, forall a : term,
+  prop_context_rename_term_is_idempotent p ->
+  prop_context_rename_term_is_idempotent a ->
+  prop_context_rename_term_is_idempotent (LamT p th a).
+Proof.
+  intros p th a H_p H_a.
+  unfold prop_context_rename_term_is_idempotent.
+  intros ctx base base_gt.
+
+Qed.
+
 Lemma context_rename_term_idempotent :
   forall t : term,
-  forall ctx : context,
-  forall base : id, forall base_gt : term_is_bounded t base /\ context_is_bounded ctx base,
-  let t2 := context_rename_term t base ctx in
-  let ctx2 := vars_sorted_by_position ctx t2 in
-    t2 = context_rename_term t2 base ctx2.
+  prop_context_rename_term_is_idempotent t.
 Proof.
   intro t.
   induction t.
     (* ConT *)
     compute. trivial.
     (* VarT *)
-    intros ctx base base_gt t2 ctx2.
+    intros ctx base base_gt.
     apply context_rename_term_idempotent_VarT.
         split.
         assert (term_is_bounded (VarT i) base).
             apply base_gt.
-        apply term_bounded_VarT. assumption.
+        assumption.
         apply base_gt.
     (* LamT *)
+    intros ctx base base_gt.
+    apply context_rename_term_idempotent_LamT.
+      unfold prop_context_rename_term_is_idempotent.
+      apply IHt1.
+      unfold prop_context_rename_term_is_idempotent.
+      apply IHt2.
+      apply base_gt.
     (* AppT *)
+
 
 (***************)
 
