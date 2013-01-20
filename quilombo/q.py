@@ -3,12 +3,7 @@
 import sys
 
 from comunes.utiles import leer_archivo, QuilomboException
-from idioma.gramatica import Sustantivo
-from lenguaje.parser import tokenizar, PSecuenciaConAccion, PVerboNuevoInfinitivo, PEntero
-
-DICCIONARIO_INICIAL = [
-    Sustantivo('mango'),
-]
+from lenguaje.parser import tokenizar, PDefinicionDeFuncion, PNominal, PPreposicion, PSecuenciaConAccion, PVerboNuevoInfinitivo, PEntero
 
 def main():
     if len(sys.argv) != 2:
@@ -21,11 +16,12 @@ def main():
         contenido = leer_archivo(nombre_archivo)
         iterador_tokens = tokenizar(contenido, nombre_archivo=nombre_archivo)
 
-        analizador = PSecuenciaConAccion(
-                        lambda xs: u'%s ---- %s' % tuple(xs),
-                        PVerboNuevoInfinitivo(),
-                        PEntero()
-                     )
+#        analizador = PSecuenciaConAccion(
+#                        lambda xs: u'%s ---- %s' % tuple(xs),
+#                        PVerboNuevoInfinitivo(),
+#                        PEntero()
+#                     )
+        analizador = PDefinicionDeFuncion()
         print unicode(iterador_tokens)
 
         nmatches = 0
