@@ -4,7 +4,7 @@ import sys
 
 from comunes.utiles import leer_archivo, QuilomboException
 from idioma.gramatica import Sustantivo
-from lenguaje.parser import tokenizar, PNumero
+from lenguaje.parser import tokenizar, PSecuenciaConAccion, PVerboNuevoInfinitivo, PEntero
 
 DICCIONARIO_INICIAL = [
     Sustantivo('mango'),
@@ -21,7 +21,11 @@ def main():
         contenido = leer_archivo(nombre_archivo)
         iterador_tokens = tokenizar(contenido, nombre_archivo=nombre_archivo)
 
-        analizador = PNumero()
+        analizador = PSecuenciaConAccion(
+                        lambda xs: u'%s ---- %s' % tuple(xs),
+                        PVerboNuevoInfinitivo(),
+                        PEntero()
+                     )
         print unicode(iterador_tokens)
 
         nmatches = 0
