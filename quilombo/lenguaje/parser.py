@@ -1,6 +1,7 @@
 # coding:utf-8
 
 from comunes.utiles import QuilomboException
+from idioma.ortografia import normalizar
 
 LETRAS_MINUSCULAS = u'abcdefghijklmnopqrstuvwxyzáéíóúüñ'
 LETRAS_MAYUSCULAS = u'ABCDEFGHIJKLMNOPQRSTUVWXYZÁÉÍÓÚÜñ'
@@ -90,6 +91,13 @@ class IteradorTokens(object):
         self._tokens = tokens
         self._pos = pos
 
+    def __unicode__(self):
+        return 'IteradorTokens(' + \
+               '[\n' + '\n'.join(['\t' + unicode(tok) for tok in self._tokens]) + '\n]' + \
+               ',\n' + \
+               '\t%u\n' % (self._pos,) + \
+               ')'
+
     def avanzar(self, n=1):
         return IteradorTokens(self._tokens, self._pos + n)
 
@@ -112,22 +120,59 @@ class Parser(object):
        un generador de matches."""
     pass
 
-class TokenParser(Parser):
+def coincide(referencia, x):
+    if referencia is None:
+        return True
+    else:
+        return referencia == x
 
-    def __init__(self, tipo=None, valor=None):
+def texto_coincide(referencia, x):
+    if referencia is None:
+        return True
+    else:
+        return normalizar(referencia) == normalizar(x)
+
+class PToken(Parser):
+    """Analizador que exige coincidencia literal con un terminal,
+       ya sea por su tipo, su valor o ambos."""
+
+    def __init__(self, tipo=None, valor=None, resultado=None):
         self._tipo = tipo
         self._valor = valor
+        self._resultado = resultado
 
     def match(self, it):
         ok = True
         tok = it.token_actual()
 
-        if self._tipo != None:
-            ok = ok and tok.tipo == self._tipo
+        ok = ok and coincide(self._tipo, tok.tipo)
+        ok = ok and texto_coincide(self._valor, tok.valor)
 
-        if self._valor != None:
-            ok = ok and tok.valor == self._valor
+        if self._resultado is not None:
+            resultado = self._resultado
+        else:
+            resultado = tok
 
         if ok:
-            return tok, it.avanzar()
+            yield resultado, it.avanzar()
+
+class PAlternativa(Parser):
+    """Introduce una alternativa no determinística entre varios parsers."""
+
+    def __init__(self, *parsers):
+        self._parsers = parsers
+
+    def match(self, it):
+        for p in self._parsers:
+            for res in p.match(it):
+                yield res
+
+class PNumero(PAlternativa):
+    """Parser para números en castellano."""
+
+    def __init__(self):
+       PAlternativa.__init__(self,
+            PToken(tipo='palabra', valor=u'ningún', resultado=0),
+            PToken(tipo='palabra', valor=u'nada', resultado=0),
+       )
 

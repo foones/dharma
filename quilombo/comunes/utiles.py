@@ -12,7 +12,8 @@ class QuilomboException(Exception):
         msj = self._mensaje
         if self._pos is not None:
             msj += u'\nEn %s' % (self._pos,)
-        return msj
+
+        return '\n'.join(['quilombo: ' + linea for linea in msj.split('\n')])
 
 def leer_archivo(nombre_archivo):
     "Lee el contenido de un archivo en el encoding apropiado."
@@ -23,7 +24,7 @@ def leer_archivo(nombre_archivo):
         f.close()
     except IOError:
         raise QuilomboException(
-            u'No se puede leer el archivo "%s".\n' % (nombre_archivo,) +
+            u'No se puede leer el archivo [ %s ].\n' % (nombre_archivo,) +
             u'Fijate si existe o me mandaste fruta.' 
         )
     return texto.decode(ENCODING)

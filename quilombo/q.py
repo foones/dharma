@@ -4,7 +4,7 @@ import sys
 
 from comunes.utiles import leer_archivo, QuilomboException
 from idioma.gramatica import Sustantivo
-from lenguaje.parser import tokenizar, IteradorTokens, TokenParser
+from lenguaje.parser import tokenizar, PNumero
 
 DICCIONARIO_INICIAL = [
     Sustantivo('mango'),
@@ -21,11 +21,19 @@ def main():
         contenido = leer_archivo(nombre_archivo)
         iterador_tokens = tokenizar(contenido, nombre_archivo=nombre_archivo)
 
-        analizador = TokenParser(tipo='palabra')
+        analizador = PNumero()
+        print unicode(iterador_tokens)
 
-        while True:
-            res, iterador_tokens = analizador.match(iterador_tokens)
-            print unicode(res)
+        nmatches = 0
+        matches = analizador.match(iterador_tokens)
+        for match in matches:
+            nmatches += 1
+            res, iterador_tokens2 = match
+            print 'resultado=', unicode(res)
+
+        if nmatches == 0:
+            print 'cannot parse'
+            
 
     except QuilomboException as e:
         print(unicode(e))
