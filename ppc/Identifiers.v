@@ -1,4 +1,5 @@
 Require Import ListSet.
+
 Require Import Arith.
 Require Import List.
 Require Import Max.
@@ -200,6 +201,20 @@ Proof.
       right. assumption.
 Qed.
 
+Lemma ids_includes_nil :
+  forall A, ids_includes ids_empty A -> A = ids_empty.
+Proof.
+  intros A hyp.
+  induction A.
+    trivial.
+    unfold ids_includes in hyp.
+    compute in hyp.
+      specialize hyp with a.
+      destruct hyp.
+      left.
+      trivial.
+Qed.
+
 (* Cardinality of a set *)
 Definition ids_card (a : ids) : nat := List.length a.
 
@@ -395,3 +410,63 @@ Proof.
     assumption.
 Qed.
 
+Lemma ids_disjoint_union_complete :
+  forall A B C,
+    ids_disjoint A C /\ ids_disjoint B C ->
+    ids_disjoint (ids_union A B) C.
+Proof.
+  intros A B C hyp.
+  apply ids_disjoint2_implies_ids_disjoint.
+  unfold ids_disjoint2.
+  intros x x_in_AuB.
+  apply ids_union_elim2 in x_in_AuB.
+  destruct hyp as (hyp1, hyp2).
+  apply ids_disjoint_implies_ids_disjoint2 in hyp1.
+  apply ids_disjoint_implies_ids_disjoint2 in hyp2.
+  unfold ids_disjoint2 in hyp1, hyp2.
+  specialize hyp1 with x.
+  specialize hyp2 with x.
+  destruct x_in_AuB.
+  apply hyp1. assumption.
+  apply hyp2. assumption.
+Qed.
+
+Lemma ids_disjoint_union_correct :
+  forall A B C,
+    ids_disjoint (ids_union A B) C ->
+    ids_disjoint A C /\ ids_disjoint B C.
+Proof.
+  intros A B C hyp.
+  apply ids_disjoint_implies_ids_disjoint2 in hyp.
+  unfold ids_disjoint2 in hyp.
+  split.
+      (* A disj C *)
+      apply ids_disjoint2_implies_ids_disjoint.
+      unfold ids_disjoint2.
+      intros x x_in_A.
+      specialize hyp with x.
+      apply hyp.
+      apply ids_union_intro1. assumption.
+      (* B disj C *)
+      apply ids_disjoint2_implies_ids_disjoint.
+      unfold ids_disjoint2.
+      intros x x_in_B.
+      specialize hyp with x.
+      apply hyp.
+      apply ids_union_intro2. assumption.
+Qed.
+
+Lemma ids_disjoint_weakening :
+  forall A B C, ids_includes A B -> ids_disjoint A C -> ids_disjoint B C.
+Proof.
+  intros A B C A_includes_B disj_AC.
+  apply ids_disjoint2_implies_ids_disjoint.
+  unfold ids_disjoint2. intros x x_in_B.
+  apply ids_disjoint_implies_ids_disjoint2 in disj_AC.
+  unfold ids_disjoint2 in disj_AC.
+  specialize disj_AC with x.
+  unfold ids_includes in A_includes_B.
+  specialize A_includes_B with x.
+  apply disj_AC, A_includes_B.
+  assumption.
+Qed.
