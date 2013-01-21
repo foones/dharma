@@ -1,7 +1,9 @@
 # coding:utf-8
 
-def unicode_list(xs):
-    return ', '.join([unicode(x) for x in xs])
+from comunes.utiles import identar
+
+def unicode_list(xs, sep=u', '):
+    return sep.join([unicode(x) for x in xs])
 
 class Termino(object):
     "Cada instancia representa un término del lenguaje."
@@ -12,8 +14,8 @@ class Termino(object):
     def tokens(self):
         return self._tokens
 
-    def __repr__(self):
-        return unicode(self)
+    #def __repr__(self):
+    #    return unicode(self)
 
 class TNumero(Termino):
     "Términos que representan números."
@@ -54,7 +56,10 @@ class TParametro(Termino):
         self._variable = variable
 
     def __unicode__(self):
-        return u'TParametro(%s, %s)' % (self._preposicion, self._variable)
+        return u'TParametro(%s, %s)' % (
+            self._preposicion,
+            self._variable
+        )
 
 class TDefinicionDeFuncion(Termino):
     "Definición de función."
@@ -66,10 +71,10 @@ class TDefinicionDeFuncion(Termino):
         self._cuerpo = cuerpo
 
     def __unicode__(self):
-        return u'TDefinicionDeFuncion(%s, [%s], %s)' % (
+        return u'TDefinicionDeFuncion(%s, [%s],\n%s\n)' % (
             self._verbo,
             unicode_list(self._parametros),
-             self._cuerpo
+            identar(unicode(self._cuerpo))
         )
 
 class TInvocarVerbo(Termino):
@@ -81,11 +86,10 @@ class TInvocarVerbo(Termino):
         self._argumentos = argumentos
 
     def __unicode__(self):
-        return u'TInvocarVerbo(%s, [%s])' % (
+        return u'TInvocarVerbo(%s, [\n%s\n])' % (
             self._verbo,
-            unicode_list(self._argumentos)
+            identar(unicode_list(self._argumentos, sep=u',\n'))
         )
-
 
 class TBegin(Termino):
     "Bloque."
@@ -95,5 +99,5 @@ class TBegin(Termino):
         self._expresiones = expresiones
 
     def __unicode__(self):
-        return u'TBegin([%s])' % (unicode_list(self._expresiones),)
+        return u'TBegin([\n%s\n])' % (identar(unicode_list(self._expresiones, sep=u',\n')),)
 

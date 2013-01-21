@@ -106,7 +106,7 @@ def stream_de_tokens(texto, nombre_archivo='...'):
 
             i = j
             pos = pos_final
-        elif texto[i] in [',', '.', '<', '>']:
+        elif texto[i] in [',', '.', '<', '>', '$']:
             j = i + 1
             pos_final = pos.avanzar(texto[i:j])
             yield Token('puntuacion', texto[i:j], pos, pos_final)
@@ -390,6 +390,15 @@ class PVerboNuevoInfinitivo(PSecuenciaConAccion):
         def accion(lista):
             return lista[1]
 
+        def accion_clausura(lista):
+            return ' '.join(lista)
+
+        def accion_interna(lista):
+            res = lista[1]
+            if lista[0] != ():
+                res = lista[0][0] + ' ' + res
+            return res
+
         PSecuenciaConAccion.__init__(self, accion,
             POpcional(
                 PSecuencia(
@@ -401,8 +410,13 @@ class PVerboNuevoInfinitivo(PSecuenciaConAccion):
                 PSecuenciaConAccion(lambda xs: u'<%s %s>' % (xs[1], xs[2]),
                     PToken(tipo='puntuacion', valor='<'),
                     PVerboNuevoInfinitivoBasico(),
-                    PNominal(),
-                    PToken(tipo='puntuacion', valor='>'),
+                    PClausuraConTerminadorConAccion(accion_clausura,
+                        PSecuenciaConAccion(accion_interna,
+                            POpcional(PPreposicion()),
+                            PNominal()
+                        ),
+                        terminador=PToken(tipo='puntuacion', valor='>'),
+                    )
                 ),
                 PVerboNuevoInfinitivoBasico(),
             ),
@@ -554,7 +568,10 @@ class PNumero(PSecuenciaConAccion):
             POpcional(PSecuenciaConAccion(p0, PEnteroMenorQueUnMillon(), PSeparadorMillones('millon'))),
             POpcional(PEnteroMenorQueUnMillon()),
             POpcional(PToken(tipo='palabra', valor='de')),
-            PUnidadMonetaria(),
+            PAlternativa(
+                PToken(tipo='puntuacion', valor='$', resultado=1),
+                PUnidadMonetaria(),
+            )
         )
 
 class PAlternativaPalabras(PAlternativa):
@@ -673,7 +690,8 @@ class PSeparadorExpresiones(PAlternativa):
                 PAlternativa(
                     PToken(tipo='palabra', valor=u'después'),
                     PSecuencia(
-                        PToken(tipo='palabra', valor=u'al'),
+                        PToken(tipo='palabra', valor=u'a'),
+                        PToken(tipo='palabra', valor=u'el'),
                         PToken(tipo='palabra', valor=u'final'),
                     )
                 )
@@ -705,7 +723,7 @@ class PInvocacionVerboInfinitivo(PSecuenciaConAccion):
         def accion(lista):
             verbo, expresion, argumentos = lista
             if expresion != ():
-                argumentos = [TParametro('*', expresion)] + argumentos
+                argumentos = [TParametro('*', expresion[0])] + argumentos
             return TInvocarVerbo(verbo, argumentos)
 
         PSecuenciaConAccion.__init__(self, accion,

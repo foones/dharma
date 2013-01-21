@@ -29,6 +29,6 @@ def leer_archivo(nombre_archivo):
         )
     return texto.decode(ENCODING)
 
-def identar(texto, sangria='  '):
-    return '\n'.join(['  ' + linea for linea in texto.split('\n')])
+def identar(texto, sangria='    '):
+    return '\n'.join([sangria + linea for linea in texto.split('\n')])
 

@@ -30,7 +30,7 @@ def main():
         for match in matches:
             nmatches += 1
             res, iterador_tokens2 = match
-            print 'resultado=', unicode(res)
+            print(unicode(res))
 
         if nmatches == 0:
             raise QuilomboException(analizador.mensaje_de_error(iterador_tokens))

@@ -6,7 +6,7 @@ ARTICULOS = u'un una unos unas el la los las lo este esta esto estos estas'.spli
 
 VOCATIVOS = u'escuchame cuchame escucheme cucheme che eh'.split(' ')
 
-APELATIVOS = u'boludo flaco pibe amigo guacho guachin hermano papa master maestro jefe maquina loco'.split(' ')
+APELATIVOS = u'boludo flaco pibe chabon man amigo guacho guachin hermano papa papi mama mami master maestro jefe maquina loco vieja viejo'.split(' ')
 
 CONJUNCIONES = u'y o'.split(' ')
 
