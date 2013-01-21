@@ -15,7 +15,7 @@ from lenguaje.terminos import (
     TVariable,
     TParametro,
     TDefinicionDeFuncion,
-    TAplicar,
+    TInvocarVerbo,
     TBegin,
 )
 
@@ -91,10 +91,22 @@ def stream_de_tokens(texto, nombre_archivo='...'):
             while j < len(texto) and texto[j] in LETRAS:
                 pos_final = pos_final.avanzar(texto[j])
                 j += 1
-            yield Token('palabra', texto[i:j], pos, pos_final)
+
+            # Contracciones se manejan a nivel léxico
+            if texto[i:j] == 'al':
+                yield Token('palabra', 'a', pos, pos_final)
+                yield Token('palabra', 'el', pos, pos_final)
+
+            elif texto[i:j] == 'del':
+                yield Token('palabra', 'de', pos, pos_final)
+                yield Token('palabra', 'el', pos, pos_final)
+
+            else:
+                yield Token('palabra', texto[i:j], pos, pos_final)
+
             i = j
             pos = pos_final
-        elif texto[i] in [',', '.']:
+        elif texto[i] in [',', '.', '<', '>']:
             j = i + 1
             pos_final = pos.avanzar(texto[i:j])
             yield Token('puntuacion', texto[i:j], pos, pos_final)
@@ -215,6 +227,16 @@ class PToken(Parser):
         else:
             return 'el símbolo esperado'
 
+class PLookahead(object):
+    u"Se fija que la entrada coincida con lo esperado sin consumirla."
+
+    def __init__(self, parser):
+        self._parser = parser
+
+    def match(self, it):
+        for res1, it1 in self._parser.match(it):
+            yield res1, it
+
 class PAlternativa(Parser):
     u"Introduce una alternativa no determinística entre varios parsers."
 
@@ -224,6 +246,7 @@ class PAlternativa(Parser):
 
     def match(self, it):
         for p in self._parsers:
+            if callable(p): p = p()
             for r in p.match(it):
                 yield r
 
@@ -268,9 +291,14 @@ class PClausuraConTerminador(Parser):
 
     def match(self, it):
         if self._separador is None:
-            return self._match_sin_separador(it)
+            for r in self._match_sin_separador(it): yield r
         else:
-            return self._match_con_separador(it)
+
+            for res1, it1 in self._terminador.match(it):
+                yield [], it1
+                return
+
+            for r in self._match_con_separador(it): yield r
 
     def _match_sin_separador(self, it):
         for res1, it1 in self._terminador.match(it):
@@ -281,10 +309,6 @@ class PClausuraConTerminador(Parser):
                 yield [res1] + res2, it2
 
     def _match_con_separador(self, it):
-
-        for res1, it1 in self._terminador.match(it):
-            yield [], it1
-            return
 
         for res1, it1 in self._parser.match(it):
             termina = False
@@ -373,7 +397,15 @@ class PVerboNuevoInfinitivo(PSecuenciaConAccion):
                     PToken(tipo='palabra', valor='y'),
                 )
             ),
-            PVerboNuevoInfinitivoBasico(),
+            PAlternativa(
+                PSecuenciaConAccion(lambda xs: u'<%s %s>' % (xs[1], xs[2]),
+                    PToken(tipo='puntuacion', valor='<'),
+                    PVerboNuevoInfinitivoBasico(),
+                    PNominal(),
+                    PToken(tipo='puntuacion', valor='>'),
+                ),
+                PVerboNuevoInfinitivoBasico(),
+            ),
             **kwargs
         )
 
@@ -494,7 +526,7 @@ class PNumero(PSecuenciaConAccion):
         def accion_sumar(lista):
             res = None
 
-            i = len(lista) - 2
+            i = len(lista) - 3
             potencia = 0
             while i >= 0:
                 if lista[i] != ():
@@ -515,12 +547,14 @@ class PNumero(PSecuenciaConAccion):
             return lista[0]
 
         PSecuenciaConAccion.__init__(self, accion_sumar,
-            #POpcional(PSecuenciaConAccion(p0, PEnteroMenorQueUnMillon(), PSeparadorMillones('quintillon'))),
-            #POpcional(PSecuenciaConAccion(p0, PEnteroMenorQueUnMillon(), PSeparadorMillones('cuatrillon'))),
-            #POpcional(PSecuenciaConAccion(p0, PEnteroMenorQueUnMillon(), PSeparadorMillones('trillon'))),
-            #POpcional(PSecuenciaConAccion(p0, PEnteroMenorQueUnMillon(), PSeparadorMillones('billon'))),
-            #POpcional(PSecuenciaConAccion(p0, PEnteroMenorQueUnMillon(), PSeparadorMillones('millon'))),
-            POpcional(PEnteroMenorQueUnMillon()), PUnidadMonetaria(),
+            POpcional(PSecuenciaConAccion(p0, PEnteroMenorQueUnMillon(), PSeparadorMillones('quintillon'))),
+            POpcional(PSecuenciaConAccion(p0, PEnteroMenorQueUnMillon(), PSeparadorMillones('cuatrillon'))),
+            POpcional(PSecuenciaConAccion(p0, PEnteroMenorQueUnMillon(), PSeparadorMillones('trillon'))),
+            POpcional(PSecuenciaConAccion(p0, PEnteroMenorQueUnMillon(), PSeparadorMillones('billon'))),
+            POpcional(PSecuenciaConAccion(p0, PEnteroMenorQueUnMillon(), PSeparadorMillones('millon'))),
+            POpcional(PEnteroMenorQueUnMillon()),
+            POpcional(PToken(tipo='palabra', valor='de')),
+            PUnidadMonetaria(),
         )
 
 class PAlternativaPalabras(PAlternativa):
@@ -616,6 +650,7 @@ class PExpresion(PAlternativa):
         PAlternativa.__init__(self,
             PVariable(),
             PNumero(),
+            lambda: PInvocacionVerboInfinitivo(),
             **kwargs
         )
 
@@ -648,7 +683,7 @@ class PSeparadorExpresiones(PAlternativa):
 
 class PCuerpoDeFuncion(PSecuenciaConAccion):
     """El cuerpo de una función consta de expresiones separadas por ",".
-       y terminadas por "."."""
+       y terminadas por un terminador dado."""
     def __init__(self, terminador_cuerpo_funcion=PPuntoFinal(), **kwargs):
 
         def accion(expresiones):
@@ -664,6 +699,30 @@ class PCuerpoDeFuncion(PSecuenciaConAccion):
             **kwargs
         )
 
+class PInvocacionVerboInfinitivo(PSecuenciaConAccion):
+    def __init__(self):
+
+        def accion(lista):
+            verbo, expresion, argumentos = lista
+            if expresion != ():
+                argumentos = [TParametro('*', expresion)] + argumentos
+            return TInvocarVerbo(verbo, argumentos)
+
+        PSecuenciaConAccion.__init__(self, accion,
+            PVerboNuevoInfinitivo(),
+            POpcional(PExpresion()),
+            PClausuraConTerminador(
+                PSecuenciaConAccion(lambda xs: TParametro(*xs), PPreposicion(), PExpresion()),
+                terminador=PLookahead(
+                               PAlternativa(
+                                   PToken(tipo='puntuacion', valor='.'),
+                                   PApelativo(),
+                                   PSeparadorExpresiones(),
+                               )
+                           )
+            )
+        )
+
 class PDefinicionDeFuncionBasico(PSecuenciaConAccion):
     """Definiciones de funciones son de la forma:
 
@@ -675,7 +734,7 @@ class PDefinicionDeFuncionBasico(PSecuenciaConAccion):
         def accion(lista):
             def_, verbo, nominal, argumentos, cuerpo = lista
             if nominal != ():
-                verbo = verbo + ' ' + nominal[0]
+                argumentos = [TParametro('*', nominal)] + argumentos
             return TDefinicionDeFuncion(verbo, argumentos, cuerpo)
 
         PSecuenciaConAccion.__init__(self, accion,

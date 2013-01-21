@@ -1,5 +1,8 @@
 # coding:utf-8
 
+def unicode_list(xs):
+    return ', '.join([unicode(x) for x in xs])
+
 class Termino(object):
     "Cada instancia representa un término del lenguaje."
 
@@ -65,20 +68,23 @@ class TDefinicionDeFuncion(Termino):
     def __unicode__(self):
         return u'TDefinicionDeFuncion(%s, [%s], %s)' % (
             self._verbo,
-            ', '.join([unicode(param) for param in self._parametros]),
+            unicode_list(self._parametros),
              self._cuerpo
         )
 
-class TAplicar(Termino):
-    "Aplicación de una función a un argumento."
+class TInvocarVerbo(Termino):
+    u"Aplicación de un verbo a parámetros."
 
-    def __init__(self, funcion, argumento, *args, **kwargs):
+    def __init__(self, verbo, argumentos, *args, **kwargs):
         Termino.__init__(self, *args, **kwargs)
-        self._funcion = funcion
-        self._argumento = argumento
+        self._verbo = verbo
+        self._argumentos = argumentos
 
     def __unicode__(self):
-        return u'TAplicar(%s, %s)' % (self._funcion, self._argumento)
+        return u'TInvocarVerbo(%s, [%s])' % (
+            self._verbo,
+            unicode_list(self._argumentos)
+        )
 
 
 class TBegin(Termino):
@@ -89,7 +95,5 @@ class TBegin(Termino):
         self._expresiones = expresiones
 
     def __unicode__(self):
-        return u'TBegin([%s])' % (
-            ', '.join([unicode(expr) for expr in self._expresiones]),
-        )
+        return u'TBegin([%s])' % (unicode_list(self._expresiones),)
 

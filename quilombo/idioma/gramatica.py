@@ -1,12 +1,12 @@
 # coding:utf-8
 
-PREPOSICIONES = u'a ante bajo cabe con contra de desde en entre hacia hasta para por según sin so sobre tras mediante durante'.split(' ')
+PREPOSICIONES = u'a ante bajo cabe con contra de desde en entre hacia hasta para por segun sin so sobre tras mediante durante'.split(' ')
 
 ARTICULOS = u'un una unos unas el la los las lo este esta esto estos estas'.split(' ')
 
 VOCATIVOS = u'escuchame cuchame escucheme cucheme che eh'.split(' ')
 
-APELATIVOS = u'boludo flaco pibe amigo guacho guachín hermano papá master maestro jefe máquina loco'.split(' ')
+APELATIVOS = u'boludo flaco pibe amigo guacho guachin hermano papa master maestro jefe maquina loco'.split(' ')
 
 CONJUNCIONES = u'y o'.split(' ')
 
@@ -18,6 +18,8 @@ NUMEROS_CARDINALES = {
         'guitas': 0.01,
         'chirola': 0.01,
         'chirolas': 0.01,
+        'peso': 1,
+        'pesos': 1,
         'mango': 1,
         'mangos': 1,
         'morlaco': 1,
@@ -32,6 +34,7 @@ NUMEROS_CARDINALES = {
     'unidades': {
         'cero': 0,
         'cerapio': 0,
+        'un': 1,
         'uno': 1,
         'una': 1,
         'dos': 2,
@@ -90,7 +93,7 @@ NUMEROS_CARDINALES = {
         'seiscientos': 600, 'seiscientas': 600,
         'setecientos': 700, 'setecientas': 700,
         'ochocientos': 800, 'ochocientas': 800,
-        'novecientos': 800, 'novecientas': 900,
+        'novecientos': 900, 'novecientas': 900,
     },
     'miles': {
         'mil': 1000,
