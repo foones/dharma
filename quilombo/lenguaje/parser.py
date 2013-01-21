@@ -1,6 +1,6 @@
 # coding:utf-8
 
-from comunes.utiles import QuilomboException
+from comunes.utiles import QuilomboException, identar
 from idioma.ortografia import normalizar
 from idioma.gramatica import (
     ARTICULOS,
@@ -11,10 +11,11 @@ from idioma.gramatica import (
     PALABRAS_CLAVE,
 )
 from lenguaje.terminos import (
-    TEntero,
+    TNumero,
     TVariable,
-    TArgumento,
+    TParametro,
     TDefinicionDeFuncion,
+    TAplicar,
     TBegin,
 )
 
@@ -139,7 +140,25 @@ class Parser(object):
     """Representa un analizador sintáctico. Toda subclase implementa un
        método self.match(it) que recibe un iterador de tokens y devuelve
        un generador de matches."""
-    pass
+
+    def __init__(self, descripcion=None):
+        self._descripcion = descripcion
+
+    def descripcion_completa(self):
+        if self._descripcion:
+            return self._descripcion
+        else:
+            return self.descripcion()
+
+    def descripcion(self):
+        return repr(self)
+
+    def mensaje_de_error(self, it):
+        msj = 'Tu programa es fruta.'
+        d = self.descripcion_completa()
+        if d is not None:
+            msj += '\nEsperaba: ' + d
+        return msj
 
 def coincide(referencia, x):
     if referencia is None:
@@ -157,8 +176,10 @@ class PToken(Parser):
     """Analizador que exige coincidencia literal con un terminal,
        ya sea por su tipo, su valor o ambos."""
 
-    def __init__(self, predicado=None, tipo=None, valor=None, resultado=None, func_resultado=None):
+    def __init__(self, predicado=None, tipo=None, valor=None, resultado=None, func_resultado=None, **kwargs):
         assert resultado is None or func_resultado is None
+
+        Parser.__init__(self, **kwargs)
 
         self._tipo = tipo
         self._valor = valor
@@ -186,10 +207,19 @@ class PToken(Parser):
         if ok:
             yield resultado, it.avanzar()
 
+    def descripcion(self):
+        if self._valor is not None:
+            return 'el símbolo "' + self._valor + '"'
+        elif self._tipo is not None:
+            return 'un símbolo tipo <' + self._tipo + '>'
+        else:
+            return 'el símbolo esperado'
+
 class PAlternativa(Parser):
     u"Introduce una alternativa no determinística entre varios parsers."
 
-    def __init__(self, *parsers):
+    def __init__(self, *parsers, **kwargs):
+        Parser.__init__(self, **kwargs)
         self._parsers = parsers
 
     def match(self, it):
@@ -197,10 +227,15 @@ class PAlternativa(Parser):
             for r in p.match(it):
                 yield r
 
+    def descripcion(self):
+        ds = [d for p in self._parsers for d in [p.descripcion()] if d is not None]
+        return 'alguna de estas cosas:\n' + identar('\n'.join(ds))
+
 class PSecuencia(Parser):
     u"Yuxtaposición de parsers."
 
-    def __init__(self, *parsers):
+    def __init__(self, *parsers, **kwargs):
+        Parser.__init__(self, **kwargs)
         self._parsers = parsers
 
     def match(self, it):
@@ -215,8 +250,8 @@ class PSecuencia(Parser):
 
 class PSecuenciaConAccion(PSecuencia):
 
-    def __init__(self, accion, *parsers):
-        PSecuencia.__init__(self, *parsers)
+    def __init__(self, accion, *parsers, **kwargs):
+        PSecuencia.__init__(self, *parsers, **kwargs)
         self._accion = accion
 
     def match(self, it):
@@ -225,7 +260,8 @@ class PSecuenciaConAccion(PSecuencia):
 
 class PClausuraConTerminador(Parser):
 
-    def __init__(self, parser, terminador, separador=None):
+    def __init__(self, parser, terminador, separador=None, **kwargs):
+        Parser.__init__(self, **kwargs)
         self._parser = parser
         self._terminador = terminador
         self._separador = separador
@@ -241,7 +277,7 @@ class PClausuraConTerminador(Parser):
             yield [], it1
             return
         for res1, it1 in self._parser.match(it):
-            for res2, it2 in self.match(it1):
+            for res2, it2 in self._match_sin_separador(it1):
                 yield [res1] + res2, it2
 
     def _match_con_separador(self, it):
@@ -259,7 +295,7 @@ class PClausuraConTerminador(Parser):
             if termina: continue
 
             for res2, it2 in self._separador.match(it1):
-                for res3, it3 in self.match(it2):
+                for res3, it3 in self._match_con_separador(it2):
                     yield [res1] + res3, it3
 
 class PClausuraConTerminadorConAccion(PClausuraConTerminador):
@@ -272,9 +308,10 @@ class PClausuraConTerminadorConAccion(PClausuraConTerminador):
         for res1, it1 in PClausuraConTerminador.match(self, it):
             yield self._accion(res1), it1
 
-class POpcional(PToken):
+class POpcional(Parser):
 
-    def __init__(self, parser):
+    def __init__(self, parser, **kwargs):
+        Parser.__init__(self, **kwargs)
         self._parser = parser
 
     def match(self, it):
@@ -287,10 +324,10 @@ VERBOS_RESERVADOS = ['agarrar']
 class PVerboNuevoInfinitivoBasico(PToken):
     "Parser para nuevos verbos en infinitivo definidos por el usuario."
 
-    def __init__(self):
+    def __init__(self, **kwargs):
 
         desinencias = ['ar', 'er', 'ir']
-        sufijos = ['lo', 'le']
+        sufijos = ['lo', 'le', 'los', 'les', 'selo', 'selos']
 
         def es_verbo_infinitivo(tok):
             if tok.valor in VERBOS_RESERVADOS:
@@ -316,16 +353,19 @@ class PVerboNuevoInfinitivoBasico(PToken):
         PToken.__init__(self,
                         tipo='palabra',
                         predicado=es_verbo_infinitivo,
-                        func_resultado=sacar_sufijos
+                        func_resultado=sacar_sufijos,
+                        **kwargs
         )
 
 class PVerboNuevoInfinitivo(PSecuenciaConAccion):
     """Parser para verbos en infinitivo definidos por el usuario,
        posiblemente decorados."""
 
-    def __init__(self):
+    def __init__(self, **kwargs):
+
         def accion(lista):
             return lista[1]
+
         PSecuenciaConAccion.__init__(self, accion,
             POpcional(
                 PSecuencia(
@@ -333,58 +373,196 @@ class PVerboNuevoInfinitivo(PSecuenciaConAccion):
                     PToken(tipo='palabra', valor='y'),
                 )
             ),
-            PVerboNuevoInfinitivoBasico()
+            PVerboNuevoInfinitivoBasico(),
+            **kwargs
         )
 
-class PEntero(PAlternativa):
+class PEnteroEnDiccionario(Parser):
+    "Parser para palabras que representan números enteros dadas por un diccionario."
+
+    def __init__(self, diccionario, **kwargs):
+        self._diccionario = diccionario
+        Parser.__init__(self, **kwargs)
+
+    def match(self, it):
+        tok = it.token_actual()
+        valor = normalizar(tok.valor) 
+        if valor in self._diccionario:
+            yield TNumero(self._diccionario[valor], tokens=[tok]), it.avanzar()
+
+def accion_sumar_par(lista):
+    cabeza, resto = lista
+    res = cabeza
+    if resto != ():
+        res += resto[0]
+    return res
+
+class PEnteroMenorQueCien(PAlternativa):
     """Parser para números enteros."""
 
+    def __init__(self, **kwargs):
+        PAlternativa.__init__(self,
+            # 0..9
+            PEnteroEnDiccionario(NUMEROS_CARDINALES['unidades']),
+            # 10..19
+            PEnteroEnDiccionario(NUMEROS_CARDINALES['diez-y']),
+            # 20..29
+            PEnteroEnDiccionario(NUMEROS_CARDINALES['veinte-y']),
+            # 30..99 (formas incorrectas)
+            PEnteroEnDiccionario(NUMEROS_CARDINALES['formas-incorrectas']),
+            # 30..99 (formas correctas)
+            PSecuenciaConAccion(accion_sumar_par,
+                PEnteroEnDiccionario(NUMEROS_CARDINALES['decenas']),
+                POpcional(
+                    PSecuenciaConAccion(lambda xs: xs[1],
+                        PToken(tipo='palabra', valor='y'),
+                        PEnteroEnDiccionario(NUMEROS_CARDINALES['unidades'])
+                    )
+                )
+            )
+        )
+
+class PEnteroMenorQueMil(PAlternativa):
+
+    def __init__(self, **kwargs):
+
+        PAlternativa.__init__(self,
+            # 0..99
+            PEnteroMenorQueCien(),
+            # 100..999
+            PSecuenciaConAccion(accion_sumar_par,
+                PEnteroEnDiccionario(NUMEROS_CARDINALES['centenas']),
+                POpcional(PEnteroMenorQueCien())
+            )
+        )
+
+class PEnteroMenorQueUnMillon(PAlternativa):
+    def __init__(self, **kwargs):
+
+        def accion_sumar_mil(lista):
+            pre, mil, post = lista
+
+            res = TNumero(1000)
+
+            if pre != ():
+                res = pre[0] * res
+
+            if post != ():
+                res = post[0] + res
+
+            return res
+
+        PAlternativa.__init__(self,
+            # 0..999
+            PEnteroMenorQueMil(),
+            # 1000..999 999
+            PSecuenciaConAccion(accion_sumar_mil,
+                POpcional(PEnteroMenorQueMil()),
+                PToken(tipo='palabra', valor='mil'),
+                POpcional(PEnteroMenorQueMil())
+            )
+        )
+
+class PSeparadorMillones(PAlternativa):
+    def __init__(self, separador, **kwargs):
+        PAlternativa.__init__(self,
+            PToken(tipo='palabra', valor=separador),
+            PToken(tipo='palabra', valor=separador + 'es'),
+            **kwargs
+        )
+
+class PUnidadMonetaria(PAlternativa):
     def __init__(self):
-        lista = []
-        for nombre, numero in NUMEROS_CARDINALES.items():
-            def func(numero):
-                return lambda tok: TEntero(numero, tokens=[tok])
+        PAlternativa.__init__(self,
+            PEnteroEnDiccionario(NUMEROS_CARDINALES['unidad-monetaria']),
+            PSecuenciaConAccion(lambda _: 10 ** 6,
+                                PToken(tipo='palabra', valor='palo'),
+                                PToken(tipo='palabra', valor='verde'),
+            ),
+            PSecuenciaConAccion(lambda _: 10 ** 6,
+                                PToken(tipo='palabra', valor='palos'),
+                                PToken(tipo='palabra', valor='verdes'),
+            ),
+        )
 
-            lista.append(PToken(tipo='palabra', valor=nombre, func_resultado=func(numero)))
+class PNumero(PSecuenciaConAccion):
+    """Analiza sintácticamente un entero menor que un sextillón seguido
+       de un especificador de 'unidad monetaria'."""
 
-        PAlternativa.__init__(self, *lista)
+    def __init__(self, **kwargs):
+
+        def accion_sumar(lista):
+            res = None
+
+            i = len(lista) - 2
+            potencia = 0
+            while i >= 0:
+                if lista[i] != ():
+                    valor = lista[i][0] * TNumero(10 ** (potencia * 6))
+                    if res is None:
+                        res = valor
+                    else:
+                        res += valor
+                potencia += 1
+                i -= 1
+
+            if res is None:
+                return lista[-1]
+            else:
+                return res * lista[-1]
+
+        def p0(lista):
+            return lista[0]
+
+        PSecuenciaConAccion.__init__(self, accion_sumar,
+            #POpcional(PSecuenciaConAccion(p0, PEnteroMenorQueUnMillon(), PSeparadorMillones('quintillon'))),
+            #POpcional(PSecuenciaConAccion(p0, PEnteroMenorQueUnMillon(), PSeparadorMillones('cuatrillon'))),
+            #POpcional(PSecuenciaConAccion(p0, PEnteroMenorQueUnMillon(), PSeparadorMillones('trillon'))),
+            #POpcional(PSecuenciaConAccion(p0, PEnteroMenorQueUnMillon(), PSeparadorMillones('billon'))),
+            #POpcional(PSecuenciaConAccion(p0, PEnteroMenorQueUnMillon(), PSeparadorMillones('millon'))),
+            POpcional(PEnteroMenorQueUnMillon()), PUnidadMonetaria(),
+        )
 
 class PAlternativaPalabras(PAlternativa):
-    def __init__(self, palabras):
+
+    def __init__(self, palabras, **kwargs):
         PAlternativa.__init__(self, *[
-            PToken(tipo='palabra', valor=pal, resultado=pal)
-            for pal in palabras
-        ])
+                PToken(tipo='palabra', valor=pal, resultado=pal)
+                for pal in palabras
+            ],
+            **kwargs
+        )
 
 class PVocativo(PAlternativaPalabras):
-    def __init__(self):
-        PAlternativaPalabras.__init__(self, VOCATIVOS)
+    def __init__(self, **kwargs):
+        PAlternativaPalabras.__init__(self, VOCATIVOS, **kwargs)
 
 class PApelativo(PAlternativaPalabras):
-    def __init__(self):
-        PAlternativaPalabras.__init__(self, APELATIVOS)
+    def __init__(self, **kwargs):
+        PAlternativaPalabras.__init__(self, APELATIVOS, **kwargs)
 
 class PArticulo(PAlternativaPalabras):
-    def __init__(self):
-        PAlternativaPalabras.__init__(self, ARTICULOS)
+    def __init__(self, **kwargs):
+        PAlternativaPalabras.__init__(self, ARTICULOS, **kwargs)
 
 class PPreposicion(PAlternativaPalabras):
-    def __init__(self):
-        PAlternativaPalabras.__init__(self, PREPOSICIONES)
+    def __init__(self, **kwargs):
+        PAlternativaPalabras.__init__(self, PREPOSICIONES, **kwargs)
 
-class PSustantivo(PToken):
+class PSustantivoComun(PToken):
 
-    def __init__(self):
+    def __init__(self, **kwargs):
         PToken.__init__(self,
             tipo='palabra',
-            #predicado=lambda tok: tok.valor[:1].upper() == tok.valor[:1],
-            predicado=lambda tok: tok.valor not in PALABRAS_CLAVE,
-            func_resultado=lambda tok: tok.valor
+            predicado=lambda tok: tok.valor not in PALABRAS_CLAVE and \
+                                  tok.valor[:1].lower() == tok.valor[:1],
+            func_resultado=lambda tok: tok.valor,
+            **kwargs
         )
 
 class PNominal(PSecuenciaConAccion):
 
-    def __init__(self, articulo_obligatorio=False, devolver_variable=False):
+    def __init__(self, articulo_obligatorio=False, devolver_variable=False, **kwargs):
 
         def accion(lista):
             art, sust = lista
@@ -400,14 +578,16 @@ class PNominal(PSecuenciaConAccion):
         art = PArticulo()
         if not articulo_obligatorio:
             art = POpcional(art)
+
         PSecuenciaConAccion.__init__(self, accion, 
             art,
-            PSustantivo(),
+            PSustantivoComun(),
+            **kwargs
         )
 
 class PCabezaDefinicionDeFuncion(PAlternativa):
 
-    def __init__(self):
+    def __init__(self, **kwargs):
         cabezas = ["la posta para",
                    "la posta pa",
                    "la posta pa'",
@@ -420,52 +600,68 @@ class PCabezaDefinicionDeFuncion(PAlternativa):
                 seqs.append(PToken(tipo='palabra', valor=pal, resultado=None))
             alts.append(PSecuenciaConAccion(lambda x: None, *seqs))
 
-        return PAlternativa.__init__(self, *alts)
+        return PAlternativa.__init__(self, *alts, **kwargs)
 
 class PVariable(PNominal):
-    def __init__(self):
+
+    def __init__(self, **kwargs):
         PNominal.__init__(self,
             articulo_obligatorio=True,
-            devolver_variable=True
+            devolver_variable=True,
+            **kwargs
         )
 
 class PExpresion(PAlternativa):
-    def __init__(self):
+    def __init__(self, **kwargs):
         PAlternativa.__init__(self,
             PVariable(),
-            PEntero(),
+            PNumero(),
+            **kwargs
         )
 
 class PComa(PToken):
-    def __init__(self):
-        PToken.__init__(self, tipo='puntuacion', valor=',')
+    def __init__(self, **kwargs):
+        PToken.__init__(self, tipo='puntuacion', valor=',', **kwargs)
 
 class PPuntoFinal(PToken):
-    def __init__(self):
-        PToken.__init__(self, tipo='puntuacion', valor='.')
+    def __init__(self, **kwargs):
+        PToken.__init__(self, tipo='puntuacion', valor='.', **kwargs)
 
 class PSeparadorExpresiones(PAlternativa):
-    def __init__(self):
+
+    def __init__(self, **kwargs):
         PAlternativa.__init__(self,
             PComa(),
+
             PSecuencia(
                 POpcional(PToken(tipo='palabra', valor='y')),
-                PToken(tipo='palabra', valor=u'después'),
-            )
+                PAlternativa(
+                    PToken(tipo='palabra', valor=u'después'),
+                    PSecuencia(
+                        PToken(tipo='palabra', valor=u'al'),
+                        PToken(tipo='palabra', valor=u'final'),
+                    )
+                )
+            ),
+            **kwargs
         )
 
-class PCuerpoDeFuncion(PClausuraConTerminadorConAccion):
+class PCuerpoDeFuncion(PSecuenciaConAccion):
     """El cuerpo de una función consta de expresiones separadas por ",".
        y terminadas por "."."""
-    def __init__(self, terminador_cuerpo_funcion=PPuntoFinal()):
+    def __init__(self, terminador_cuerpo_funcion=PPuntoFinal(), **kwargs):
 
         def accion(expresiones):
             return TBegin(expresiones)
 
-        PClausuraConTerminadorConAccion.__init__(self, accion,
-            PExpresion(),
-            separador=PSeparadorExpresiones(),
-            terminador=terminador_cuerpo_funcion,
+        PSecuenciaConAccion.__init__(self, lambda xs: xs[1],
+            POpcional(PToken(tipo='palabra', valor='primero')),
+            PClausuraConTerminadorConAccion(accion,
+                PExpresion(),
+                separador=PSeparadorExpresiones(),
+                terminador=terminador_cuerpo_funcion,
+            ),
+            **kwargs
         )
 
 class PDefinicionDeFuncionBasico(PSecuenciaConAccion):
@@ -474,7 +670,7 @@ class PDefinicionDeFuncionBasico(PSecuenciaConAccion):
             <cabeza-definicion-de-funcion> <verbo> [<nominal>] [<prep> <nominal>]* es <cuerpo>
 
     """
-    def __init__(self, terminador_cuerpo_funcion=PPuntoFinal()):
+    def __init__(self, terminador_cuerpo_funcion=PPuntoFinal(), **kwargs):
 
         def accion(lista):
             def_, verbo, nominal, argumentos, cuerpo = lista
@@ -487,15 +683,16 @@ class PDefinicionDeFuncionBasico(PSecuenciaConAccion):
             PVerboNuevoInfinitivo(),
             POpcional(PNominal()),
             PClausuraConTerminador(
-                PSecuenciaConAccion(lambda xs: TArgumento(*xs), PPreposicion(), PNominal()),
+                PSecuenciaConAccion(lambda xs: TParametro(*xs), PPreposicion(), PNominal()),
                 terminador=PToken(tipo='palabra', valor='es'),
             ),
             PCuerpoDeFuncion(terminador_cuerpo_funcion),
+            **kwargs
         )
 
 class PDefinicionDeFuncion(PAlternativa):
 
-    def __init__(self):
+    def __init__(self, **kwargs):
         PAlternativa.__init__(self,
             PDefinicionDeFuncionBasico(),
             PSecuenciaConAccion(lambda xs: xs[3],
@@ -520,5 +717,6 @@ class PDefinicionDeFuncion(PAlternativa):
                         )
                 ),
             ),
+            descripcion=u'declaración de una función usando "la posta".'
         )
 

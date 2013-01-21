@@ -3,7 +3,7 @@
 import sys
 
 from comunes.utiles import leer_archivo, QuilomboException
-from lenguaje.parser import tokenizar, PDefinicionDeFuncion, PNominal, PPreposicion, PSecuenciaConAccion, PVerboNuevoInfinitivo, PEntero
+from lenguaje.parser import tokenizar, PDefinicionDeFuncion, PNominal, PPreposicion, PSecuenciaConAccion, PVerboNuevoInfinitivo, PNumero
 
 def main():
     if len(sys.argv) != 2:
@@ -19,10 +19,11 @@ def main():
 #        analizador = PSecuenciaConAccion(
 #                        lambda xs: u'%s ---- %s' % tuple(xs),
 #                        PVerboNuevoInfinitivo(),
-#                        PEntero()
+#                        PNumero()
 #                     )
+        #analizador = PNumero()
         analizador = PDefinicionDeFuncion()
-        print unicode(iterador_tokens)
+        #print unicode(iterador_tokens)
 
         nmatches = 0
         matches = analizador.match(iterador_tokens)
@@ -32,8 +33,7 @@ def main():
             print 'resultado=', unicode(res)
 
         if nmatches == 0:
-            print 'cannot parse'
-            
+            raise QuilomboException(analizador.mensaje_de_error(iterador_tokens))
 
     except QuilomboException as e:
         print(unicode(e))

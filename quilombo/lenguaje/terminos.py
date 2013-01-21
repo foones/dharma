@@ -6,20 +6,31 @@ class Termino(object):
     def __init__(self, tokens=[]):
         self._tokens = tokens
 
+    def tokens(self):
+        return self._tokens
+
     def __repr__(self):
         return unicode(self)
 
-class TEntero(Termino):
-    "Términos que representan números enteros."
+class TNumero(Termino):
+    "Términos que representan números."
 
     def __init__(self, numero, *args, **kwargs):
         Termino.__init__(self, *args, **kwargs)
 
-        assert isinstance(numero, int) or isinstance(numero, long)
+        assert isinstance(numero, int) or \
+               isinstance(numero, long) or \
+               isinstance(numero, float)
         self._numero = numero
 
+    def __add__(self, otro):
+        return TNumero(self._numero + otro._numero, tokens=self.tokens())
+
+    def __mul__(self, otro):
+        return TNumero(self._numero * otro._numero, tokens=self.tokens())
+
     def __unicode__(self):
-        return u'TEntero(%u)' % (self._numero,)
+        return u'TNumero(%s)' % (self._numero,)
 
 class TVariable(Termino):
     "Términos que representan variable."
@@ -31,7 +42,7 @@ class TVariable(Termino):
     def __unicode__(self):
         return u'TVariable(%s)' % (self._nombre,)
 
-class TArgumento(Termino):
+class TParametro(Termino):
     "Argumentos de una función."
 
     def __init__(self, preposicion, variable, *args, **kwargs):
@@ -40,7 +51,7 @@ class TArgumento(Termino):
         self._variable = variable
 
     def __unicode__(self):
-        return u'TArgumento(%s, %s)' % (self._preposicion, self._variable)
+        return u'TParametro(%s, %s)' % (self._preposicion, self._variable)
 
 class TDefinicionDeFuncion(Termino):
     "Definición de función."
@@ -57,6 +68,18 @@ class TDefinicionDeFuncion(Termino):
             ', '.join([unicode(param) for param in self._parametros]),
              self._cuerpo
         )
+
+class TAplicar(Termino):
+    "Aplicación de una función a un argumento."
+
+    def __init__(self, funcion, argumento, *args, **kwargs):
+        Termino.__init__(self, *args, **kwargs)
+        self._funcion = funcion
+        self._argumento = argumento
+
+    def __unicode__(self):
+        return u'TAplicar(%s, %s)' % (self._funcion, self._argumento)
+
 
 class TBegin(Termino):
     "Bloque."
