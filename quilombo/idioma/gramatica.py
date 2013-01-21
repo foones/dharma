@@ -1,4 +1,5 @@
 # coding:utf-8
+import random
 
 PREPOSICIONES = u'a ante bajo cabe con contra de desde en entre hacia hasta para por segun sin so sobre tras mediante durante'.split(' ')
 
@@ -62,19 +63,8 @@ NUMEROS_CARDINALES = {
         'dieciocho': 18,
         'diecinueve': 19,
     },
-    'veinte-y': {
-        'veinte': 20,
-        'veintiuno': 21,
-        'veintidos': 22,
-        'veintitres': 23,
-        'veinticuatro': 24,
-        'veinticinco': 25,
-        'veintiseis': 26,
-        'veintisiete': 27,
-        'veintiocho': 28,
-        'veintinueve': 29,
-    },
     'decenas': {
+        'veinte': 30,
         'treinta': 30,
         'cuarenta': 40,
         'cincuenta': 50,
@@ -120,10 +110,12 @@ NUMEROS_CARDINALES = {
     },
 }
 
-## Formas incorrectas (ej. cuarentitres)
+## Formas contractas (ej. veinticinco, o incorrectas como cuarentitres)
 
-NUMEROS_CARDINALES['formas-incorrectas'] = {}
-for decena, valor_decena in [('treinti', 30),
+NUMEROS_CARDINALES['formas-contractas'] = {}
+NUMEROS_CARDINALES['formas-contractas-y-pico'] = {}
+for decena, valor_decena in [('veinti', 20),
+                             ('treinti', 30),
                              ('trenti', 30),
                              ('trentai', 30),
                              ('cuarenti', 40),
@@ -134,7 +126,8 @@ for decena, valor_decena in [('treinti', 30),
                              ('noventi', 90),
                             ]:
     for unidad, valor_unidad in NUMEROS_CARDINALES['unidades'].items():
-        NUMEROS_CARDINALES['formas-incorrectas'][decena + unidad] = valor_decena + valor_unidad
+        NUMEROS_CARDINALES['formas-contractas'][decena + unidad] = valor_decena + valor_unidad
+    NUMEROS_CARDINALES['formas-contractas-y-pico'][decena + 'pico'] = (valor_decena, 10)
 
 ##
 
@@ -144,6 +137,7 @@ PALABRAS_CLAVE = PREPOSICIONES + \
                  APELATIVOS + \
                  CONJUNCIONES
 
+PALABRAS_CLAVE.append('pico')
 for clave, diccionario in NUMEROS_CARDINALES.items():
     for nombre, numero in diccionario.items():
         PALABRAS_CLAVE.append(nombre)

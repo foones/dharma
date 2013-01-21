@@ -227,6 +227,24 @@ class PToken(Parser):
         else:
             return 'el símbolo esperado'
 
+class PPalabra(PToken):
+    def __init__(self, pal, **kwargs):
+        PToken.__init__(self, tipo='palabra', valor=pal, **kwargs)
+
+class PValor(PToken):
+
+    def __init__(self, valor, parser):
+        self._valor = valor
+        self._parser = parser
+
+    def match(self, it):
+        for res1, it1 in self._parser.match(it):
+            yield self._valor, it1
+
+class PPuntuacion(PToken):
+    def __init__(self, punt, **kwargs):
+        PToken.__init__(self, tipo='puntuacion', valor=punt, **kwargs)
+
 class PLookahead(object):
     u"Se fija que la entrada coincida con lo esperado sin consumirla."
 
@@ -236,6 +254,20 @@ class PLookahead(object):
     def match(self, it):
         for res1, it1 in self._parser.match(it):
             yield res1, it
+
+class PComplemento(object):
+    u"Tiene éxito sii el parser dado no tiene éxito. No consume la entrada."
+
+    def __init__(self, parser):
+        self._parser = parser
+
+    def match(self, it):
+        exito = False
+        for res1, it1 in self._parser.match(it):
+            exito = True
+            break
+        if not exito:
+            yield None, it
 
 class PAlternativa(Parser):
     u"Introduce una alternativa no determinística entre varios parsers."
@@ -280,6 +312,12 @@ class PSecuenciaConAccion(PSecuencia):
     def match(self, it):
         for res1, it1 in PSecuencia.match(self, it):
             yield self._accion(res1), it1
+
+class PPalabras(PSecuencia):
+    def __init__(self, palabras, **kwargs):
+        PSecuencia.__init__(self, *[
+            PPalabra(pal) for pal in palabras.split(' ')
+        ])
 
 class PClausuraConTerminador(Parser):
 
@@ -354,6 +392,8 @@ class PVerboNuevoInfinitivoBasico(PToken):
         sufijos = ['lo', 'le', 'los', 'les', 'selo', 'selos']
 
         def es_verbo_infinitivo(tok):
+            if tok.valor[:1].lower() != tok.valor[:1]:
+                return False
             if tok.valor in VERBOS_RESERVADOS:
                 return False
             for d in desinencias:
@@ -401,21 +441,18 @@ class PVerboNuevoInfinitivo(PSecuenciaConAccion):
 
         PSecuenciaConAccion.__init__(self, accion,
             POpcional(
-                PSecuencia(
-                    PToken(tipo='palabra', valor='agarrar'),
-                    PToken(tipo='palabra', valor='y'),
-                )
+                PPalabras('agarrar y'),
             ),
             PAlternativa(
                 PSecuenciaConAccion(lambda xs: u'<%s %s>' % (xs[1], xs[2]),
-                    PToken(tipo='puntuacion', valor='<'),
+                    PPuntuacion('<'),
                     PVerboNuevoInfinitivoBasico(),
                     PClausuraConTerminadorConAccion(accion_clausura,
                         PSecuenciaConAccion(accion_interna,
                             POpcional(PPreposicion()),
                             PNominal()
                         ),
-                        terminador=PToken(tipo='puntuacion', valor='>'),
+                        terminador=PPuntuacion('>'),
                     )
                 ),
                 PVerboNuevoInfinitivoBasico(),
@@ -434,7 +471,12 @@ class PEnteroEnDiccionario(Parser):
         tok = it.token_actual()
         valor = normalizar(tok.valor) 
         if valor in self._diccionario:
-            yield TNumero(self._diccionario[valor], tokens=[tok]), it.avanzar()
+            num = self._diccionario[valor]
+            if isinstance(num, tuple):
+                num, pico = num
+            else:
+                pico = 0
+            yield TNumero(num, tokens=[tok], pico=pico), it.avanzar()
 
 def accion_sumar_par(lista):
     cabeza, resto = lista
@@ -452,17 +494,19 @@ class PEnteroMenorQueCien(PAlternativa):
             PEnteroEnDiccionario(NUMEROS_CARDINALES['unidades']),
             # 10..19
             PEnteroEnDiccionario(NUMEROS_CARDINALES['diez-y']),
-            # 20..29
-            PEnteroEnDiccionario(NUMEROS_CARDINALES['veinte-y']),
-            # 30..99 (formas incorrectas)
-            PEnteroEnDiccionario(NUMEROS_CARDINALES['formas-incorrectas']),
-            # 30..99 (formas correctas)
+            # 20..99 (formas contractas)
+            PEnteroEnDiccionario(NUMEROS_CARDINALES['formas-contractas']),
+            PEnteroEnDiccionario(NUMEROS_CARDINALES['formas-contractas-y-pico']),
+            # 20..99 (formas largas)
             PSecuenciaConAccion(accion_sumar_par,
                 PEnteroEnDiccionario(NUMEROS_CARDINALES['decenas']),
                 POpcional(
-                    PSecuenciaConAccion(lambda xs: xs[1],
-                        PToken(tipo='palabra', valor='y'),
-                        PEnteroEnDiccionario(NUMEROS_CARDINALES['unidades'])
+                    PAlternativa(
+                        PSecuenciaConAccion(lambda xs: xs[1],
+                            PPalabra('y'),
+                            PEnteroEnDiccionario(NUMEROS_CARDINALES['unidades'])
+                        ),
+                        PValor(TNumero(0, pico=10), PPalabras('y pico')),
                     )
                 )
             )
@@ -478,7 +522,12 @@ class PEnteroMenorQueMil(PAlternativa):
             # 100..999
             PSecuenciaConAccion(accion_sumar_par,
                 PEnteroEnDiccionario(NUMEROS_CARDINALES['centenas']),
-                POpcional(PEnteroMenorQueCien())
+                POpcional(
+                    PAlternativa(
+                        PEnteroMenorQueCien(),
+                        PValor(TNumero(0, pico=100), PPalabras('y pico')),
+                    )
+                )
             )
         )
 
@@ -504,16 +553,21 @@ class PEnteroMenorQueUnMillon(PAlternativa):
             # 1000..999 999
             PSecuenciaConAccion(accion_sumar_mil,
                 POpcional(PEnteroMenorQueMil()),
-                PToken(tipo='palabra', valor='mil'),
-                POpcional(PEnteroMenorQueMil())
+                PPalabra('mil'),
+                POpcional(
+                    PAlternativa(
+                        PEnteroMenorQueMil(),
+                        PValor(TNumero(0, pico=1000), PPalabras('y pico')),
+                    )
+                )
             )
         )
 
 class PSeparadorMillones(PAlternativa):
     def __init__(self, separador, **kwargs):
         PAlternativa.__init__(self,
-            PToken(tipo='palabra', valor=separador),
-            PToken(tipo='palabra', valor=separador + 'es'),
+            PPalabra(separador),
+            PPalabra(separador + 'es'),
             **kwargs
         )
 
@@ -521,13 +575,11 @@ class PUnidadMonetaria(PAlternativa):
     def __init__(self):
         PAlternativa.__init__(self,
             PEnteroEnDiccionario(NUMEROS_CARDINALES['unidad-monetaria']),
-            PSecuenciaConAccion(lambda _: 10 ** 6,
-                                PToken(tipo='palabra', valor='palo'),
-                                PToken(tipo='palabra', valor='verde'),
-            ),
-            PSecuenciaConAccion(lambda _: 10 ** 6,
-                                PToken(tipo='palabra', valor='palos'),
-                                PToken(tipo='palabra', valor='verdes'),
+            PValor(10 ** 6,
+                PAlternativa(
+                    PPalabras('palo verde'),
+                    PPalabras('palos verdes')
+                )
             ),
         )
 
@@ -557,28 +609,42 @@ class PNumero(PSecuenciaConAccion):
             else:
                 return res * lista[-1]
 
-        def p0(lista):
-            return lista[0]
+        def accion_sumar_parte(lista):
+            res = lista[0]
+            if lista[2] != ():
+                res += lista[2][0]
+            return res
+
+        def parser_parte(sep):
+            return POpcional(
+                PSecuenciaConAccion(accion_sumar_parte,
+                    PEnteroMenorQueUnMillon(),
+                    PSeparadorMillones(sep),
+                    POpcional(
+                        PValor(
+                            TNumero(0, pico=1),
+                            PPalabras('y pico')
+                        )
+                    )
+                )
+            )
 
         PSecuenciaConAccion.__init__(self, accion_sumar,
-            POpcional(PSecuenciaConAccion(p0, PEnteroMenorQueUnMillon(), PSeparadorMillones('quintillon'))),
-            POpcional(PSecuenciaConAccion(p0, PEnteroMenorQueUnMillon(), PSeparadorMillones('cuatrillon'))),
-            POpcional(PSecuenciaConAccion(p0, PEnteroMenorQueUnMillon(), PSeparadorMillones('trillon'))),
-            POpcional(PSecuenciaConAccion(p0, PEnteroMenorQueUnMillon(), PSeparadorMillones('billon'))),
-            POpcional(PSecuenciaConAccion(p0, PEnteroMenorQueUnMillon(), PSeparadorMillones('millon'))),
+            parser_parte('quintillon'),
+            parser_parte('cuatrillon'),
+            parser_parte('trillon'),
+            parser_parte('billon'),
+            parser_parte('millon'),
             POpcional(PEnteroMenorQueUnMillon()),
-            POpcional(PToken(tipo='palabra', valor='de')),
-            PAlternativa(
-                PToken(tipo='puntuacion', valor='$', resultado=1),
-                PUnidadMonetaria(),
-            )
+            POpcional(PPalabra('de')),
+            PUnidadMonetaria(),
         )
 
 class PAlternativaPalabras(PAlternativa):
 
     def __init__(self, palabras, **kwargs):
         PAlternativa.__init__(self, *[
-                PToken(tipo='palabra', valor=pal, resultado=pal)
+                PPalabra(pal, resultado=pal)
                 for pal in palabras
             ],
             **kwargs
@@ -611,6 +677,36 @@ class PSustantivoComun(PToken):
             **kwargs
         )
 
+class PSustantivoPropioBasico(PToken):
+    def __init__(self, **kwargs):
+        PToken.__init__(self,
+            tipo='palabra',
+            predicado=lambda tok: tok.valor[:1].upper() == tok.valor[:1],
+            func_resultado=lambda tok: tok.valor,
+            **kwargs
+        )
+
+class PSustantivoPropio(PSecuenciaConAccion):
+
+    def __init__(self, devolver_variable=False, **kwargs):
+        if devolver_variable:
+            envolver = lambda x: TVariable(x)
+        else:
+            envolver = lambda x: x
+
+        PSecuenciaConAccion.__init__(self, lambda xs: envolver(xs[0]),
+            PSustantivoPropioBasico(),
+        )
+
+        #PSecuenciaConAccion.__init__(self,
+        #    lambda xs: envolver(' '.join([xs[0]] + xs[1])),
+        #    PSustantivoPropioBasico(),
+        #    PClausuraConTerminador(
+        #        PSustantivoPropioBasico(),
+        #        terminador=PComplemento(PSustantivoPropioBasico())
+        #    )
+        #)
+
 class PNominal(PSecuenciaConAccion):
 
     def __init__(self, articulo_obligatorio=False, devolver_variable=False, **kwargs):
@@ -630,10 +726,13 @@ class PNominal(PSecuenciaConAccion):
         if not articulo_obligatorio:
             art = POpcional(art)
 
-        PSecuenciaConAccion.__init__(self, accion, 
-            art,
-            PSustantivoComun(),
-            **kwargs
+        PAlternativa(
+            PSustantivoPropio(devolver_variable=devolver_variable),
+            PSecuenciaConAccion.__init__(self, accion, 
+                art,
+                PSustantivoComun(),
+                **kwargs
+            )
         )
 
 class PCabezaDefinicionDeFuncion(PAlternativa):
@@ -648,7 +747,7 @@ class PCabezaDefinicionDeFuncion(PAlternativa):
         for cabeza in cabezas:
             seqs = []
             for pal in cabeza.split(' '):
-                seqs.append(PToken(tipo='palabra', valor=pal, resultado=None))
+                seqs.append(PPalabra(pal, resultado=None))
             alts.append(PSecuenciaConAccion(lambda x: None, *seqs))
 
         return PAlternativa.__init__(self, *alts, **kwargs)
@@ -668,16 +767,17 @@ class PExpresion(PAlternativa):
             PVariable(),
             PNumero(),
             lambda: PInvocacionVerboInfinitivo(),
+            lambda: PDefinicionDeFuncion(),
             **kwargs
         )
 
-class PComa(PToken):
+class PComa(PPuntuacion):
     def __init__(self, **kwargs):
-        PToken.__init__(self, tipo='puntuacion', valor=',', **kwargs)
+        PPuntuacion.__init__(self, ',', **kwargs)
 
-class PPuntoFinal(PToken):
+class PPuntoFinal(PPuntuacion):
     def __init__(self, **kwargs):
-        PToken.__init__(self, tipo='puntuacion', valor='.', **kwargs)
+        PPuntuacion.__init__(self, '.', **kwargs)
 
 class PSeparadorExpresiones(PAlternativa):
 
@@ -686,13 +786,12 @@ class PSeparadorExpresiones(PAlternativa):
             PComa(),
 
             PSecuencia(
-                POpcional(PToken(tipo='palabra', valor='y')),
+                POpcional(PPalabra('y')),
                 PAlternativa(
-                    PToken(tipo='palabra', valor=u'después'),
+                    PPalabra(u'después'),
                     PSecuencia(
-                        PToken(tipo='palabra', valor=u'a'),
-                        PToken(tipo='palabra', valor=u'el'),
-                        PToken(tipo='palabra', valor=u'final'),
+                        PPalabras('a el final'),
+                        POpcional(PPalabras('de todo')),
                     )
                 )
             ),
@@ -708,7 +807,7 @@ class PCuerpoDeFuncion(PSecuenciaConAccion):
             return TBegin(expresiones)
 
         PSecuenciaConAccion.__init__(self, lambda xs: xs[1],
-            POpcional(PToken(tipo='palabra', valor='primero')),
+            POpcional(PPalabra('primero')),
             PClausuraConTerminadorConAccion(accion,
                 PExpresion(),
                 separador=PSeparadorExpresiones(),
@@ -733,7 +832,7 @@ class PInvocacionVerboInfinitivo(PSecuenciaConAccion):
                 PSecuenciaConAccion(lambda xs: TParametro(*xs), PPreposicion(), PExpresion()),
                 terminador=PLookahead(
                                PAlternativa(
-                                   PToken(tipo='puntuacion', valor='.'),
+                                   PPuntoFinal(),
                                    PApelativo(),
                                    PSeparadorExpresiones(),
                                )
@@ -761,7 +860,7 @@ class PDefinicionDeFuncionBasico(PSecuenciaConAccion):
             POpcional(PNominal()),
             PClausuraConTerminador(
                 PSecuenciaConAccion(lambda xs: TParametro(*xs), PPreposicion(), PNominal()),
-                terminador=PToken(tipo='palabra', valor='es'),
+                terminador=PPalabra('es'),
             ),
             PCuerpoDeFuncion(terminador_cuerpo_funcion),
             **kwargs
@@ -771,27 +870,23 @@ class PDefinicionDeFuncion(PAlternativa):
 
     def __init__(self, **kwargs):
         PAlternativa.__init__(self,
-            PDefinicionDeFuncionBasico(),
-            PSecuenciaConAccion(lambda xs: xs[3],
-                POpcional(
-                    PSecuencia(
-                        PVocativo(),
-                        POpcional(PToken(tipo='puntuacion', valor=','))
-                    )
-                ),
-                PApelativo(),
-                PToken(tipo='puntuacion', valor=','),
-                PDefinicionDeFuncionBasico(),
-            ),
+            #PDefinicionDeFuncionBasico(),
+            #PSecuenciaConAccion(lambda xs: xs[3],
+            #    POpcional(
+            #        PSecuencia(
+            #            PVocativo(),
+            #            POpcional(PToken(tipo='puntuacion', valor=','))
+            #        )
+            #    ),
+            #    PApelativo(),
+            #    PToken(tipo='puntuacion', valor=','),
+            #    PDefinicionDeFuncionBasico(),
+            #),
             PSecuenciaConAccion(lambda xs: xs[2],
                 PVocativo(),
-                PToken(tipo='puntuacion', valor=','),
+                PComa(),
                 PDefinicionDeFuncionBasico(
-                    terminador_cuerpo_funcion=
-                        PSecuencia(
-                            PApelativo(),
-                            PPuntoFinal(),
-                        )
+                    terminador_cuerpo_funcion=PApelativo(),
                 ),
             ),
             descripcion=u'declaración de una función usando "la posta".'

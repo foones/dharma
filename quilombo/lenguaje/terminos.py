@@ -1,9 +1,39 @@
 # coding:utf-8
 
-from comunes.utiles import identar
+from comunes.utiles import QuilomboException, identar
 
 def unicode_list(xs, sep=u', '):
     return sep.join([unicode(x) for x in xs])
+
+class Entorno(object):
+    "Un entorno es una pila de 'costillas' que asocian nombres a valores."
+
+    def __init__(self):
+        self._entorno = [{}]
+
+    def push(self):
+        self._entorno.append({})
+
+    def pop(self):
+        self._entorno.pop(-1)
+
+    def declarar(self, nombre, valor=None):
+        if nombre in self._entorno[-1]:
+            raise QuilomboException('Epa: "%s" ya estaba declarada.' % (nombre,))
+        self._entorno[-1][nombre] = valor
+
+    def asignar(self, nombre, valor):
+        for costilla in reversed(self._entorno):
+            if nombre in costilla:
+                costilla[nombre] = valor
+                return valor
+        raise QuilomboException('Epa: "%s" no estaba ligada.' % (nombre,))
+
+    def valor(self, nombre):
+        for costilla in reversed(self._entorno):
+            if nombre in costilla:
+                return costilla[nombre]
+        raise QuilomboException('Epa: "%s" no estaba ligada.' % (nombre,))
 
 class Termino(object):
     "Cada instancia representa un término del lenguaje."
@@ -20,22 +50,34 @@ class Termino(object):
 class TNumero(Termino):
     "Términos que representan números."
 
-    def __init__(self, numero, *args, **kwargs):
+    def __init__(self, numero, pico=0, *args, **kwargs):
         Termino.__init__(self, *args, **kwargs)
 
         assert isinstance(numero, int) or \
                isinstance(numero, long) or \
                isinstance(numero, float)
         self._numero = numero
+        self._pico = pico
 
     def __add__(self, otro):
-        return TNumero(self._numero + otro._numero, tokens=self.tokens())
+        return TNumero(
+            self._numero + otro._numero,
+            pico=self._pico + otro._pico,
+            tokens=self.tokens()
+        )
 
     def __mul__(self, otro):
-        return TNumero(self._numero * otro._numero, tokens=self.tokens())
+        return TNumero(
+            self._numero * otro._numero,
+            pico=self._pico * otro._numero + otro._pico * self._numero + self._pico * otro._pico,
+            tokens=self.tokens()
+        )
 
     def __unicode__(self):
-        return u'TNumero(%s)' % (self._numero,)
+        if self._pico == 0:
+            return u'TNumero(%s)' % (self._numero,)
+        else:
+            return u'TNumero(%s + pico=%s)' % (self._numero, self._pico)
 
 class TVariable(Termino):
     "Términos que representan variable."
