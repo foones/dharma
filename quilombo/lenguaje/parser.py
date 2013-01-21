@@ -694,20 +694,16 @@ class PSustantivoPropio(PSecuenciaConAccion):
         else:
             envolver = lambda x: x
 
-        PSecuenciaConAccion.__init__(self, lambda xs: envolver(xs[0]),
+        PSecuenciaConAccion.__init__(self,
+            lambda xs: envolver(' '.join([xs[0]] + xs[1])),
             PSustantivoPropioBasico(),
+            PClausuraConTerminador(
+                PSustantivoPropioBasico(),
+                terminador=PComplemento(PSustantivoPropioBasico())
+            )
         )
 
-        #PSecuenciaConAccion.__init__(self,
-        #    lambda xs: envolver(' '.join([xs[0]] + xs[1])),
-        #    PSustantivoPropioBasico(),
-        #    PClausuraConTerminador(
-        #        PSustantivoPropioBasico(),
-        #        terminador=PComplemento(PSustantivoPropioBasico())
-        #    )
-        #)
-
-class PNominal(PSecuenciaConAccion):
+class PNominal(PAlternativa):
 
     def __init__(self, articulo_obligatorio=False, devolver_variable=False, **kwargs):
 
@@ -726,9 +722,9 @@ class PNominal(PSecuenciaConAccion):
         if not articulo_obligatorio:
             art = POpcional(art)
 
-        PAlternativa(
+        PAlternativa.__init__(self,
             PSustantivoPropio(devolver_variable=devolver_variable),
-            PSecuenciaConAccion.__init__(self, accion, 
+            PSecuenciaConAccion(accion, 
                 art,
                 PSustantivoComun(),
                 **kwargs
@@ -738,18 +734,13 @@ class PNominal(PSecuenciaConAccion):
 class PCabezaDefinicionDeFuncion(PAlternativa):
 
     def __init__(self, **kwargs):
-        cabezas = ["la posta para",
-                   "la posta pa",
-                   "la posta pa'",
-                   "la posta si queres",
-                  ]
-        alts = []
-        for cabeza in cabezas:
-            seqs = []
-            for pal in cabeza.split(' '):
-                seqs.append(PPalabra(pal, resultado=None))
-            alts.append(PSecuenciaConAccion(lambda x: None, *seqs))
-
+        cabezas = [
+            "la posta para",
+            "la posta pa",
+            "la posta pa'",
+            "la posta si queres",
+        ]
+        alts = [PPalabras(cabeza) for cabeza in cabezas]
         return PAlternativa.__init__(self, *alts, **kwargs)
 
 class PVariable(PNominal):
