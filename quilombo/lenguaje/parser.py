@@ -389,7 +389,7 @@ class PVerboNuevoInfinitivoBasico(PToken):
     def __init__(self, **kwargs):
 
         desinencias = ['ar', 'er', 'ir']
-        sufijos = ['lo', 'le', 'los', 'les', 'selo', 'selos']
+        sufijos = ['lo', 'le', 'los', 'les', 'se', 'selo', 'selos']
 
         def es_verbo_infinitivo(tok):
             if tok.valor[:1].lower() != tok.valor[:1]:
@@ -491,7 +491,10 @@ class PEnteroMenorQueCien(PAlternativa):
     def __init__(self, **kwargs):
         PAlternativa.__init__(self,
             # 0..9
-            PEnteroEnDiccionario(NUMEROS_CARDINALES['unidades']),
+            PSecuenciaConAccion(accion_sumar_par,
+                PEnteroEnDiccionario(NUMEROS_CARDINALES['unidades']),
+                POpcional(PValor(TNumero(0, pico=1), PPalabras('y pico'))),
+            ),
             # 10..19
             PEnteroEnDiccionario(NUMEROS_CARDINALES['diez-y']),
             PValor(TNumero(10, pico=10), PPalabras('diez y pico')),
@@ -608,7 +611,12 @@ class PNumeroEspecificado(PSecuenciaConAccion):
         def accion_sumar_final(lista):
             millones = lista[0]
             miles, unidad = lista[1]
-            return envolver(millones + miles, unidad)
+            algo_mas = lista[2]
+            numero = millones + miles
+            if algo_mas == ('medio',):
+                import fractions
+                numero = numero + TNumero(fractions.Fraction(1, 2))
+            return envolver(numero, unidad)
 
         def entuplar(xs):
             if xs[0] != ():
@@ -649,6 +657,12 @@ class PNumeroEspecificado(PSecuenciaConAccion):
                 terminador=PLookahead(terminador)
             ),
             terminador,
+            POpcional(
+                PAlternativa(
+                    PValor('medio', PPalabras('y medio')),
+                    PValor('medio', PPalabras('y media')),
+                )
+            )
         )
 
 class PPlata(PNumeroEspecificado):

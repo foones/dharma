@@ -1,4 +1,5 @@
 # coding:utf-8
+import fractions
 
 ENCODING = 'utf-8'
 
@@ -32,3 +33,5 @@ def leer_archivo(nombre_archivo):
 def identar(texto, sangria='    '):
     return '\n'.join([sangria + linea for linea in texto.split('\n')])
 
+def frac(n, d):
+    return fractions.Fraction(n, d)

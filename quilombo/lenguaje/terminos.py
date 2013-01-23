@@ -1,5 +1,6 @@
 # coding:utf-8
 
+import fractions
 from comunes.utiles import QuilomboException, identar
 
 def unicode_list(xs, sep=u', '):
@@ -57,15 +58,17 @@ class TNumero(Termino):
         if numero is not None:
             assert isinstance(numero, int) or \
                    isinstance(numero, long) or \
-                   isinstance(numero, float)
+                   isinstance(numero, fractions.Fraction)
             assert a is None and b is None
             assert pico >= 0
+            if not isinstance(numero, fractions.Fraction):
+                numero = fractions.Fraction(numero, 1)
             if pico == 0:
                 a, b = numero, numero
             elif numero >= 0:
-                a, b = numero, numero + pico - 1
+                a, b = numero, numero + pico
             else:
-                a, b = numero - pico + 1, numero
+                a, b = numero - pico, numero
         else:
             assert a is not None and b is not None
         self._a, self._b = a, b
@@ -189,7 +192,43 @@ class TNumero(Termino):
         return sbase
 
     def _numero_escrito(self, base, pico):
-        return self._numero_escrito_millon(base, pico)
+        assert 0 <= base and base < 10 ** (10 * 6)
+        llones = [
+            '', u'mill', u'bill', u'trill', u'cuatrill',
+            u'quintill', u'sextill', u'septill', u'octill',
+            u'nonill', u'decill'
+        ]
+        if base == 0:
+            sbase = 'cero'
+            if pico == 1:
+                sbase += ' y pico'
+            return sbase
+        partes = []
+        while base > 0:
+            pot = 0
+            while 10 ** (pot * 6) <= base:
+                pot += 1
+            pot -= 1
+            potllon = 10 ** (pot * 6)
+            cabeza = base // potllon 
+            scabeza = self._numero_escrito_millon(cabeza, pico // potllon)
+
+            if pot > 0 and cabeza > 1:
+                sllon = ' ' + llones[pot] + u'ones'
+            elif pot > 0:
+                sllon = ' ' + llones[pot] + u'ón'
+            else:
+                sllon = ''
+
+            if cabeza < 10 and scabeza.endswith(' y pico'):
+                scabeza = scabeza[:-len(' y pico')]
+            if pico == potllon:
+                sllon += ' y pico'
+
+            partes.append(scabeza + sllon)
+            base = base % potllon
+
+        return ' '.join(partes)
 
     def numero_escrito(self, genero='f'):
         assert genero in ['msust', 'f', 'madj']

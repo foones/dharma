@@ -1,5 +1,6 @@
 # coding:utf-8
 import random
+from comunes.utiles import frac
 
 PREPOSICIONES = u'a ante bajo cabe con contra de desde en entre hacia hasta para por segun sin so sobre tras mediante durante'.split(' ')
 
@@ -18,10 +19,10 @@ def _llon(n):
 
 NUMEROS_CARDINALES = {
     'unidad-monetaria': {
-        'guita': 0.01,
-        'guitas': 0.01,
-        'chirola': 0.01,
-        'chirolas': 0.01,
+        'guita': frac(1, 10),
+        'guitas': frac(1, 10),
+        'chirola': frac(1, 10),
+        'chirolas': frac(1, 10),
         'peso': 1,
         'pesos': 1,
         'mango': 1,
