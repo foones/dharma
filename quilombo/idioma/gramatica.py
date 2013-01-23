@@ -97,6 +97,11 @@ NUMEROS_CARDINALES = {
         'trillon': _llon(3),
         'cuatrillon': _llon(4),
         'quintillon': _llon(5),
+        'sextillon': _llon(6),
+        'septillon': _llon(7),
+        'octillon': _llon(8),
+        'nonillon': _llon(9),
+        'decillon': _llon(10),
     },
 }
 

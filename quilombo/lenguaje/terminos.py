@@ -50,34 +50,176 @@ class Termino(object):
 class TNumero(Termino):
     "Términos que representan números."
 
-    def __init__(self, numero, pico=0, *args, **kwargs):
+    def __init__(self, numero=None, pico=0, a=None, b=None, *args, **kwargs):
+        "Representa un número inexacto con aritmética de intervalos."
         Termino.__init__(self, *args, **kwargs)
 
-        assert isinstance(numero, int) or \
-               isinstance(numero, long) or \
-               isinstance(numero, float)
-        self._numero = numero
-        self._pico = pico
+        if numero is not None:
+            assert isinstance(numero, int) or \
+                   isinstance(numero, long) or \
+                   isinstance(numero, float)
+            assert a is None and b is None
+            assert pico >= 0
+            if pico == 0:
+                a, b = numero, numero
+            elif numero >= 0:
+                a, b = numero, numero + pico - 1
+            else:
+                a, b = numero - pico + 1, numero
+        else:
+            assert a is not None and b is not None
+        self._a, self._b = a, b
 
     def __add__(self, otro):
         return TNumero(
-            self._numero + otro._numero,
-            pico=self._pico + otro._pico,
+            a=self._a + otro._a,
+            b=self._b + otro._b,
             tokens=self.tokens()
         )
 
     def __mul__(self, otro):
+        aa = self._a * otro._a
+        ab = self._a * otro._b
+        ba = self._b * otro._a
+        bb = self._b * otro._b
         return TNumero(
-            self._numero * otro._numero,
-            pico=self._pico * otro._numero + otro._pico * self._numero + self._pico * otro._pico,
+            a=min(aa, ab, ba, bb),
+            b=max(aa, ab, ba, bb),
             tokens=self.tokens()
         )
 
-    def __unicode__(self):
-        if self._pico == 0:
-            return u'TNumero(%s)' % (self._numero,)
+    def _numero_escrito_10(self, base, pico):
+        assert 0 <= base and base < 10
+        sbase = {
+            0: '',
+            1: 'un@',
+            2: 'dos',
+            3: 'tres',
+            4: 'cuatro',
+            5: 'cinco',
+            6: 'seis',
+            7: 'siete',
+            8: 'ocho',
+            9: 'nueve',
+          }[base]
+        if pico == 1: sbase += ' y pico'
+        return sbase
+
+    def _numero_escrito_100(self, base, pico):
+        assert 0 <= base and base < 100
+        if base < 10:
+            return self._numero_escrito_10(base, pico)
+        elif base < 30:
+            sbase = {
+                10: 'diez', 11: 'once', 12: 'doce', 13: 'trece',
+                14: 'catorce', 15: 'quince', 16: u'dieciséis',
+                17: 'diecisiete', 18: 'dieciocho', 19: 'diecinueve',
+                20: 'veinte', 21: 'veintiun@', 22: u'veintidós',
+                23: u'veintitrés', 24: 'veinticuatro', 25: 'veinticinco',
+                26: u'veintiséis', 27: 'veintisiete', 28: 'veintiocho',
+                29: 'veintinueve',
+            }[base]
         else:
-            return u'TNumero(%s + pico=%s)' % (self._numero, self._pico)
+            decena = base // 10
+            unidad = base % 10
+            sdecena = {
+                3: 'treinta', 4: 'cuarenta', 5: 'cincuenta',
+                6: 'sesenta', 7: 'setenta', 8: 'ochenta',
+                9: 'noventa',
+            }[decena]
+            sunidad = self._numero_escrito_10(unidad, pico)
+            if unidad == 0:
+                sbase = sdecena
+            else:
+                sbase = '%s y %s' % (sdecena, sunidad)
+        if pico == 10:
+            if sbase == 'veinte':
+                sbase = 'veintipico'
+            else:
+                sbase += ' y pico'
+        return sbase
+
+    def _numero_escrito_1000(self, base, pico):
+        assert 0 <= base and base < 1000
+        if base < 100:
+            return self._numero_escrito_100(base, pico)
+        centena = base // 100
+        resto = base % 100
+        scentena = {
+            1: 'ciento',
+            2: 'doscient@s',
+            3: 'trescient@s',
+            4: 'cuatrocient@s',
+            5: 'quinient@s',
+            6: 'seiscient@s',
+            7: 'setecient@s',
+            8: 'ochocient@s',
+            9: 'novecient@s',
+        }[centena]
+        sresto = self._numero_escrito_100(resto, pico)
+        if centena == 1 and resto == 0 and pico != 100:
+            sbase = 'cien'
+        elif resto == 0:
+            sbase = scentena
+        else:
+            sbase = '%s %s' % (scentena, sresto)
+        if pico == 100:
+            sbase += ' y pico'
+        return sbase
+
+    def _numero_escrito_millon(self, base, pico):
+        assert 0 <= base and base < 10 ** 6
+        if base < 1000:
+            return self._numero_escrito_1000(base, pico)
+        miles = base // 1000
+        resto = base % 1000
+        smiles = self._numero_escrito_1000(miles, pico // 1000)
+        sresto = self._numero_escrito_1000(resto, pico)
+
+        if miles == 1:
+            smiles = ''
+
+        if resto == 0:
+            sbase = '%s mil' % (smiles,)
+        else:
+            sbase = '%s mil %s' % (smiles, sresto)
+
+        if pico == 1000:
+            sbase += ' y pico'
+        return sbase
+
+    def _numero_escrito(self, base, pico):
+        return self._numero_escrito_millon(base, pico)
+
+    def numero_escrito(self, genero='f'):
+        assert genero in ['msust', 'f', 'madj']
+
+        ancho = self._b - self._a
+        pico = 1
+        while pico < ancho:
+            pico *= 10
+        if ancho == 0:
+            pico = 0
+
+        if pico == 0:
+            restante = self._a - int(self._a)
+            base = int(self._a)
+        else:
+            restante = 0
+            base = (int(self._a) // pico) * pico
+
+        escrito = self._numero_escrito(base, pico) + ' --- CON DECIMALES %s' % (restante,)
+        if genero == 'msust':
+            escrito = escrito.replace('@', 'o')
+        elif genero == 'f':
+            escrito = escrito.replace('@', 'a')
+        elif genero == 'madj':
+            escrito = escrito.replace('veintiun@', u'veintiún')
+            escrito = escrito.replace('un@', u'un')
+        return escrito
+
+    def __unicode__(self):
+        return self.numero_escrito()
 
 class TVariable(Termino):
     "Términos que representan variable."
