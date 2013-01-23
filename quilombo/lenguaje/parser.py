@@ -494,6 +494,7 @@ class PEnteroMenorQueCien(PAlternativa):
             PEnteroEnDiccionario(NUMEROS_CARDINALES['unidades']),
             # 10..19
             PEnteroEnDiccionario(NUMEROS_CARDINALES['diez-y']),
+            PValor(TNumero(10, pico=10), PPalabras('diez y pico')),
             # 20..99 (formas contractas)
             PEnteroEnDiccionario(NUMEROS_CARDINALES['formas-contractas']),
             PEnteroEnDiccionario(NUMEROS_CARDINALES['formas-contractas-y-pico']),
@@ -563,14 +564,6 @@ class PEnteroMenorQueUnMillon(PAlternativa):
             )
         )
 
-class PSeparadorMillones(PAlternativa):
-    def __init__(self, separador, **kwargs):
-        PAlternativa.__init__(self,
-            PPalabra(separador),
-            PPalabra(separador + 'es'),
-            **kwargs
-        )
-
 class PUnidadMonetaria(PAlternativa):
     def __init__(self):
         PAlternativa.__init__(self,
@@ -583,61 +576,86 @@ class PUnidadMonetaria(PAlternativa):
             ),
         )
 
-class PNumero(PSecuenciaConAccion):
-    """Analiza sintácticamente un entero menor que un sextillón seguido
-       de un especificador de 'unidad monetaria'."""
+class PNumeroEspecificado(PSecuenciaConAccion):
+    "Analiza sintácticamente un entero seguido de un especificador."
 
-    def __init__(self, **kwargs):
+    def __init__(self, parser_especificador_unidad, envolver, **kwargs):
 
-        def accion_sumar(lista):
-            res = None
+        separadores = [
+                sep[0]
+                for sep in sorted(
+                    NUMEROS_CARDINALES['separadores-millones'].items(),
+                    key=lambda x: -x[1]
+                )
+        ]
 
-            i = len(lista) - 3
-            potencia = 0
-            while i >= 0:
-                if lista[i] != ():
-                    valor = lista[i][0] * TNumero(10 ** (potencia * 6))
-                    if res is None:
-                        res = valor
+        def accion_sumar_millones(lista):
+            res = TNumero(0)
+            for s in lista:
+                base = NUMEROS_CARDINALES['separadores-millones'][s[1]]
+                mult = TNumero(base)
+                res = res + s[0] * mult
+                if s[2] != ():
+                    if s[2][0] == 'pico':
+                        ag = TNumero(0, base)
+                    elif s[2][0] == 'medio':
+                        ag = TNumero(base / 2)
                     else:
-                        res += valor
-                potencia += 1
-                i -= 1
-
-            if res is None:
-                return lista[-1]
-            else:
-                return res * lista[-1]
-
-        def accion_sumar_parte(lista):
-            res = lista[0]
-            if lista[2] != ():
-                res += lista[2][0]
+                        ag = TNumero(0)
+                    res += ag
             return res
 
-        def parser_parte(sep):
-            return POpcional(
-                PSecuenciaConAccion(accion_sumar_parte,
-                    PEnteroMenorQueUnMillon(),
-                    PSeparadorMillones(sep),
-                    POpcional(
-                        PValor(
-                            TNumero(0, pico=1),
-                            PPalabras('y pico')
-                        )
-                    )
+        def accion_sumar_final(lista):
+            millones = lista[0]
+            miles, unidad = lista[1]
+            return envolver(millones + miles, unidad)
+
+        def entuplar(xs):
+            if xs[0] != ():
+                num = xs[0][0]
+            else:
+                num = TNumero(0)
+            return num, xs[2]
+
+        algun_separador = PAlternativa(*[
+            PValor(sep,
+                PAlternativa(
+                    PPalabra(sep),
+                    PPalabra(sep + 'es'),
                 )
             )
+            for sep in separadores
+        ])
 
-        PSecuenciaConAccion.__init__(self, accion_sumar,
-            parser_parte('quintillon'),
-            parser_parte('cuatrillon'),
-            parser_parte('trillon'),
-            parser_parte('billon'),
-            parser_parte('millon'),
+        terminador = PSecuenciaConAccion(entuplar,
             POpcional(PEnteroMenorQueUnMillon()),
             POpcional(PPalabra('de')),
-            PUnidadMonetaria(),
+            parser_especificador_unidad,
+        )
+
+        PSecuenciaConAccion.__init__(self, accion_sumar_final,
+            PClausuraConTerminadorConAccion(accion_sumar_millones,
+                PSecuencia(
+                    PEnteroMenorQueUnMillon(),
+                    algun_separador,
+                    POpcional(
+                        PAlternativa(
+                            PValor('pico', PPalabras('y pico')),
+                            PValor('medio', PPalabras('y medio')),
+                            PValor('medio', PPalabras('y media')),
+                        )
+                    )
+                ),
+                terminador=PLookahead(terminador)
+            ),
+            terminador,
+        )
+
+class PPlata(PNumeroEspecificado):
+    def __init__(self):
+        PNumeroEspecificado.__init__(self,
+            parser_especificador_unidad=PUnidadMonetaria(),
+            envolver=lambda valor, unidad: valor * unidad
         )
 
 class PAlternativaPalabras(PAlternativa):
@@ -756,7 +774,7 @@ class PExpresion(PAlternativa):
     def __init__(self, **kwargs):
         PAlternativa.__init__(self,
             PVariable(),
-            PNumero(),
+            PPlata(),
             lambda: PInvocacionVerboInfinitivo(),
             lambda: PDefinicionDeFuncion(),
             **kwargs

@@ -13,6 +13,9 @@ CONJUNCIONES = u'y o'.split(' ')
 
 # Nota: representarlos sin tildes.
 
+def _llon(n):
+    return 10 ** (n * 6)
+
 NUMEROS_CARDINALES = {
     'unidad-monetaria': {
         'guita': 0.01,
@@ -88,27 +91,18 @@ NUMEROS_CARDINALES = {
     'miles': {
         'mil': 1000,
     },
-    'millones': {
-        'millon': 10 ** 6,
-        'millones': 10 ** 6,
-    },
-    'billones': {
-        'billon': 10 ** 12,
-        'billones': 10 ** 12,
-    },
-    'trillones': {
-        'trillon': 10 ** 18,
-        'trillones': 10 ** 18,
-    },
-    'cuatrillones': {
-        'cuatrillon': 10 ** 24,
-        'cuatrillones': 10 ** 24,
-    },
-    'quintillones': {
-        'quintillon': 10 ** 30,
-        'quintillones': 10 ** 30,
+    'separadores-millones': {
+        'millon': _llon(1),
+        'billon': _llon(2),
+        'trillon': _llon(3),
+        'cuatrillon': _llon(4),
+        'quintillon': _llon(5),
     },
 }
+
+NUMEROS_CARDINALES['separadores-millones-plural'] = {}
+for sep in NUMEROS_CARDINALES['separadores-millones']:
+    NUMEROS_CARDINALES['separadores-millones-plural'][sep + 'es'] = NUMEROS_CARDINALES['separadores-millones'][sep]
 
 ## Formas contractas (ej. veinticinco, o incorrectas como cuarentitres)
 
@@ -138,6 +132,8 @@ PALABRAS_CLAVE = PREPOSICIONES + \
                  CONJUNCIONES
 
 PALABRAS_CLAVE.append('pico')
+PALABRAS_CLAVE.append('medio')
+PALABRAS_CLAVE.append('media')
 for clave, diccionario in NUMEROS_CARDINALES.items():
     for nombre, numero in diccionario.items():
         PALABRAS_CLAVE.append(nombre)

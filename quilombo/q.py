@@ -3,7 +3,7 @@
 import sys
 
 from comunes.utiles import leer_archivo, QuilomboException
-from lenguaje.parser import tokenizar, PDefinicionDeFuncion, PNominal, PPreposicion, PSecuenciaConAccion, PVerboNuevoInfinitivo, PNumero
+from lenguaje.parser import tokenizar, PDefinicionDeFuncion, PNominal, PPreposicion, PSecuenciaConAccion, PVerboNuevoInfinitivo, PPlata
 
 def main():
     if len(sys.argv) != 2:
@@ -19,9 +19,9 @@ def main():
 #        analizador = PSecuenciaConAccion(
 #                        lambda xs: u'%s ---- %s' % tuple(xs),
 #                        PVerboNuevoInfinitivo(),
-#                        PNumero()
+#                        PPlata()
 #                     )
-        #analizador = PNumero()
+        #analizador = PPlata()
         analizador = PDefinicionDeFuncion()
         #print unicode(iterador_tokens)
 
