@@ -208,10 +208,15 @@ class TNumero(Termino):
             restante = 0
             base = (int(self._a) // pico) * pico
 
-        escrito = self._numero_escrito(base, pico) + ' --- CON DECIMALES %s' % (restante,)
+        escrito = self._numero_escrito(base, pico) + '=== CON DECIMALES %s' % (restante,)
         if genero == 'msust':
+            escrito = escrito.replace('veintiun@ ', u'veintiún ')
+            escrito = escrito.replace('un@ ', u'un ')
             escrito = escrito.replace('@', 'o')
         elif genero == 'f':
+            print 'antes', escrito
+            escrito = escrito.replace('veintiun@ ', u'veintiún ')
+            escrito = escrito.replace('un@ ', u'un ')
             escrito = escrito.replace('@', 'a')
         elif genero == 'madj':
             escrito = escrito.replace('veintiun@', u'veintiún')
