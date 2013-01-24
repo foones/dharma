@@ -28,9 +28,18 @@ class Parser(object):
 
     def mensaje_de_error(self, it):
         msj = u'Tu programa es fruta.'
-        d = self.descripcion_completa()
-        if d is not None:
-            msj += u'\nEsperaba: %s' % (d,)
+
+        fallos = []
+        it2 = None
+        for _it, subparser in self.max_match(it):
+            descripcion = subparser.descripcion_completa()
+            if descripcion is not None:
+                fallos.append(descripcion)
+            it2 = _it
+            
+        if fallos != []:
+            msj += u'\nEsperaba:\n%s' % (identar('\n'.join(fallos)),)
+            msj += u'\n---\nCerca de:\n\n%s\n' % (identar(it2.contexto()),)
         return msj
 
 def coincide(referencia, x):
@@ -90,7 +99,7 @@ class PToken(Parser):
         if self._valor is not None:
             return u'el símbolo "%s"' % (self._valor,)
         elif self._tipo is not None:
-            return u'un símbolo tipo <%s>' % (self._tipo,)
+            return u'un símbolo de tipo <%s>' % (self._tipo,)
         else:
             return u'el símbolo esperado'
 
@@ -104,6 +113,8 @@ def agregar_max_its(max_its, key):
 def max_match_wrapper(parser, it, subparsers):
     max_its = [(it, parser)]
     for sub in subparsers:
+        if callable(sub):
+            sub = sub()
         for r in sub.max_match(it):
             max_its = agregar_max_its(max_its, r)
     for x in max_its:
@@ -123,7 +134,7 @@ class PValor(Parser):
             yield self._valor, it1
 
     def max_match(self, it):
-        return max_match_wrapper(self, it, self._parser)
+        return max_match_wrapper(self, it, [self._parser])
 
 class PLookahead(Parser):
     u"Se fija que la entrada coincida con lo esperado sin consumirla."
@@ -137,7 +148,7 @@ class PLookahead(Parser):
             yield res1, it
 
     def max_match(self, it):
-        return max_match_wrapper(self, it, self._parser)
+        return max_match_wrapper(self, it, [self._parser])
 
 class PComplemento(Parser):
     u"Tiene éxito sii el parser dado no tiene éxito. No consume la entrada."
@@ -321,14 +332,15 @@ class POpcional(Parser):
 
     def match(self, it):
         for res1, it1 in self._parser.match(it):
-            yield res1, it1
-        yield None, it1
+            yield (res1,), it1
+        yield (), it
 
     def max_match(self, it):
         max_its = []
-        for r in self._parser.match(it):
-            max_its = agregar_max_its(max_its, r)
-        yield it, 'ok'
+        for r, it2 in self._parser.match(it):
+            max_its = agregar_max_its(max_its, (it2, 'ok'))
+        max_its = agregar_max_its(max_its, (it, 'ok'))
+        for r in max_its: yield r
 
 class PEOF(PToken):
     def __init__(self, **kwargs):

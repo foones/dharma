@@ -93,6 +93,7 @@ class PVerboNuevoInfinitivo(PSecuenciaConAccion):
                 ),
                 PVerboNuevoInfinitivoBasico(),
             ),
+            descripcion='un verbo en infinitivo',
             **kwargs
         )
 
@@ -127,19 +128,19 @@ class PAlternativaPalabras(PAlternativa):
 
 class PVocativo(PAlternativaPalabras):
     def __init__(self, **kwargs):
-        PAlternativaPalabras.__init__(self, VOCATIVOS, **kwargs)
+        PAlternativaPalabras.__init__(self, VOCATIVOS, descripcion='un vocativo (ej. `che\', `cuchame\')', **kwargs)
 
 class PApelativo(PAlternativaPalabras):
     def __init__(self, **kwargs):
-        PAlternativaPalabras.__init__(self, APELATIVOS, **kwargs)
+        PAlternativaPalabras.__init__(self, APELATIVOS, descripcion='un apelativo (ej. `boludo\', `hermano\')', **kwargs)
 
 class PArticulo(PAlternativaPalabras):
     def __init__(self, **kwargs):
-        PAlternativaPalabras.__init__(self, ARTICULOS, **kwargs)
+        PAlternativaPalabras.__init__(self, ARTICULOS, descripcion=u'un artículo (ej. `la\', `unos\')', **kwargs)
 
 class PPreposicion(PAlternativaPalabras):
     def __init__(self, **kwargs):
-        PAlternativaPalabras.__init__(self, PREPOSICIONES, **kwargs)
+        PAlternativaPalabras.__init__(self, PREPOSICIONES, descripcion=u'una preposición (ej. `de\', `contra\')', **kwargs)
 
 class PSustantivoComun(PToken):
 
@@ -149,6 +150,7 @@ class PSustantivoComun(PToken):
             predicado=lambda tok: tok.valor not in PALABRAS_CLAVE and \
                                   tok.valor[:1].lower() == tok.valor[:1],
             func_resultado=lambda tok: tok.valor,
+            descripcion=u"un sustantivo común (ej. `moneda\', `bondi\')",
             **kwargs
         )
 
@@ -158,6 +160,7 @@ class PSustantivoPropioBasico(PToken):
             tipo='palabra',
             predicado=lambda tok: tok.valor[:1].upper() == tok.valor[:1],
             func_resultado=lambda tok: tok.valor,
+            descripcion=u"un sustantivo propio (ej. `Fulanito', `Juan Pérez')",
             **kwargs
         )
 
@@ -358,7 +361,7 @@ class PDefinicionDeFuncion(PAlternativa):
                     terminador_bloque=PApelativo(),
                 ),
             ),
-            descripcion=u'declaración de una función usando "la posta".',
+            descripcion=u'una declaración de función, usando `la posta\'',
             **kwargs
         )
 

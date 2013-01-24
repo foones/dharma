@@ -113,16 +113,23 @@ class IteradorTokens(object):
         self._pos = pos
 
     def __unicode__(self):
-        return 'IteradorTokens(' + \
-               '[\n' + \
-                '\n'.join([
-                    ('    >>> ' if i == self._pos else '        ') + unicode(tok)
-                    for tok, i in zip(self._tokens, range(len(self._tokens)))
-                ]) + \
-                '\n]' + \
-               ',\n' + \
-               '\t%u\n' % (self._pos,) + \
-               ')'
+       return 'IteradorTokens(' + \
+              '[\n' + \
+               '\n'.join([
+                   ('    >>> ' if i == self._pos else '        ') + unicode(tok)
+                   for tok, i in zip(self._tokens, range(len(self._tokens)))
+               ]) + \
+               '\n]' + \
+              ',\n' + \
+              '\t%u\n' % (self._pos,) + \
+              ')'
+
+    def contexto(self):
+        ztoks = zip(self._tokens, range(len(self._tokens)))[max(0, self._pos - 10):self._pos + 10]
+        return ' '.join([
+                   ('\n\t' if i == self._pos else '') + tok.valor + ('\n' if i == self._pos else '')
+                   for tok, i in ztoks
+               ])
 
     def avanzar(self, n=1):
         return IteradorTokens(self._tokens, self._pos + n)
