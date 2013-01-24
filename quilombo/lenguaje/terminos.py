@@ -1,7 +1,7 @@
 # coding:utf-8
 
 import fractions
-from comunes.utiles import QuilomboException, identar
+from comunes.utiles import QuilomboException, identar, frac
 
 def unicode_list(xs, sep=u', '):
     return sep.join([unicode(x) for x in xs])
@@ -62,7 +62,7 @@ class TNumero(Termino):
             assert a is None and b is None
             assert pico >= 0
             if not isinstance(numero, fractions.Fraction):
-                numero = fractions.Fraction(numero, 1)
+                numero = frac(numero, 1)
             if pico == 0:
                 a, b = numero, numero
             elif numero >= 0:
@@ -72,6 +72,9 @@ class TNumero(Termino):
         else:
             assert a is not None and b is not None
         self._a, self._b = a, b
+
+    def inf(self):
+        return self._a
 
     def __add__(self, otro):
         return TNumero(
@@ -230,6 +233,35 @@ class TNumero(Termino):
 
         return ' '.join(partes)
 
+    def _escribir_decimales(self, decimales):
+        pals = []
+        i = 0
+        while i < 20:
+            decimales *= 100
+            num = int(decimales)
+            decimales = decimales - num
+            i += 2
+            if num == 0:
+                pals.append('cero')
+            elif num < 10:
+                pals.append('cero')
+                pals.append(self._numero_escrito_10(num, 0))
+            elif num < 100:
+                if num % 10 == 0:
+                    pals.append(self._numero_escrito_10(num // 10, 0))
+                    pals.append('cero')
+                else:
+                    pals.append(self._numero_escrito_100(num, 0))
+
+        while pals != [] and pals[-1] == 'cero':
+            pals.pop(-1)
+        if pals == []:
+            return ''
+        else:
+            sdec = ' coma ' + ' '.join(pals)
+            sdec = sdec.replace('@', 'o')
+            return sdec
+
     def numero_escrito(self, genero='f'):
         assert genero in ['msust', 'f', 'madj']
 
@@ -247,7 +279,7 @@ class TNumero(Termino):
             restante = 0
             base = (int(self._a) // pico) * pico
 
-        escrito = self._numero_escrito(base, pico) + '=== CON DECIMALES %s' % (restante,)
+        escrito = self._numero_escrito(base, pico)
         if genero == 'msust':
             escrito = escrito.replace('veintiun@ ', u'veintiún ')
             escrito = escrito.replace('un@ ', u'un ')
@@ -260,6 +292,9 @@ class TNumero(Termino):
         elif genero == 'madj':
             escrito = escrito.replace('veintiun@', u'veintiún')
             escrito = escrito.replace('un@', u'un')
+
+        if restante != 0:
+            escrito += self._escribir_decimales(restante)
         return escrito
 
     def __unicode__(self):

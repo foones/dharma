@@ -1,6 +1,6 @@
 # coding:utf-8
 
-from comunes.utiles import QuilomboException, identar
+from comunes.utiles import QuilomboException, identar, frac
 from idioma.ortografia import normalizar
 from idioma.gramatica import (
     ARTICULOS,
@@ -579,6 +579,34 @@ class PUnidadMonetaria(PAlternativa):
             ),
         )
 
+class PParteDecimal(PSecuenciaConAccion):
+    def __init__(self):
+        def sumar_digitos(xs):
+            longitud = 0
+            suma = 0
+            for x in xs:
+                if x.inf() < 10:
+                    longitud += 1
+                    suma = suma * 10 + x.inf()
+                elif x.inf() < 100:
+                    longitud += 2
+                    suma = suma * 100 + x.inf()
+                else:
+                    longitud += 3
+                    suma = suma * 1000 + x.inf()
+            return TNumero(suma / frac(10 ** longitud, 1))
+
+        PSecuenciaConAccion.__init__(self, lambda xs: sumar_digitos([xs[1]] + xs[2]),
+            PPalabra('coma'),
+            PEnteroMenorQueMil(),
+            PClausuraConTerminadorConAccion(lambda xs: xs,
+                PEnteroMenorQueMil(),
+                terminador=PComplemento(
+                    PEnteroMenorQueMil(),
+                )
+            )
+        )
+
 class PNumeroEspecificado(PSecuenciaConAccion):
     "Analiza sintácticamente un entero seguido de un especificador."
 
@@ -610,20 +638,23 @@ class PNumeroEspecificado(PSecuenciaConAccion):
 
         def accion_sumar_final(lista):
             millones = lista[0]
-            miles, unidad = lista[1]
+            miles, decimales, unidad_de_medida = lista[1]
             algo_mas = lista[2]
-            numero = millones + miles
+            numero = millones + miles + decimales
             if algo_mas == ('medio',):
-                import fractions
-                numero = numero + TNumero(fractions.Fraction(1, 2))
-            return envolver(numero, unidad)
+                numero = numero + frac(1, 2)
+            return envolver(numero, unidad_de_medida)
 
         def entuplar(xs):
             if xs[0] != ():
                 num = xs[0][0]
             else:
                 num = TNumero(0)
-            return num, xs[2]
+            if xs[1] != ():
+                decimales = xs[1][0]
+            else:
+                decimales = TNumero(0)
+            return num, decimales, xs[3]
 
         algun_separador = PAlternativa(*[
             PValor(sep,
@@ -637,6 +668,7 @@ class PNumeroEspecificado(PSecuenciaConAccion):
 
         terminador = PSecuenciaConAccion(entuplar,
             POpcional(PEnteroMenorQueUnMillon()),
+            POpcional(PParteDecimal()),
             POpcional(PPalabra('de')),
             parser_especificador_unidad,
         )

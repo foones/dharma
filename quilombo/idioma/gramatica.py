@@ -140,6 +140,7 @@ PALABRAS_CLAVE = PREPOSICIONES + \
 PALABRAS_CLAVE.append('pico')
 PALABRAS_CLAVE.append('medio')
 PALABRAS_CLAVE.append('media')
+PALABRAS_CLAVE.append('coma')
 for clave, diccionario in NUMEROS_CARDINALES.items():
     for nombre, numero in diccionario.items():
         PALABRAS_CLAVE.append(nombre)
