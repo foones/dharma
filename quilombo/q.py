@@ -3,7 +3,8 @@
 import sys
 
 from comunes.utiles import leer_archivo, QuilomboException
-from lenguaje.parser import tokenizar, PDefinicionDeFuncion, PNominal, PPreposicion, PSecuenciaConAccion, PVerboNuevoInfinitivo, PPlata
+from lenguaje.lexer import tokenizar
+from lenguaje.parser_quilombo import PDefinicionDeFuncion
 
 def main():
     if len(sys.argv) != 2:
@@ -16,14 +17,7 @@ def main():
         contenido = leer_archivo(nombre_archivo)
         iterador_tokens = tokenizar(contenido, nombre_archivo=nombre_archivo)
 
-#        analizador = PSecuenciaConAccion(
-#                        lambda xs: u'%s ---- %s' % tuple(xs),
-#                        PVerboNuevoInfinitivo(),
-#                        PPlata()
-#                     )
-        #analizador = PPlata()
         analizador = PDefinicionDeFuncion()
-        #print unicode(iterador_tokens)
 
         nmatches = 0
         matches = analizador.match(iterador_tokens)
