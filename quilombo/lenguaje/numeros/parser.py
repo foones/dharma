@@ -223,7 +223,7 @@ class PNumeroEspecificado(PSecuenciaConAccion):
             algo_mas = lista[2]
             numero = millones + miles + decimales
             if algo_mas == ('medio',):
-                numero = numero + frac(1, 2)
+                numero = numero + TNumero(frac(1, 2))
             return envolver(numero, unidad_de_medida)
 
         def entuplar(xs):

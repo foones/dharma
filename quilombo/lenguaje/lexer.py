@@ -114,7 +114,12 @@ class IteradorTokens(object):
 
     def __unicode__(self):
         return 'IteradorTokens(' + \
-               '[\n' + '\n'.join(['\t' + unicode(tok) for tok in self._tokens]) + '\n]' + \
+               '[\n' + \
+                '\n'.join([
+                    ('    >>> ' if i == self._pos else '        ') + unicode(tok)
+                    for tok, i in zip(self._tokens, range(len(self._tokens)))
+                ]) + \
+                '\n]' + \
                ',\n' + \
                '\t%u\n' % (self._pos,) + \
                ')'
@@ -128,6 +133,12 @@ class IteradorTokens(object):
     def token_actual(self):
         assert self.hay_token()
         return self._tokens[self._pos]
+
+    def posicion(self):
+        return self._pos
+
+    def __cmp__(self, otro):
+        assert False
 
 def tokenizar(texto, nombre_archivo='...'):
     "Devuelve el iterador de tokens que resulta del texto dado."

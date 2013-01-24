@@ -8,7 +8,11 @@ from idioma.ortografia import normalizar
 class Parser(object):
     """Representa un analizador sintáctico. Toda subclase implementa un
        método self.match(it) que recibe un iterador de tokens y devuelve
-       un generador de matches."""
+       un generador de matches.
+
+       Además, para reporte de errores, las subclases implementan
+       self.max_match(it) que recibe un generador de tokens y genera
+       los matches que consumen la mayor cantidad de la entrada posible."""
 
     def __init__(self, descripcion=None):
         self._descripcion = descripcion
@@ -20,13 +24,13 @@ class Parser(object):
             return self.descripcion()
 
     def descripcion(self):
-        return repr(self)
+        return unicode(self)
 
     def mensaje_de_error(self, it):
-        msj = 'Tu programa es fruta.'
+        msj = u'Tu programa es fruta.'
         d = self.descripcion_completa()
         if d is not None:
-            msj += '\nEsperaba: ' + d
+            msj += u'\nEsperaba: %s' % (d,)
         return msj
 
 def coincide(referencia, x):
@@ -76,15 +80,36 @@ class PToken(Parser):
         if ok:
             yield resultado, it.avanzar()
 
+    def max_match(self, it):
+        for _, it2 in self.match(it):
+            yield (it2, 'ok')
+            return
+        yield (it, self)
+
     def descripcion(self):
         if self._valor is not None:
-            return 'el símbolo "' + self._valor + '"'
+            return u'el símbolo "%s"' % (self._valor,)
         elif self._tipo is not None:
-            return 'un símbolo tipo <' + self._tipo + '>'
+            return u'un símbolo tipo <%s>' % (self._tipo,)
         else:
-            return 'el símbolo esperado'
+            return u'el símbolo esperado'
 
-class PValor(PToken):
+def agregar_max_its(max_its, key):
+    if max_its == [] or max_its[0][0].posicion() < key[0].posicion():
+        max_its = [key]
+    elif key[0].posicion() == max_its[0][0].posicion():
+        max_its.append(key)
+    return max_its
+
+def max_match_wrapper(parser, it, subparsers):
+    max_its = [(it, parser)]
+    for sub in subparsers:
+        for r in sub.max_match(it):
+            max_its = agregar_max_its(max_its, r)
+    for x in max_its:
+        yield x
+
+class PValor(Parser):
     """PValor(valor, parser) reconoce las mismas entradas que el parser
        dado, pero ignora el valor devuelto por el parser y devuelve el
        valor dado."""
@@ -97,20 +122,28 @@ class PValor(PToken):
         for res1, it1 in self._parser.match(it):
             yield self._valor, it1
 
-class PLookahead(object):
+    def max_match(self, it):
+        return max_match_wrapper(self, it, self._parser)
+
+class PLookahead(Parser):
     u"Se fija que la entrada coincida con lo esperado sin consumirla."
 
-    def __init__(self, parser):
+    def __init__(self, parser, *args, **kwargs):
+        Parser.__init__(self, *args, **kwargs)
         self._parser = parser
 
     def match(self, it):
         for res1, it1 in self._parser.match(it):
             yield res1, it
 
-class PComplemento(object):
+    def max_match(self, it):
+        return max_match_wrapper(self, it, self._parser)
+
+class PComplemento(Parser):
     u"Tiene éxito sii el parser dado no tiene éxito. No consume la entrada."
 
-    def __init__(self, parser):
+    def __init__(self, parser, *args, **kwargs):
+        Parser.__init__(self, *args, **kwargs)
         self._parser = parser
 
     def match(self, it):
@@ -120,6 +153,14 @@ class PComplemento(object):
             break
         if not exito:
             yield None, it
+
+    def max_match(self, it):
+        exito = False
+        for res1, it1 in self._parser.match(it):
+            exito = True
+            yield it, self
+            return
+        yield it, 'ok'
 
 class PAlternativa(Parser):
     u"Introduce una alternativa no determinística entre varios parsers."
@@ -138,6 +179,9 @@ class PAlternativa(Parser):
         ds = [d for p in self._parsers for d in [p.descripcion()] if d is not None]
         return 'alguna de estas cosas:\n' + identar('\n'.join(ds))
 
+    def max_match(self, it):
+        return max_match_wrapper(self, it, self._parsers)
+
 class PSecuencia(Parser):
     u"Yuxtaposición de parsers."
 
@@ -154,6 +198,19 @@ class PSecuencia(Parser):
             for res1, it1 in p.match(it):
                 for res2, it2 in ps.match(it1):
                     yield [res1] + res2, it2
+
+    def max_match(self, it):
+        if self._parsers == ():
+            yield it, 'ok'
+        else:
+            p = self._parsers[0]
+            ps = PSecuencia(*self._parsers[1:])
+            for it1, ok_fail1 in p.max_match(it):
+                if ok_fail1 == 'ok':
+                    for it2, ok_fail2 in ps.max_match(it1):
+                        yield it2, ok_fail2
+                else:
+                    yield it1, ok_fail1
 
 class PSecuenciaConAccion(PSecuencia):
 
@@ -206,6 +263,46 @@ class PClausuraConTerminador(Parser):
                 for res3, it3 in self._match_con_separador(it2):
                     yield [res1] + res3, it3
 
+    def max_match(self, it):
+        max_its = []
+        if self._separador is None:
+            for r in self._max_match_sin_separador(it):
+                max_its = agregar_max_its(max_its, r)
+        else:
+            for r in self._terminador.max_match(it):
+                max_its = agregar_max_its(max_its, r)
+            for r in self._max_match_con_separador(it):
+                max_its = agregar_max_its(max_its, r)
+        for r in max_its: yield r
+
+    def _max_match_sin_separador(self, it):
+        max_its = []
+        for r in self._terminador.max_match(it):
+            max_its = agregar_max_its(max_its, r)
+        for it1, ok_fail1 in self._parser.max_match(it):
+            if ok_fail1 == 'ok':
+                for r in self._max_match_sin_separador(it1):
+                    max_its = agregar_max_its(max_its, r)
+            else:
+                max_its = agregar_max_its(max_its, (it1, ok_fail1))
+        for r in max_its: yield r
+
+    def _max_match_con_separador(self, it):
+        max_its = []
+        for it1, ok_fail1 in self._parser.max_match(it):
+            if ok_fail1 == 'ok':
+                for r2 in self._terminador.max_match(it1):
+                    max_its = agregar_max_its(max_its, r2)
+                for it2, ok_fail2 in self._separador.max_match(it1):
+                    if ok_fail2 == 'ok':
+                        for r3 in self._max_match_con_separador(it2):
+                            max_its = agregar_max_its(max_its, r3)
+                    else:
+                        max_its = agregar_max_its(max_its, (it2, ok_fail2))
+            else:
+                max_its = agregar_max_its(max_its, (it1, ok_fail1))
+        for r in max_its: yield r
+
 class PClausuraConTerminadorConAccion(PClausuraConTerminador):
 
     def __init__(self, accion, *args, **kwargs):
@@ -224,8 +321,14 @@ class POpcional(Parser):
 
     def match(self, it):
         for res1, it1 in self._parser.match(it):
-            yield (res1,), it1
-        yield (), it
+            yield res1, it1
+        yield None, it1
+
+    def max_match(self, it):
+        max_its = []
+        for r in self._parser.match(it):
+            max_its = agregar_max_its(max_its, r)
+        yield it, 'ok'
 
 class PEOF(PToken):
     def __init__(self, **kwargs):

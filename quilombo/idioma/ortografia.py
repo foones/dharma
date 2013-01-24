@@ -16,6 +16,7 @@ def normalizar(texto):
         u'Ú': 'U',
         u'Ü': 'U',
         u'Ñ': '`N',
+        "\'": 's',   # Identificar ' con s
     }
     for original, cambiado in reemplazo.items():
         texto = texto.replace(original, cambiado)

@@ -337,7 +337,6 @@ class PDefinicionDeFuncionBasico(PSecuenciaConAccion):
         )
 
 class PDefinicionDeFuncion(PAlternativa):
-
     def __init__(self, **kwargs):
         PAlternativa.__init__(self,
             #PDefinicionDeFuncionBasico(),

@@ -68,11 +68,15 @@ def evaluar(termino, estado):
 def evaluar_bloque(terminos, estado, i=0):
     if i == len(terminos):
         yield TNada()
-    else:
-        ti = terminos[i]
-        for ri in evaluar(ti, estado):
-            if not ri.es_nada():
-                estado.pila.append(ri)
+        return
+
+    ti = terminos[i]
+    for ri in evaluar(ti, estado):
+        if not ri.es_nada():
+            estado.pila.append(ri)
+        if i + 1 < len(terminos):
             for rs in evaluar_bloque(terminos, estado, i + 1):
                 yield rs
+        else:
+            yield ri
 
