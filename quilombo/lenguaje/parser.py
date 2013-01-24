@@ -227,6 +227,19 @@ class POpcional(Parser):
             yield (res1,), it1
         yield (), it
 
+class PEOF(PToken):
+    def __init__(self, **kwargs):
+        PToken.__init__(self, tipo='EOF', valor='EOF', **kwargs)
+
+class PDebug(PClausuraConTerminadorConAccion):
+    def __init__(self, parser):
+       self._parser = parser 
+
+    def match(self, it):
+        for res1, it1 in self._parser.match(it):
+            print 'Debugging', unicode(res1), unicode(it1)
+            yield res1, it1
+
 class PPalabra(PToken):
     def __init__(self, pal, **kwargs):
         PToken.__init__(self, tipo='palabra', valor=pal, **kwargs)

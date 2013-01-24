@@ -4,7 +4,7 @@ from parser import (
     Parser, PToken, PSecuencia, PSecuenciaConAccion, PAlternativa,
     PClausuraConTerminador, PClausuraConTerminadorConAccion,
     PComplemento, PLookahead, POpcional, PValor, PPalabra,
-    PPalabras, PPuntuacion,
+    PPalabras, PPuntuacion, PEOF,
 )
 from idioma.gramatica import (
     ARTICULOS, PREPOSICIONES, VOCATIVOS, APELATIVOS, NUMEROS_CARDINALES,
@@ -256,7 +256,10 @@ class PSeparadorExpresiones(PAlternativa):
                 PAlternativa(
                     PPalabra(u'después'),
                     PSecuencia(
-                        PPalabras('a el final'),
+                        PAlternativa(
+                            PPalabras('a el final'),
+                            PPalabras('a el fin'),
+                        ),
                         POpcional(PPalabras('de todo')),
                     )
                 )
@@ -264,10 +267,10 @@ class PSeparadorExpresiones(PAlternativa):
             **kwargs
         )
 
-class PCuerpoDeFuncion(PSecuenciaConAccion):
+class PBloque(PSecuenciaConAccion):
     """El cuerpo de una función consta de expresiones separadas por ",".
        y terminadas por un terminador dado."""
-    def __init__(self, terminador_cuerpo_funcion=PPuntoFinal(), **kwargs):
+    def __init__(self, terminador_bloque=PPuntoFinal(), **kwargs):
 
         def accion(expresiones):
             return TBloque(expresiones)
@@ -277,7 +280,7 @@ class PCuerpoDeFuncion(PSecuenciaConAccion):
             PClausuraConTerminadorConAccion(accion,
                 PExpresion(),
                 separador=PSeparadorExpresiones(),
-                terminador=terminador_cuerpo_funcion,
+                terminador=terminador_bloque,
             ),
             **kwargs
         )
@@ -301,6 +304,7 @@ class PInvocacionVerboInfinitivo(PSecuenciaConAccion):
                                    PPuntoFinal(),
                                    PApelativo(),
                                    PSeparadorExpresiones(),
+                                   PEOF(),
                                )
                            )
             )
@@ -312,7 +316,7 @@ class PDefinicionDeFuncionBasico(PSecuenciaConAccion):
             <cabeza-definicion-de-funcion> <verbo> [<nominal>] [<prep> <nominal>]* es <cuerpo>
 
     """
-    def __init__(self, terminador_cuerpo_funcion=PPuntoFinal(), **kwargs):
+    def __init__(self, terminador_bloque=PPuntoFinal(), **kwargs):
 
         def accion(lista):
             def_, verbo, nominal, argumentos, cuerpo = lista
@@ -328,7 +332,7 @@ class PDefinicionDeFuncionBasico(PSecuenciaConAccion):
                 PSecuenciaConAccion(lambda xs: TParametro(*xs), PPreposicion(), PNominal()),
                 terminador=PPalabra('es'),
             ),
-            PCuerpoDeFuncion(terminador_cuerpo_funcion),
+            PBloque(terminador_bloque),
             **kwargs
         )
 
@@ -352,9 +356,14 @@ class PDefinicionDeFuncion(PAlternativa):
                 PVocativo(),
                 PComa(),
                 PDefinicionDeFuncionBasico(
-                    terminador_cuerpo_funcion=PApelativo(),
+                    terminador_bloque=PApelativo(),
                 ),
             ),
-            descripcion=u'declaración de una función usando "la posta".'
+            descripcion=u'declaración de una función usando "la posta".',
+            **kwargs
         )
+
+class PPrograma(PBloque):
+    def __init__(self, **kwargs):
+        PBloque.__init__(self, terminador_bloque=PEOF())
 

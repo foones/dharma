@@ -5,36 +5,6 @@ from comunes.utiles import QuilomboException, identar
 def unicode_list(xs, sep=u', '):
     return sep.join([unicode(x) for x in xs])
 
-class Entorno(object):
-    "Un entorno es una pila de 'costillas' que asocian nombres a valores."
-
-    def __init__(self):
-        self._entorno = [{}]
-
-    def push(self):
-        self._entorno.append({})
-
-    def pop(self):
-        self._entorno.pop(-1)
-
-    def declarar(self, nombre, valor=None):
-        if nombre in self._entorno[-1]:
-            raise QuilomboException('Epa: "%s" ya estaba declarada.' % (nombre,))
-        self._entorno[-1][nombre] = valor
-
-    def asignar(self, nombre, valor):
-        for costilla in reversed(self._entorno):
-            if nombre in costilla:
-                costilla[nombre] = valor
-                return valor
-        raise QuilomboException('Epa: "%s" no estaba ligada.' % (nombre,))
-
-    def valor(self, nombre):
-        for costilla in reversed(self._entorno):
-            if nombre in costilla:
-                return costilla[nombre]
-        raise QuilomboException('Epa: "%s" no estaba ligada.' % (nombre,))
-
 class Termino(object):
     "Cada instancia representa un término del lenguaje."
 
@@ -47,6 +17,24 @@ class Termino(object):
     #def __repr__(self):
     #    return unicode(self)
 
+    def es_nada(self): return False
+    def es_constante(self): return False
+    def es_variable(self): return False
+    def es_bloque(self): return False
+    def es_invocacion_verbo(self): return False
+    def es_definicion_de_funcion(self): return False
+
+class TerminoConstante(Termino):
+    def es_constante(self):
+        return True
+
+class TNada(TerminoConstante):
+    def __unicode__(self):
+        return 'nada'
+
+    def es_nada(self):
+        return True
+
 class TVariable(Termino):
     "Términos que representan variable."
 
@@ -56,6 +44,12 @@ class TVariable(Termino):
 
     def __unicode__(self):
         return u'TVariable(%s)' % (self._nombre,)
+
+    def es_variable(self):
+        return True
+
+    def nombre_variable(self):
+        return self._nombre
 
 class TParametro(Termino):
     "Argumentos de una función."
@@ -87,6 +81,9 @@ class TDefinicionDeFuncion(Termino):
             identar(unicode(self._cuerpo))
         )
 
+    def es_definicion_de_funcion(self):
+        return True
+
 class TInvocarVerbo(Termino):
     u"Aplicación de un verbo a parámetros."
 
@@ -101,13 +98,22 @@ class TInvocarVerbo(Termino):
             identar(unicode_list(self._argumentos, sep=u',\n'))
         )
 
+    def es_invocacion_verbo(self):
+        return True
+
 class TBloque(Termino):
     "Bloque."
 
-    def __init__(self, expresiones, *args, **kwargs):
+    def __init__(self, subterminos, *args, **kwargs):
         Termino.__init__(self, *args, **kwargs)
-        self._expresiones = expresiones
+        self._subterminos = subterminos
 
     def __unicode__(self):
-        return u'TBloque([\n%s\n])' % (identar(unicode_list(self._expresiones, sep=u',\n')),)
+        return u'TBloque([\n%s\n])' % (identar(unicode_list(self._subterminos, sep=u',\n')),)
+
+    def es_bloque(self):
+        return True
+
+    def subterminos(self):
+        return self._subterminos
 

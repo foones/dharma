@@ -4,14 +4,14 @@ import fractions
 
 from comunes.utiles import frac
 
-from lenguaje.terminos import Termino
+from lenguaje.terminos import TerminoConstante
 
-class TNumero(Termino):
+class TNumero(TerminoConstante):
     "Términos que representan números."
 
     def __init__(self, numero=None, pico=0, a=None, b=None, *args, **kwargs):
         "Representa un número inexacto con aritmética de intervalos."
-        Termino.__init__(self, *args, **kwargs)
+        TerminoConstante.__init__(self, *args, **kwargs)
 
         if numero is not None:
             assert isinstance(numero, int) or \
@@ -243,7 +243,6 @@ class TNumero(Termino):
             escrito = escrito.replace('un@ ', u'un ')
             escrito = escrito.replace('@', 'o')
         elif genero == 'f':
-            print 'antes', escrito
             escrito = escrito.replace('veintiun@ ', u'veintiún ')
             escrito = escrito.replace('un@ ', u'un ')
             escrito = escrito.replace('@', 'a')

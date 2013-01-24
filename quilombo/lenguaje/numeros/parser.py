@@ -89,6 +89,7 @@ class PEnteroMenorQueMil(PAlternativa):
         )
 
 class PEnteroMenorQueUnMillon(PAlternativa):
+
     def __init__(self, **kwargs):
 
         def accion_sumar_mil(lista):
@@ -121,7 +122,17 @@ class PEnteroMenorQueUnMillon(PAlternativa):
         )
 
 class PParteDecimal(PSecuenciaConAccion):
+    u"""Parser para la parte decimal de un número.
+        Algo de la forma:
+          'coma <x_1> ... <x_N>'
+        donde cada <x_i> es un entero < 1000. Por ejemplo:
+          coma uno uno dos cinco 
+          coma once veinticinco
+          coma uno ciento veinticinco
+          coma ciento doce cinco
+          etc."""
     def __init__(self):
+
         def sumar_digitos(xs):
             longitud = 0
             suma = 0
@@ -149,7 +160,36 @@ class PParteDecimal(PSecuenciaConAccion):
         )
 
 class PNumeroEspecificado(PSecuenciaConAccion):
-    "Analiza sintácticamente un entero seguido de un especificador."
+    u"""Analiza sintácticamente un entero seguido de un especificador.
+        Recibe un parser para el especificador, y una función 'envolver' binaria.
+        El parser es lo que se usa para reconocer la unidad de medida.
+
+        Por ejemplo, si se están cuantificando veces, la unidad de
+        medida podría estar dada por el parser:
+
+            PAlternativa(PPalabra('vez'), PPalabra('veces'))
+
+        La función envolver recibe como primer parámetro el número reconocido
+        por este analizador sintáctico, y como segundo parámetro
+        el resultado del parser correspondiente a la unidad de medida.
+
+        Por ejemplo, para medir distancias, se podría hacer algo asi:
+
+        PNumeroEspecificado(
+            parser_especificador_unidad=PAlternativa(
+                PValor(1, PAlternativa(PPalabra('metro'), PPalabra('metros'))),
+                PValor(1000, PAlternativa(PPalabra(u'kilómetro'), PPalabra(u'kilómetros'))),
+            ),
+            envolver=lambda cantidad, unidad: cantidad * unidad
+        )
+
+        Esto reconoce distancias tales como:
+            un kilómetro
+            dos kilómetros y medio
+            un millón cuatrocientos mil metros
+            ciento veintipico de kilómetros
+            etc.
+    """
 
     def __init__(self, parser_especificador_unidad, envolver, **kwargs):
 
