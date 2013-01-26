@@ -21,7 +21,7 @@ class PEnteroEnDiccionario(Parser):
         self._diccionario = diccionario
         Parser.__init__(self, **kwargs)
 
-    def match(self, it):
+    def _match(self, it):
         tok = it.token_actual()
         valor = normalizar(tok.valor) 
         if valor in self._diccionario:
@@ -32,7 +32,7 @@ class PEnteroEnDiccionario(Parser):
                 pico = 0
             yield TNumero(num, tokens=[tok], pico=pico), it.avanzar()
 
-    def max_match(self, it):
+    def _max_match(self, it):
         for res1, it1 in self.match(it):
             yield it1, 'ok'
         yield it, self
@@ -51,7 +51,7 @@ class PEnteroMenorQueCien(PAlternativa):
         PAlternativa.__init__(self,
             # 0..9
             PSecuenciaConAccion(accion_sumar_par,
-                PEnteroEnDiccionario(NUMEROS_CARDINALES['unidades']),
+                PEnteroEnDiccionario(NUMEROS_CARDINALES['unidades'], descripcion='una unidad (ej. `uno\', `dos\', `cinco\')'),
                 POpcional(PValor(TNumero(0, pico=1), PPalabras('y pico'))),
             ),
             # 10..19

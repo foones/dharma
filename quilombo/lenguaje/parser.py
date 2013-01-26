@@ -22,11 +22,13 @@ class Parser(object):
        un generador de matches.
 
        Además, para reporte de errores, las subclases implementan
-       self.max_match(it) que recibe un generador de tokens y genera
+       self._max_match(it) que recibe un generador de tokens y genera
        los matches que consumen la mayor cantidad de la entrada posible."""
 
     def __init__(self, descripcion=None):
         self._descripcion = descripcion
+        self._match_tabla = {}
+        self._max_match_tabla = {}
 
     def descripcion_completa(self):
         if self._descripcion is not None:
@@ -36,6 +38,34 @@ class Parser(object):
 
     def descripcion(self):
         return unicode(self)
+
+    def match(self, it):
+        """Memorización del método self._match implementado por cada
+           subclase."""
+        key = it.valor_hash()
+        if key in self._match_tabla:
+            for r in self._match_tabla[key]:
+                yield r
+        else:
+            rs = []
+            for r in self._match(it):
+                yield r
+                rs.append(r)
+            self._match_tabla[key] = rs
+
+    def max_match(self, it):
+        """Memorización del método self._max_match implementado por cada
+           subclase."""
+        key = it.valor_hash()
+        if key in self._max_match_tabla:
+            for r in self._max_match_tabla[key]:
+                yield r
+        else:
+            rs = []
+            for r in self._max_match(it):
+                yield r
+                rs.append(r)
+            self._max_match_tabla[key] = rs
 
     def mensaje_de_error(self, it):
         msj = u'Tu programa es fruta.'
@@ -52,7 +82,11 @@ class Parser(object):
             it2 = _it
 
         if fallos != []:
-            msj += u'\nEsperaba:\n%s' % (identar('\n'.join(fallos)),)
+            if len(fallos) == 1:
+                comentario = ''
+            else:
+                comentario = ' alguna de las siguientes cosas'
+            msj += u'\nEsperaba%s:\n%s' % (comentario, identar('\n'.join(fallos)),)
             msj += u'\n---\nCerca de:\n\n%s\n' % (identar(it2.contexto()),)
         return msj
 
@@ -83,7 +117,7 @@ class PToken(Parser):
         self._resultado = resultado
         self._func_resultado = func_resultado
 
-    def match(self, it):
+    def _match(self, it):
         ok = True
         tok = it.token_actual()
 
@@ -103,7 +137,7 @@ class PToken(Parser):
         if ok:
             yield resultado, it.avanzar()
 
-    def max_match(self, it):
+    def _max_match(self, it):
         for _, it2 in self.match(it):
             yield it2, 'ok'
         yield it, self
@@ -118,9 +152,11 @@ class PToken(Parser):
 
 def max_match_wrapper(parser, it, subparsers):
     res = []
+    i = -1
     for sub in subparsers:
+        i += 1
         if callable(sub):
-            sub = sub()
+            sub = subparsers[i] = sub()
         for r in sub.max_match(it):
             res.append(r)
 
@@ -146,12 +182,15 @@ class PValor(Parser):
         self._valor = valor
         self._parser = parser
 
-    def match(self, it):
+    def _match(self, it):
         for res1, it1 in self._parser.match(it):
             yield self._valor, it1
 
-    def max_match(self, it):
+    def _max_match(self, it):
         return max_match_wrapper(self, it, [self._parser])
+
+    def descripcion(self):
+        self._parser.descripcion()
 
 class PLookahead(Parser):
     u"Se fija que la entrada coincida con lo esperado sin consumirla."
@@ -160,11 +199,11 @@ class PLookahead(Parser):
         Parser.__init__(self, *args, **kwargs)
         self._parser = parser
 
-    def match(self, it):
+    def _match(self, it):
         for res1, it1 in self._parser.match(it):
             yield res1, it
 
-    def max_match(self, it):
+    def _max_match(self, it):
         for it1, ok_fail1 in max_match_wrapper(self, it, [self._parser]):
             if ok_fail1 == 'ok':
                 yield it, 'ok'
@@ -178,7 +217,7 @@ class PComplemento(Parser):
         Parser.__init__(self, *args, **kwargs)
         self._parser = parser
 
-    def match(self, it):
+    def _match(self, it):
         exito = False
         for res1, it1 in self._parser.match(it):
             exito = True
@@ -186,7 +225,7 @@ class PComplemento(Parser):
         if not exito:
             yield None, it
 
-    def max_match(self, it):
+    def _max_match(self, it):
         for it1, ok_fail1 in self._parser.max_match(it):
             if ok_fail1 == 'ok':
                 yield it, self
@@ -198,11 +237,14 @@ class PAlternativa(Parser):
 
     def __init__(self, *parsers, **kwargs):
         Parser.__init__(self, **kwargs)
-        self._parsers = parsers
+        self._parsers = list(parsers)
 
-    def match(self, it):
+    def _match(self, it):
+        i = -1
         for p in self._parsers:
-            if callable(p): p = p()
+            i += 1
+            if callable(p):
+                p = self._parsers[i] = p()
             for r in p.match(it):
                 yield r
 
@@ -215,9 +257,9 @@ class PAlternativa(Parser):
             d = p.descripcion()
             if d is not None:
                 ds.append(d)
-        return 'alguna de estas cosas:\n' + identar('\n'.join(ds))
+        return 'alguna de las siguientes cosas:\n' + identar('\n'.join(ds))
 
-    def max_match(self, it):
+    def _max_match(self, it):
         return max_match_wrapper(self, it, self._parsers)
 
 class PSecuencia(Parser):
@@ -227,7 +269,7 @@ class PSecuencia(Parser):
         Parser.__init__(self, **kwargs)
         self._parsers = parsers
 
-    def match(self, it):
+    def _match(self, it):
         if self._parsers == ():
             yield [], it
         else:
@@ -237,7 +279,7 @@ class PSecuencia(Parser):
                 for res2, it2 in ps.match(it1):
                     yield [res1] + res2, it2
 
-    def max_match(self, it):
+    def _max_match(self, it):
         if self._parsers == ():
             yield it, 'ok'
         else:
@@ -252,7 +294,7 @@ class PSecuencia(Parser):
 
     def descripcion(self):
         ds = [d for p in self._parsers for d in [p.descripcion()] if d is not None]
-        return 'una secuencia de estas cosas:\n' + identar('\n'.join(ds))
+        return 'una secuencia de las siguientes cosas:\n' + identar('\n'.join(ds))
 
 class PSecuenciaConAccion(PSecuencia):
 
@@ -260,8 +302,8 @@ class PSecuenciaConAccion(PSecuencia):
         PSecuencia.__init__(self, *parsers, **kwargs)
         self._accion = accion
 
-    def match(self, it):
-        for res1, it1 in PSecuencia.match(self, it):
+    def _match(self, it):
+        for res1, it1 in PSecuencia._match(self, it):
             yield self._accion(res1), it1
 
 class PClausuraConTerminador(Parser):
@@ -272,7 +314,7 @@ class PClausuraConTerminador(Parser):
         self._terminador = terminador
         self._separador = separador
 
-    def match(self, it):
+    def _match(self, it):
         if self._separador is None:
             for r in self._match_sin_separador(it): yield r
         else:
@@ -305,7 +347,7 @@ class PClausuraConTerminador(Parser):
                 for res3, it3 in self._match_con_separador(it2):
                     yield [res1] + res3, it3
 
-    def max_match(self, it):
+    def _max_match(self, it):
         max_its = []
         if self._separador is None:
             for r in self._max_match_sin_separador(it):
@@ -349,14 +391,23 @@ class PClausuraConTerminador(Parser):
             else:
                 yield it1, ok_fail1
 
+    def descripcion(self):
+        msj = 'una secuencia de cosas de la forma:\n' + identar(self._parser.descripcion())
+        if self._separador is None:
+            msj += '\n'
+        else:
+            msj += '\nseparadas por:\n' + identar(self._separador.descripcion()) + '\ny '
+        msj += 'terminadas por:\n' + identar(self._terminador.descripcion())
+        return msj
+
 class PClausuraConTerminadorConAccion(PClausuraConTerminador):
 
     def __init__(self, accion, *args, **kwargs):
         PClausuraConTerminador.__init__(self, *args, **kwargs)
         self._accion = accion
 
-    def match(self, it):
-        for res1, it1 in PClausuraConTerminador.match(self, it):
+    def _match(self, it):
+        for res1, it1 in PClausuraConTerminador._match(self, it):
             yield self._accion(res1), it1
 
 class POpcional(Parser):
@@ -365,25 +416,32 @@ class POpcional(Parser):
         Parser.__init__(self, **kwargs)
         self._parser = parser
 
-    def match(self, it):
+    def _match(self, it):
         for res1, it1 in self._parser.match(it):
             yield (res1,), it1
         yield (), it
 
-    def max_match(self, it):
+    def _max_match(self, it):
         for it1, ok_fail1 in self._parser.max_match(it):
             yield it1, ok_fail1
         yield it, 'ok'
 
+    def descripcion(self):
+        return u'opcionalmente: %s' % (self._parser.descripcion(),)
+
 class PEOF(PToken):
+
     def __init__(self, **kwargs):
         PToken.__init__(self, tipo='EOF', valor='EOF', **kwargs)
+
+    def descripcion(self):
+        return 'el final de la entrada'
 
 class PDebug(PClausuraConTerminadorConAccion):
     def __init__(self, parser):
        self._parser = parser 
 
-    def match(self, it):
+    def _match(self, it):
         for res1, it1 in self._parser.match(it):
             sys.stderr.write((u'Debugging %s %s' % (unicode(res1), unicode(it1))).encode('utf-8'))
             yield res1, it1

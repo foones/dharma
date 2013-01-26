@@ -144,6 +144,9 @@ class IteradorTokens(object):
     def posicion(self):
         return self._pos
 
+    def valor_hash(self):
+        return id(self._tokens), self._pos
+
     def __cmp__(self, otro):
         assert False
 

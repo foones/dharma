@@ -225,6 +225,10 @@ class PNominal(PAlternativa):
             )
         )
 
+    def descripcion(self):
+        return u'una construcción nominal ' + \
+               u'(ej. frase nominal común como `el mazo\' o nombre propio como `Juan Iberra\')'
+
 class PCabezaDefinicionDeFuncion(PAlternativa):
 
     def __init__(self, **kwargs):
@@ -256,6 +260,9 @@ class PExpresion(PAlternativa):
             **kwargs
         )
 
+    def descripcion(self):
+        return u'una expresión'
+
 class PComa(PPuntuacion):
     def __init__(self, **kwargs):
         PPuntuacion.__init__(self, ',', **kwargs)
@@ -286,6 +293,9 @@ class PSeparadorExpresiones(PAlternativa):
             **kwargs
         )
 
+    def descripcion(self):
+        return u'un separador de expresiones (ej. `,\', `después\', `y al final\')'
+
 class PBloque(PSecuenciaConAccion):
     """El cuerpo de una función consta de expresiones separadas por ",".
        y terminadas por un terminador dado."""
@@ -303,6 +313,9 @@ class PBloque(PSecuenciaConAccion):
             ),
             **kwargs
         )
+
+    def descripcion(self):
+        return u'un bloque de expresiones'
 
 class PInvocacionVerboInfinitivo(PSecuenciaConAccion):
     def __init__(self):
