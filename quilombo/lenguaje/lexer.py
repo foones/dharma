@@ -49,7 +49,7 @@ class Token(object):
         self._pos_final = pos_final
 
     def __unicode__(self):
-        return u'Token(%s, %s, %s, %s)' % (
+        return u'Token(%s, %s, %s --- %s)' % (
                     self.tipo,
                     self.valor,
                     self._pos_inicial,

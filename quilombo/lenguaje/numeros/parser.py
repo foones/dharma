@@ -33,11 +33,9 @@ class PEnteroEnDiccionario(Parser):
             yield TNumero(num, tokens=[tok], pico=pico), it.avanzar()
 
     def max_match(self, it):
-        its_max = []
         for res1, it1 in self.match(it):
-            agregar_max_its(its_max, (it1, 'ok'))
-        agregar_max_its(its_max, (it, self))
-        for r in its_max: yield r
+            yield it1, 'ok'
+        yield it, self
 
 def accion_sumar_par(lista):
     cabeza, resto = lista

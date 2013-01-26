@@ -57,10 +57,10 @@ def evaluar(termino, estado):
         for res in evaluar_bloque(termino.subterminos(), estado):
             yield res
     elif termino.es_definicion_de_funcion():
-        print(u'TODO defino %s' % (termino,))
+        print(u'TODO defino %s' % (termino,)).encode('utf-8')
         yield TNada()
     elif termino.es_invocacion_verbo():
-        print(u'TODO invoco a %s' % (termino,))
+        print(u'TODO invoco a %s' % (termino,)).encode('utf-8')
         yield TNada()
     else:
         assert False

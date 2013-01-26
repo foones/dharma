@@ -127,20 +127,36 @@ class PAlternativaPalabras(PAlternativa):
         )
 
 class PVocativo(PAlternativaPalabras):
+
     def __init__(self, **kwargs):
-        PAlternativaPalabras.__init__(self, VOCATIVOS, descripcion='un vocativo (ej. `che\', `cuchame\')', **kwargs)
+        PAlternativaPalabras.__init__(self, VOCATIVOS, **kwargs)
+
+    def descripcion(self):
+        return u'un vocativo (ej. `che\', `cuchame\')'
 
 class PApelativo(PAlternativaPalabras):
+
     def __init__(self, **kwargs):
-        PAlternativaPalabras.__init__(self, APELATIVOS, descripcion='un apelativo (ej. `boludo\', `hermano\')', **kwargs)
+        PAlternativaPalabras.__init__(self, APELATIVOS, **kwargs)
+
+    def descripcion(self):
+        return u'un apelativo (ej. `boludo\', `hermano\')'
 
 class PArticulo(PAlternativaPalabras):
+
     def __init__(self, **kwargs):
-        PAlternativaPalabras.__init__(self, ARTICULOS, descripcion=u'un artículo (ej. `la\', `unos\')', **kwargs)
+        PAlternativaPalabras.__init__(self, ARTICULOS, **kwargs)
+
+    def descripcion(self):
+        return u'un artículo (ej. `la\', `unos\')'
 
 class PPreposicion(PAlternativaPalabras):
+
     def __init__(self, **kwargs):
-        PAlternativaPalabras.__init__(self, PREPOSICIONES, descripcion=u'una preposición (ej. `de\', `contra\')', **kwargs)
+        PAlternativaPalabras.__init__(self, PREPOSICIONES, **kwargs)
+
+    def descripcion(self):
+        return u'una preposición (ej. `de\', `contra\')'
 
 class PSustantivoComun(PToken):
 

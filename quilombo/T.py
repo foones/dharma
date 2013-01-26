@@ -20,41 +20,29 @@ def main():
         print('----tokenizacion----')
         print(unicode(iterador_tokens))
 
-#       analizador = PSecuencia(
-#           PPalabra('test'),
-#           PComplemento(
-#               PAlternativa(
-#                   PSecuencia(
-#                       PPalabra('buen'),
-#                       PPalabra('dia'),
-#                       PPalabra('putos'),
-#                   ),
-#                   PSecuencia(
-#                       PPalabra('hola'),
-#                       PPalabra('mundo')
-#                   )
-#               )
-#           ),
-#       )
-
         analizador = PClausuraConTerminador(
-            PPalabra('a'),
-            terminador=PPalabra('b'),
-            separador=POpcional(PPalabra('c')),
+            PClausuraConTerminador(
+                PPalabra('a'),
+                terminador=PPalabra('b'),
+                separador=PPalabra('c'),
+            ),
+            terminador=PPalabra('z'),
+            separador=PPalabra('c'),
         )
 
         nmatches = 0
-        matches = analizador.match(iterador_tokens)
-        MS = analizador.max_match(iterador_tokens)
-        for it, prs in MS:
-            print '--max matches--'
-            print unicode(it) 
-            print prs
-        #for match in matches:
-        #    nmatches += 1
-        #    programa, iterador_tokens2 = match
-        #    print('----arbol sintactico----')
-        #    print(unicode(programa))
+        for match in analizador.match(iterador_tokens):
+            nmatches += 1
+            programa, iterador_tokens2 = match
+            print('----arbol sintactico----')
+            print(unicode(programa))
+
+        if nmatches == 0:
+            MS = analizador.max_match(iterador_tokens)
+            #for it, prs in MS:
+            #    print '--max matches--'
+            #    print 'PRS', prs
+            print analizador.mensaje_de_error(iterador_tokens)
 
         #if nmatches == 0:
         #    raise QuilomboException(analizador.mensaje_de_error(iterador_tokens))

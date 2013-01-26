@@ -17,8 +17,8 @@ def main():
     try:
         contenido = leer_archivo(nombre_archivo)
         iterador_tokens = tokenizar(contenido, nombre_archivo=nombre_archivo)
-        print('----tokenizacion----')
-        print(unicode(iterador_tokens))
+        print(u'----tokenizacion----').encode('utf-8')
+        print(unicode(iterador_tokens)).encode('utf-8')
 
         analizador = PPrograma()
 
@@ -27,17 +27,20 @@ def main():
         for match in matches:
             nmatches += 1
             programa, iterador_tokens2 = match
-            print('----arbol sintactico----')
-            print(unicode(programa))
-            print('----resultado de evaluar----')
+            print(u'----arbol sintactico----').encode('utf-8')
+            print(unicode(programa)).encode('utf-8')
+            print(u'----resultado de evaluar----').encode('utf-8')
             for resultado in evaluar(programa, estado_inicial()):
-                print(unicode(resultado))
+                print(unicode(resultado)).encode('utf-8')
 
         if nmatches == 0:
+            #for it, res in analizador.max_match(iterador_tokens):
+            #    print it.posicion(), res
             raise QuilomboException(analizador.mensaje_de_error(iterador_tokens))
 
     except QuilomboException as e:
-        print(unicode(e))
+        print(80 * u'-').encode('utf-8')
+        print(unicode(e)).encode('utf-8')
 
 if __name__ == '__main__':
     main()
