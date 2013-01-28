@@ -2,9 +2,8 @@
 
 from comunes.utiles import frac
 
-from idioma.ortografia import normalizar
-from idioma.gramatica import NUMEROS_CARDINALES
-
+from lenguaje.ortografia import normalizar
+from lenguaje.gramatica import NUMEROS_CARDINALES
 from lenguaje.parser import (
     Parser, PSecuencia, PSecuenciaConAccion, PAlternativa,
     PClausuraConTerminadorConAccion, PComplemento, PLookahead,

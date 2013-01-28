@@ -5,7 +5,7 @@ u"""Herramientas básicas para construir parsers combinatorios."""
 import sys
 
 from comunes.utiles import QuilomboException, identar
-from idioma.ortografia import normalizar
+from lenguaje.ortografia import normalizar
 
 def agregar_max_its(max_its, key):
     if max_its == [] or max_its[0][0].posicion() < key[0].posicion():
@@ -241,11 +241,13 @@ class PAlternativa(Parser):
 
     def _match(self, it):
         i = -1
-        for p in self._parsers:
+        for parser in self._parsers:
             i += 1
-            if callable(p):
-                p = self._parsers[i] = p()
-            for r in p.match(it):
+            if callable(parser):
+                parser = parser()
+                self._parsers[i] = parser
+
+            for r in parser.match(it):
                 yield r
 
     def descripcion(self):

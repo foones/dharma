@@ -6,7 +6,7 @@ from parser import (
     PComplemento, PLookahead, POpcional, PValor, PPalabra,
     PPalabras, PPuntuacion, PEOF,
 )
-from idioma.gramatica import (
+from lenguaje.gramatica import (
     ARTICULOS, PREPOSICIONES, VOCATIVOS, APELATIVOS, NUMEROS_CARDINALES,
     PALABRAS_CLAVE,
 )
@@ -250,19 +250,6 @@ class PVariable(PNominal):
             **kwargs
         )
 
-class PExpresion(PAlternativa):
-    def __init__(self, **kwargs):
-        PAlternativa.__init__(self,
-            PVariable(),
-            PPlata(),
-            lambda: PInvocacionVerboInfinitivo(),
-            lambda: PDefinicionDeFuncion(),
-            **kwargs
-        )
-
-    def descripcion(self):
-        return u'una expresión'
-
 class PComa(PPuntuacion):
     def __init__(self, **kwargs):
         PPuntuacion.__init__(self, ',', **kwargs)
@@ -371,18 +358,6 @@ class PDefinicionDeFuncionBasico(PSecuenciaConAccion):
 class PDefinicionDeFuncion(PAlternativa):
     def __init__(self, **kwargs):
         PAlternativa.__init__(self,
-            #PDefinicionDeFuncionBasico(),
-            #PSecuenciaConAccion(lambda xs: xs[3],
-            #    POpcional(
-            #        PSecuencia(
-            #            PVocativo(),
-            #            POpcional(PToken(tipo='puntuacion', valor=','))
-            #        )
-            #    ),
-            #    PApelativo(),
-            #    PToken(tipo='puntuacion', valor=','),
-            #    PDefinicionDeFuncionBasico(),
-            #),
             PSecuenciaConAccion(lambda xs: xs[2],
                 PVocativo(),
                 PComa(),
@@ -390,9 +365,33 @@ class PDefinicionDeFuncion(PAlternativa):
                     terminador_bloque=PApelativo(),
                 ),
             ),
-            descripcion=u'una declaración de función, usando `la posta\'',
+            descripcion=u'una declaración de función, usando `che, la posta para ... es ... boludo\'',
             **kwargs
         )
+
+class PDefinicionDeUnidad(PSecuenciaConAccion):
+    def __init__(self, **kwargs):
+        PSecuenciaConAccion.__init__(self, accion,
+            PVocativo(), PApelativo(),
+            PNominal(articulo_obligatorio=True),
+            PPalabras('es una unidad'),
+        )
+
+class PExpresion(PAlternativa):
+    def __init__(self, **kwargs):
+        PAlternativa.__init__(self,
+            PVariable(),
+            PPlata(),
+            lambda: PInvocacionVerboInfinitivo(),
+            lambda: PDefinicionDeFuncion(),
+            # unidades
+            lambda: PDefinicionDeUnidad(),
+            **kwargs
+        )
+
+    def descripcion(self):
+        return u'una expresión'
+
 
 class PPrograma(PBloque):
     def __init__(self, **kwargs):

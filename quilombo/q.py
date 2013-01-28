@@ -17,8 +17,8 @@ def main():
     try:
         contenido = leer_archivo(nombre_archivo)
         iterador_tokens = tokenizar(contenido, nombre_archivo=nombre_archivo)
-        print(u'----tokenizacion----').encode('utf-8')
-        print(unicode(iterador_tokens)).encode('utf-8')
+        #print(u'----tokenizacion----').encode('utf-8')
+        #print(unicode(iterador_tokens)).encode('utf-8')
 
         analizador = PPrograma()
 
@@ -32,6 +32,7 @@ def main():
             print(u'----resultado de evaluar----').encode('utf-8')
             for resultado in evaluar(programa, estado_inicial()):
                 print(unicode(resultado)).encode('utf-8')
+            break
 
         if nmatches == 0:
             #for it, res in analizador.max_match(iterador_tokens):
