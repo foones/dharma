@@ -412,6 +412,53 @@ class PClausuraConTerminadorConAccion(PClausuraConTerminador):
         for res1, it1 in PClausuraConTerminador._match(self, it):
             yield self._accion(res1), it1
 
+class PClausura1ConTerminadorConAccion(PSecuenciaConAccion):
+    def __init__(self, accion, parser, terminador, separador=None, **kwargs):
+        if separador is None:
+            def accion2(lista):
+                return accion([lista[0]] + lista[1])
+            PSecuenciaConAccion.__init__(self, accion2,
+                parser,
+                PClausuraConTerminador(
+                    parser,
+                    terminador=terminador,
+                    separador=separador,
+                ),
+                **kwargs
+            )
+        else:
+            def accion2(lista):
+                if lista[1] == ():
+                    return accion([lista[0]])
+                else:
+                    return accion([lista[0]] + lista[1][0])
+            PSecuenciaConAccion.__init__(self, accion2,
+                parser,
+                PAlternativa(
+                    PValor((), terminador),
+                    PSecuenciaConAccion(lambda xs: (xs[1],),
+                        separador,
+                        PClausuraConTerminador(
+                            parser,
+                            terminador=terminador,
+                            separador=separador,
+                        )
+                    )
+                ),
+                **kwargs
+            )
+
+class PClausura1ConTerminador(PClausura1ConTerminadorConAccion):
+
+    def __init__(self, parser, terminador, separador=None, **kwargs):
+        PClausura1ConTerminadorConAccion.__init__(self,
+            lambda x: x,
+            parser,
+            terminador=terminador,
+            separador=separador,
+            **kwargs
+        )
+
 class POpcional(Parser):
 
     def __init__(self, parser, **kwargs):

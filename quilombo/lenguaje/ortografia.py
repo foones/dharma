@@ -22,3 +22,12 @@ def normalizar(texto):
         texto = texto.replace(original, cambiado)
     return texto
 
+def normalizar_sustantivo_comun(texto):
+    if texto.endswith('ces'):
+        texto = texto[:-3] + 'z' 
+    elif texto.endswith('es'):
+        texto = texto[:-2]
+    elif texto.endswith('s'):
+        texto = texto[:-1]
+    return texto
+

@@ -17,20 +17,20 @@ class Termino(object):
     #def __repr__(self):
     #    return unicode(self)
 
-    def es_nada(self): return False
-    def es_constante(self): return False
-    def es_variable(self): return False
-    def es_bloque(self): return False
-    def es_invocacion_verbo(self): return False
-    def es_definicion_de_funcion(self): return False
+    def es_nada(self):
+        return False
 
 class TerminoConstante(Termino):
-    def es_constante(self):
-        return True
+
+    def evaluar_en(self, estado):
+        return self
 
 class TNada(TerminoConstante):
     def __unicode__(self):
         return 'nada'
+
+    def evaluar_en(self, estado):
+        return self
 
     def es_nada(self):
         return True
@@ -45,11 +45,8 @@ class TVariable(Termino):
     def __unicode__(self):
         return u'TVariable(%s)' % (self._nombre,)
 
-    def es_variable(self):
-        return True
-
-    def nombre_variable(self):
-        return self._nombre
+    def evaluar_en(self, estado):
+        yield estado.entorno.valor(self._nombre)
 
 class TParametro(Termino):
     "Argumentos de una función."
@@ -81,8 +78,10 @@ class TDefinicionDeFuncion(Termino):
             identar(unicode(self._cuerpo))
         )
 
-    def es_definicion_de_funcion(self):
-        return True
+    def evaluar_en(self, estado):
+        # TODO
+        print unicode(self)
+        yield TNada()
 
 class TInvocarVerbo(Termino):
     u"Aplicación de un verbo a parámetros."
@@ -98,8 +97,10 @@ class TInvocarVerbo(Termino):
             identar(unicode_list(self._argumentos, sep=u',\n'))
         )
 
-    def es_invocacion_verbo(self):
-        return True
+    def evaluar_en(self, estado):
+        # TODO
+        print unicode(self)
+        yield TNada()
 
 class TBloque(Termino):
     "Bloque."
@@ -111,9 +112,19 @@ class TBloque(Termino):
     def __unicode__(self):
         return u'TBloque([\n%s\n])' % (identar(unicode_list(self._subterminos, sep=u',\n')),)
 
-    def es_bloque(self):
-        return True
+    def evaluar_en(self, estado, i=0):
+        terminos = self._subterminos
+        if i == len(terminos):
+            yield TNada()
+            return
 
-    def subterminos(self):
-        return self._subterminos
+        ti = terminos[i]
+        for ri in ti.evaluar_en(estado):
+            if not ri.es_nada():
+                estado.pila.append(ri)
+            if i + 1 < len(terminos):
+                for rs in self.evaluar_en(estado, i + 1):
+                    yield rs
+            else:
+                yield ri
 
