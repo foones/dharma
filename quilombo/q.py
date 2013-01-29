@@ -30,7 +30,9 @@ def main():
             print(u'----arbol sintactico----').encode('utf-8')
             print(unicode(programa)).encode('utf-8')
             print(u'----resultado de evaluar----').encode('utf-8')
-            for resultado in evaluar(programa, estado_inicial()):
+            estado = estado_inicial()
+            for resultado in evaluar(programa, estado):
+                print 'ESTADO', unicode(estado).encode('utf-8')
                 print(unicode(resultado)).encode('utf-8')
             break
 

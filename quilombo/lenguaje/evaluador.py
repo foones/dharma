@@ -1,6 +1,6 @@
 # coding:utf-8
 
-from comunes.utiles import QuilomboException
+from comunes.utiles import QuilomboException, identar
 from lenguaje.terminos import Termino, TNada
 
 class Entorno(object):
@@ -33,6 +33,15 @@ class Entorno(object):
                 return costilla[nombre]
         raise QuilomboException('Epa: "%s" no estaba ligada.' % (nombre,))
 
+    def __unicode__(self):
+        res = []
+        for costilla in self._entorno:
+            res_costilla = []
+            for k, v in sorted(costilla.items()):
+                res_costilla.append(u'%s -> %s' % (k, v))
+            res.append(u'{%s}' % (', '.join(res_costilla),))
+        return u'Entorno([\n%s\n])' % (identar(',\n'.join(res),))
+
 class Estado(object):
 
     def __init__(self):
@@ -45,6 +54,12 @@ class Estado(object):
     def pop(self):
         return self.pila.pop(-1)
 
+    def __unicode__(self):
+        return u'Estado(\n%s,\n%s\n)' % (
+            identar(unicode(self.entorno)),
+            identar('Pila([' + ', '.join(map(unicode, self.pila)) + '])')
+        )
+
 def estado_inicial():
     return Estado()
 
@@ -53,34 +68,4 @@ def evaluar(termino, estado):
         raise QuilomboException(u'%s no es un término' % (termino,))
     for r in termino.evaluar_en(estado):
         yield r
-#    if termino.es_constante():
-#        yield termino
-#    elif termino.es_variable():
-#        yield estado.entorno.valor(termino.nombre_variable())
-#    elif termino.es_bloque():
-#        for res in evaluar_bloque(termino.subterminos(), estado):
-#            yield res
-#    elif termino.es_definicion_de_funcion():
-#        print(u'TODO defino %s' % (termino,)).encode('utf-8')
-#        yield TNada()
-#    elif termino.es_invocacion_verbo():
-#        print(u'TODO invoco a %s' % (termino,)).encode('utf-8')
-#        yield TNada()
-#    else:
-#        assert False
-#
-#def evaluar_bloque(terminos, estado, i=0):
-#    if i == len(terminos):
-#        yield TNada()
-#        return
-#
-#    ti = terminos[i]
-#    for ri in evaluar(ti, estado):
-#        if not ri.es_nada():
-#            estado.pila.append(ri)
-#        if i + 1 < len(terminos):
-#            for rs in evaluar_bloque(terminos, estado, i + 1):
-#                yield rs
-#        else:
-#            yield ri
 

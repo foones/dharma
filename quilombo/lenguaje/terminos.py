@@ -23,14 +23,14 @@ class Termino(object):
 class TerminoConstante(Termino):
 
     def evaluar_en(self, estado):
-        return self
+        yield self
 
 class TNada(TerminoConstante):
     def __unicode__(self):
         return 'nada'
 
     def evaluar_en(self, estado):
-        return self
+        yield self
 
     def es_nada(self):
         return True

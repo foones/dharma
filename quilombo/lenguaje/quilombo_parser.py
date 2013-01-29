@@ -17,23 +17,13 @@ from lenguaje.terminos import (
 )
 from lenguaje.basico.parser import (
     PVerboNuevoInfinitivo, PVocativo, PApelativo, PComa, PPuntoFinal,
-    PNominal, PUnidadMonetaria, PPreposicion,
-)
-from lenguaje.numeros.parser import (
-    PEnteroEnDiccionario, PNumeroEspecificado
+    PNominal, PPreposicion,
 )
 from lenguaje.dimensiones.parser import (
-    PDefinicionDeDimension,
+    PDefinicionDeDimension, PDefinicionDeUnidadBasica, PCantidad,
 )
 
 VERBOS_RESERVADOS = ['agarrar']
-
-class PPlata(PNumeroEspecificado):
-    def __init__(self):
-        PNumeroEspecificado.__init__(self,
-            parser_especificador_unidad=PUnidadMonetaria(),
-            envolver=lambda valor, unidad: valor * unidad
-        )
 
 class PCabezaDefinicionDeFuncion(PAlternativa):
 
@@ -171,12 +161,13 @@ class PExpresion(PAlternativa):
     def __init__(self, **kwargs):
         PAlternativa.__init__(self,
             PVariable(),
-            PPlata(),
             lambda: PInvocacionVerboInfinitivo(),
             lambda: PDefinicionDeFuncion(),
 
             # dimensiones
             lambda: PDefinicionDeDimension(),
+            lambda: PDefinicionDeUnidadBasica(parser_dimension=PExpresion()),
+            PCantidad(),
 
             **kwargs
         )

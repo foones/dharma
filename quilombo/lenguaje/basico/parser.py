@@ -94,18 +94,6 @@ class PVerboNuevoInfinitivo(PSecuenciaConAccion):
             **kwargs
         )
 
-class PUnidadMonetaria(PAlternativa):
-    def __init__(self):
-        PAlternativa.__init__(self,
-            PEnteroEnDiccionario(NUMEROS_CARDINALES['unidad-monetaria']),
-            PValor(10 ** 6,
-                PAlternativa(
-                    PPalabras('palo verde'),
-                    PPalabras('palos verdes')
-                )
-            ),
-        )
-
 class PAlternativaPalabras(PAlternativa):
 
     def __init__(self, palabras, **kwargs):
