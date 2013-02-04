@@ -1,5 +1,5 @@
 # vim:filetype=vhdl:
 
-component Not a b
+component Not a !b
   Nand a=a b=a c=b
 end

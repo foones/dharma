@@ -17,9 +17,16 @@ def read_component_defs_from_file(fn):
         if l.startswith('component '):
             l = l.split(' ')
             name = l[1]
-            params = l[2:] if len(l) > 2 else []
             or_die(name not in component_defs, 'component "%s" already defined' % (name,))
-            current_component_def = ComponentDefinition(name, params)
+            ports = l[2:] if len(l) > 2 else []
+            input_ports = []
+            output_ports = []
+            for p in ports:
+                if p.startswith('!'):
+                    output_ports.append(p[1:])
+                else:
+                    input_ports.append(p)
+            current_component_def = ComponentDefinition(name, input_ports, output_ports)
         elif l == 'end':
             or_die(current_component_def is not None, 'no component to end')
             component_defs[current_component_def.name] = current_component_def
@@ -32,20 +39,20 @@ def read_component_defs_from_file(fn):
             or_die(name in component_defs, 'component "%s" is not defined' % (l[0],))
             subcomponent_def = component_defs[name]
 
-            parameters = []
-            arguments = []
+            remote_ports = []
+            local_ports = []
             for arg in args:
                 kvarg = arg.split('=')
                 or_die(len(kvarg) == 2, 'argument "%s" should be of the form key=value' % (arg,))
-                param, arg = kvarg
-                current_component_def.declare_connector(arg)
-                parameters.append(param)
-                arguments.append(arg)
+                port, arg = kvarg
+                current_component_def.declare_port(arg)
+                remote_ports.append(port)
+                local_ports.append(arg)
 
-            current_component_def.add_subcomponent(subcomponent_def, parameters, arguments)
+            current_component_def.add_subcomponent(subcomponent_def, remote_ports, local_ports)
 
-            or_die(subcomponent_def.check_params(parameters),
-                   'incorrect parameter list, expected %s' % (subcomponent_def.params(),))
+            or_die(subcomponent_def.check_external_ports(remote_ports),
+                   'incorrect port list, expected %s' % (subcomponent_def.show_external_ports(),))
 
     or_die(current_component_def is None, 'last component has no end')
 

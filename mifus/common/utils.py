@@ -13,3 +13,5 @@ def file_lines(fn):
         line = re.sub('[ \t]+', ' ', line)
         yield numline, line
 
+def unzip(lst):
+    return [x for (x, y) in lst], [y for (x, y) in lst]
