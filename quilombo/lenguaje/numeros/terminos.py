@@ -34,6 +34,15 @@ class TNumero(TerminoConstante):
     def inf(self):
         return self._a
 
+    def es_exacto(self):
+        return self._a == self._b
+
+    def valor_inferior(self):
+        return self._a
+
+    def es_singular(self):
+        return self.es_exacto() and self.valor_inferior() == 1
+
     def __add__(self, otro):
         return TNumero(
             a=self._a + otro._a,
@@ -194,17 +203,22 @@ class TNumero(TerminoConstante):
     def _escribir_decimales(self, decimales):
         pals = []
         i = 0
-        while i < 20:
+
+        significativos = 0
+        while significativos < 1000 or i < 20:
             decimales *= 100
             num = int(decimales)
             decimales = decimales - num
             i += 2
             if num == 0:
                 pals.append('cero')
+                significativos *= 10
             elif num < 10:
+                significativos = significativos * 10 + 1
                 pals.append('cero')
                 pals.append(self._numero_escrito_10(num, 0))
             elif num < 100:
+                significativos += significativos * 10 + 1
                 if num % 10 == 0:
                     pals.append(self._numero_escrito_10(num // 10, 0))
                     pals.append('cero')
@@ -247,8 +261,14 @@ class TNumero(TerminoConstante):
             escrito = escrito.replace('un@ ', u'un ')
             escrito = escrito.replace('@', 'a')
         elif genero == 'madj':
-            escrito = escrito.replace('veintiun@', u'veintiún')
-            escrito = escrito.replace('un@', u'un')
+            if restante == 0:
+                escrito = escrito.replace('veintiun@', u'veintiún')
+                escrito = escrito.replace('un@', u'un')
+                escrito = escrito.replace('@', 'o')
+            else:
+                escrito = escrito.replace('veintiun@ ', u'veintiún ')
+                escrito = escrito.replace('un@ ', u'un ')
+                escrito = escrito.replace('@', 'o')
 
         if restante != 0:
             escrito += self._escribir_decimales(restante)

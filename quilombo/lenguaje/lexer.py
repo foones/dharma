@@ -5,6 +5,7 @@ u"""Analizador léxico para el lenguaje Quilombo. La función principal
     IteradorTokens."""
 
 from comunes.utiles import QuilomboException
+from lenguaje.tesoro import armar_tesoro
 
 LETRAS_MINUSCULAS = u'abcdefghijklmnopqrstuvwxyzáéíóúüñ'
 LETRAS_MAYUSCULAS = u'ABCDEFGHIJKLMNOPQRSTUVWXYZÁÉÍÓÚÜñ'
@@ -146,6 +147,9 @@ class IteradorTokens(object):
 
     def valor_hash(self):
         return id(self._tokens), self._pos
+
+    def lista_de_tokens(self):
+        return self._tokens
 
     def __cmp__(self, otro):
         assert False

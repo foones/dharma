@@ -90,6 +90,8 @@ class Parser(object):
             msj += u'\n---\nCerca de:\n\n%s\n' % (identar(it2.contexto()),)
         return msj
 
+PARSER_OK = Parser()
+
 def coincide(referencia, x):
     if referencia is None:
         return True
@@ -139,7 +141,7 @@ class PToken(Parser):
 
     def _max_match(self, it):
         for _, it2 in self.match(it):
-            yield it2, 'ok'
+            yield it2, PARSER_OK
         yield it, self
 
     def descripcion(self):
@@ -162,7 +164,7 @@ def max_match_wrapper(parser, it, subparsers):
 
     yield_self = []
     for r in res:
-        if r[0].posicion() == it.posicion() and r[1] != 'ok':
+        if r[0].posicion() == it.posicion() and r[1] != PARSER_OK:
             yield_self.append(r)
         else:
             yield r
@@ -205,8 +207,8 @@ class PLookahead(Parser):
 
     def _max_match(self, it):
         for it1, ok_fail1 in max_match_wrapper(self, it, [self._parser]):
-            if ok_fail1 == 'ok':
-                yield it, 'ok'
+            if ok_fail1 == PARSER_OK:
+                yield it, PARSER_OK
             else:
                 yield it1, ok_fail1
 
@@ -227,10 +229,10 @@ class PComplemento(Parser):
 
     def _max_match(self, it):
         for it1, ok_fail1 in self._parser.max_match(it):
-            if ok_fail1 == 'ok':
+            if ok_fail1 == PARSER_OK:
                 yield it, self
                 return
-        yield it, 'ok'
+        yield it, PARSER_OK
 
 class PAlternativa(Parser):
     u"Introduce una alternativa no determinística entre varios parsers."
@@ -283,12 +285,12 @@ class PSecuencia(Parser):
 
     def _max_match(self, it):
         if self._parsers == ():
-            yield it, 'ok'
+            yield it, PARSER_OK
         else:
             p = self._parsers[0]
             ps = PSecuencia(*self._parsers[1:])
             for it1, ok_fail1 in p.max_match(it):
-                if ok_fail1 == 'ok':
+                if ok_fail1 == PARSER_OK:
                     for it2, ok_fail2 in ps.max_match(it1):
                         yield it2, ok_fail2
                 else:
@@ -357,7 +359,7 @@ class PClausuraConTerminador(Parser):
         else:
             for it1, ok_fail1 in self._terminador.max_match(it):
                 yield it1, ok_fail1
-                if ok_fail1 == 'ok':
+                if ok_fail1 == PARSER_OK:
                     return
             for it1, ok_fail1 in self._max_match_con_separador(it):
                 yield it1, ok_fail1
@@ -366,7 +368,7 @@ class PClausuraConTerminador(Parser):
         for r in self._terminador.max_match(it):
             yield r
         for it1, ok_fail1 in self._parser.max_match(it):
-            if ok_fail1 == 'ok':
+            if ok_fail1 == PARSER_OK:
                 for r in self._max_match_sin_separador(it1):
                     yield r
             else:
@@ -374,18 +376,18 @@ class PClausuraConTerminador(Parser):
 
     def _max_match_con_separador(self, it):
         for it1, ok_fail1 in self._parser.max_match(it):
-            if ok_fail1 == 'ok':
+            if ok_fail1 == PARSER_OK:
 
                 termina = False
                 for it2, ok_fail2 in self._terminador.max_match(it1):
-                    if ok_fail2 == 'ok':
+                    if ok_fail2 == PARSER_OK:
                         termina = True
                     yield it2, ok_fail2
 
                 if termina: continue
 
                 for it2, ok_fail2 in self._separador.max_match(it1):
-                    if ok_fail2 == 'ok':
+                    if ok_fail2 == PARSER_OK:
                         for r3 in self._max_match_con_separador(it2):
                             yield r3
                     else:
@@ -473,7 +475,7 @@ class POpcional(Parser):
     def _max_match(self, it):
         for it1, ok_fail1 in self._parser.max_match(it):
             yield it1, ok_fail1
-        yield it, 'ok'
+        yield it, PARSER_OK
 
     def descripcion(self):
         return u'opcionalmente: %s' % (self._parser.descripcion(),)

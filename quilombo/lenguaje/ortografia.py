@@ -22,12 +22,27 @@ def normalizar(texto):
         texto = texto.replace(original, cambiado)
     return texto
 
+def singularizar_sustantivo_comun(palabra):
+    if palabra.endswith('ces'):
+        palabra = palabra[:-3] + 'z' 
+    elif palabra.endswith('es'):
+        palabra = palabra[:-2]
+    elif palabra.endswith('s'):
+        palabra = palabra[:-1]
+    return palabra
+
 def normalizar_sustantivo_comun(texto):
-    if texto.endswith('ces'):
-        texto = texto[:-3] + 'z' 
-    elif texto.endswith('es'):
-        texto = texto[:-2]
-    elif texto.endswith('s'):
-        texto = texto[:-1]
-    return texto
+    return singularizar_sustantivo_comun(normalizar(texto))
+
+def pluralizar_sustantivo_comun(palabra):
+    vocales = ['a', 'e', 'i', 'o', 'u', u'á', u'é', u'ó']
+    cerradas = [u'í', u'ú']
+    if any([palabra.endswith(x) for x in vocales]):
+        return palabra + 's'
+    elif any([palabra.endswith(x) for x in cerradas]):
+        return palabra + 'es'
+    elif palabra.endswith('z'):
+        return palabra[-1] + 'ces'
+    else:
+        return palabra + 'es'
 

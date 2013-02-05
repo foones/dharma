@@ -37,16 +37,3 @@ class PCantidad(PNumeroEspecificado):
             envolver=lambda numero, unidad: TCantidad(numero, unidad)
         )
 
-
-#class PUnidadMonetaria(PAlternativa):
-#    def __init__(self):
-#        PAlternativa.__init__(self,
-#            PEnteroEnDiccionario(NUMEROS_CARDINALES['unidad-monetaria']),
-#            PValor(10 ** 6,
-#                PAlternativa(
-#                    PPalabras('palo verde'),
-#                    PPalabras('palos verdes')
-#                )
-#            ),
-#        )
-#

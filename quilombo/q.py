@@ -6,6 +6,7 @@ from comunes.utiles import leer_archivo, QuilomboException
 from lenguaje.lexer import tokenizar
 from lenguaje.quilombo_parser import PPrograma
 from lenguaje.evaluador import evaluar, estado_inicial
+from lenguaje.tesoro import tesoro_empezar, tesoro_terminar
 
 def main():
     if len(sys.argv) != 2:
@@ -17,6 +18,8 @@ def main():
     try:
         contenido = leer_archivo(nombre_archivo)
         iterador_tokens = tokenizar(contenido, nombre_archivo=nombre_archivo)
+        tesoro_empezar(iterador_tokens)
+
         #print(u'----tokenizacion----').encode('utf-8')
         #print(unicode(iterador_tokens)).encode('utf-8')
 
@@ -40,6 +43,8 @@ def main():
             #for it, res in analizador.max_match(iterador_tokens):
             #    print it.posicion(), res
             raise QuilomboException(analizador.mensaje_de_error(iterador_tokens))
+
+        tesoro_terminar()
 
     except QuilomboException as e:
         print(80 * u'-').encode('utf-8')

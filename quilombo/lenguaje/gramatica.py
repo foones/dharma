@@ -2,9 +2,49 @@
 import random
 from comunes.utiles import frac
 
+class Flexion(object):
+    def __init__(self, nombre_flexion):
+        self._nombre_flexion = nombre_flexion
+
+    def __unicode__(self):
+        return self._nombre_flexion
+
+    def __repr__(self):
+        return unicode(self)
+
+class Numero(Flexion):
+    pass
+
+class Genero(Flexion):
+    pass
+
+NUMERO_SINGULAR = Numero('plural')
+NUMERO_PLURAL = Numero('singular')
+GENERO_MASCULINO = Genero('masculino')
+GENERO_FEMENINO = Genero('femenino')
+
+##
+
 PREPOSICIONES = u'a ante bajo cabe con contra de desde en entre hacia hasta para por segun sin so sobre tras mediante durante'.split(' ')
 
-ARTICULOS = u'un una unos unas el la los las lo este esta esto estos estas'.split(' ')
+DATOS_ARTICULOS = {
+    'un': [NUMERO_SINGULAR, GENERO_MASCULINO],
+    'una': [NUMERO_SINGULAR, GENERO_FEMENINO],
+    'unos': [NUMERO_PLURAL, GENERO_MASCULINO],
+    'unas': [NUMERO_PLURAL, GENERO_FEMENINO],
+    'el': [NUMERO_SINGULAR, GENERO_MASCULINO],
+    'la': [NUMERO_SINGULAR, GENERO_FEMENINO],
+    'los': [NUMERO_PLURAL, GENERO_MASCULINO],
+    'las': [NUMERO_PLURAL, GENERO_FEMENINO],
+    'lo': [NUMERO_SINGULAR, GENERO_MASCULINO],
+    'este': [NUMERO_SINGULAR, GENERO_MASCULINO],
+    'esta': [NUMERO_SINGULAR, GENERO_FEMENINO],
+    'esto': [NUMERO_SINGULAR, GENERO_MASCULINO],
+    'estos': [NUMERO_PLURAL, GENERO_MASCULINO],
+    'estas': [NUMERO_PLURAL, GENERO_FEMENINO],
+}
+
+ARTICULOS = DATOS_ARTICULOS.keys()
 
 VOCATIVOS = u'escuchame cuchame escucheme cucheme che eh'.split(' ')
 

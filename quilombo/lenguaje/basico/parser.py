@@ -141,8 +141,8 @@ class PSustantivoComun(PToken):
     def __init__(self, **kwargs):
         PToken.__init__(self,
             tipo='palabra',
-            predicado=lambda tok: tok.valor not in PALABRAS_CLAVE and \
-                                  tok.valor[:1].lower() == tok.valor[:1],
+            predicado=lambda tok: normalizar_sustantivo_comun(tok.valor) not in PALABRAS_CLAVE and \
+                                  normalizar_sustantivo_comun(tok.valor)[:1].lower() == normalizar_sustantivo_comun(tok.valor)[:1],
             func_resultado=lambda tok: normalizar_sustantivo_comun(tok.valor),
             descripcion=u"un sustantivo común (ej. `moneda\', `bondi\')",
             **kwargs

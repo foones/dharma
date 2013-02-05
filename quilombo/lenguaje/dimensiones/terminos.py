@@ -1,6 +1,8 @@
 # coding:utf-8
 
 from lenguaje.terminos import Termino, TerminoConstante, TNada
+from lenguaje.tesoro import tesoro_actual
+from lenguaje.numeros.terminos import TNumero
 
 class TDimension(TerminoConstante):
     u"""Representa una dimensión. Por ejemplo "distancia",
@@ -79,7 +81,10 @@ class TDefinicionDeUnidadBasica(Termino):
     def evaluar_en(self, estado):
         for dimension in self._dimension.evaluar_en(estado):
             estado.entorno.declarar(self._nombre_unidad,
-                TUnidadDeMedidaBasica(self._nombre_unidad, self._dimension)
+                TCantidad(
+                    TNumero(1),
+                    TUnidadDeMedidaBasica(self._nombre_unidad, self._dimension)
+                )
             )
         yield TNada()
 
@@ -88,8 +93,28 @@ class TCantidad(TerminoConstante):
     def __init__(self, numero, unidad, *args, **kwargs):
         TerminoConstante.__init__(self, *args, **kwargs)
         self._numero = numero
+        while isinstance(unidad, TCantidad):
+            unidad = unidad._unidad
         self._unidad = unidad
 
     def __unicode__(self):
-        return self._numero.numero_escrito() + ' ' + unicode(self._unidad)
+        nombre_unidad_normalizado = unicode(self._unidad)
+
+        if self._numero.es_singular():
+            nombre_unidad = tesoro_actual().sustantivo_comun_singular(nombre_unidad_normalizado)
+        else:
+            nombre_unidad = tesoro_actual().sustantivo_comun_plural(nombre_unidad_normalizado)
+
+        if tesoro_actual().sustantivo_comun_es_masculino(nombre_unidad_normalizado):
+            genero = 'madj'
+        else:
+            genero = 'f'
+
+        numero_escrito = self._numero.numero_escrito(genero)
+        if not self._numero.es_exacto() or int(self._numero.valor_inferior()) % 10 ** 6 == 0:
+            sep = ' de '
+        else:
+            sep = ' '
+
+        return numero_escrito + sep + nombre_unidad
 
