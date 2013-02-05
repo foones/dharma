@@ -13,14 +13,16 @@ from lenguaje.gramatica import (
     PALABRAS_CLAVE,
 )
 from lenguaje.terminos import (
-    TVariable, TParametro, TDefinicionDeFuncion, TInvocarVerbo, TBloque, TNada,
+    TVariable, TParametro, TInvocarVerbo, TBloque, TNada,
+    TDefinicionDeFuncion,
 )
 from lenguaje.basico.parser import (
     PVerboNuevoInfinitivo, PVocativo, PApelativo, PComa, PPuntoFinal,
-    PNominal, PPreposicion,
+    PNominal, PPreposicion, PAlternativaPalabras,
 )
 from lenguaje.dimensiones.parser import (
-    PDefinicionDeDimension, PDefinicionDeUnidadBasica, PCantidad,
+    PDefinicionDeDimension, PDefinicionDeUnidadBasica, PDefinicionDeUnidadDerivada,
+    PCantidad, PCantidadExpresada,
 )
 
 VERBOS_RESERVADOS = ['agarrar']
@@ -166,8 +168,10 @@ class PExpresion(PAlternativa):
 
             # dimensiones
             lambda: PDefinicionDeDimension(),
-            lambda: PDefinicionDeUnidadBasica(parser_dimension=PExpresion()),
+            lambda: PDefinicionDeUnidadBasica(parser_expresion=PExpresion()),
+            lambda: PDefinicionDeUnidadDerivada(parser_expresion=PExpresion()),
             PCantidad(),
+            lambda: PCantidadExpresada(parser_expresion=PExpresion()),
 
             **kwargs
         )

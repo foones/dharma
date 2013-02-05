@@ -1,5 +1,6 @@
 # coding:utf-8
 
+from comunes.utiles import QuilomboException
 from lenguaje.terminos import Termino, TerminoConstante, TNada
 from lenguaje.tesoro import tesoro_actual
 from lenguaje.numeros.terminos import TNumero
@@ -53,6 +54,21 @@ class TUnidadDeMedidaBasica(TerminoConstante):
     def __unicode__(self):
         return u'%s' % (self._nombre_unidad,)
 
+class TUnidadDeMedidaDerivada(TerminoConstante):
+    u"""Representa una unidad de medida derivada (múltiplo) de otra.
+        Por ejemplo "kilómetro" (1000 metros), etc."""
+
+    def __init__(self, nombre_unidad, cantidad, *args, **kwargs):
+        TerminoConstante.__init__(self, *args, **kwargs)
+        self._nombre_unidad = nombre_unidad
+        self._cantidad = cantidad
+
+    def cantidad(self):
+        return self._cantidad
+
+    def __unicode__(self):
+        return u'%s' % (self._nombre_unidad,)
+
 class TDefinicionDeDimension(Termino):
 
     def __init__(self, nombre_dimension, *args, **kwargs):
@@ -83,24 +99,52 @@ class TDefinicionDeUnidadBasica(Termino):
             estado.entorno.declarar(self._nombre_unidad,
                 TCantidad(
                     TNumero(1),
-                    TUnidadDeMedidaBasica(self._nombre_unidad, self._dimension)
+                    TUnidadDeMedidaBasica(self._nombre_unidad, dimension)
                 )
             )
         yield TNada()
 
-class TCantidad(TerminoConstante):
+class TDefinicionDeUnidadDerivada(Termino):
 
-    def __init__(self, numero, unidad, *args, **kwargs):
-        TerminoConstante.__init__(self, *args, **kwargs)
-        self._numero = numero
-        while isinstance(unidad, TCantidad):
-            unidad = unidad._unidad
-        self._unidad = unidad
+    def __init__(self, nombre_unidad, cantidad, *args, **kwargs):
+        Termino.__init__(self, *args, **kwargs)
+        self._nombre_unidad = nombre_unidad
+        self._cantidad = cantidad
 
     def __unicode__(self):
-        nombre_unidad_normalizado = unicode(self._unidad)
+        return u'TDefinicionDeUnidadDerivada(%s, %s)' % (
+            self._nombre_unidad,
+            self._cantidad,
+        )
 
-        if self._numero.es_singular():
+    def evaluar_en(self, estado):
+        for cantidad in self._cantidad.evaluar_en(estado):
+            estado.entorno.declarar(self._nombre_unidad,
+                TCantidad(
+                    TNumero(1),
+                    TUnidadDeMedidaDerivada(self._nombre_unidad, cantidad),
+                )
+            )
+        yield TNada()
+
+def _real_unidad(unidad):
+    u = unidad
+    while isinstance(u, TCantidad):
+        u = u.unidad
+    return u
+
+class TCantidad(Termino):
+
+    def __init__(self, numero, unidad, *args, **kwargs):
+        Termino.__init__(self, *args, **kwargs)
+        self.numero = numero
+        self.unidad = unidad
+
+    def __unicode__(self):
+        unidad = _real_unidad(self.unidad)
+        nombre_unidad_normalizado = unicode(unidad)
+
+        if self.numero.es_singular():
             nombre_unidad = tesoro_actual().sustantivo_comun_singular(nombre_unidad_normalizado)
         else:
             nombre_unidad = tesoro_actual().sustantivo_comun_plural(nombre_unidad_normalizado)
@@ -110,11 +154,51 @@ class TCantidad(TerminoConstante):
         else:
             genero = 'f'
 
-        numero_escrito = self._numero.numero_escrito(genero)
-        if not self._numero.es_exacto() or int(self._numero.valor_inferior()) % 10 ** 6 == 0:
-            sep = ' de '
+        numero_escrito = self.numero.numero_escrito(genero)
+
+        intval = int(self.numero.valor_inferior())
+        llon_redondo = intval % 10 ** 6 == 0 and intval != 0
+        if not self.numero.es_exacto() or llon_redondo:
+            sep = u' de '
         else:
-            sep = ' '
+            sep = u' '
 
         return numero_escrito + sep + nombre_unidad
+
+    def evaluar_en(self, estado):
+        for numero in self.numero.evaluar_en(estado):
+            for unidad in self.unidad.evaluar_en(estado):
+                yield TCantidad(numero, unidad)
+
+class TCantidadExpresada(Termino):
+
+    def __init__(self, cantidad, unidad, *args, **kwargs):
+        Termino.__init__(self, *args, **kwargs)
+        self._cantidad = cantidad
+        self._unidad = unidad
+
+    def __unicode__(self):
+        return u'TCantidadExpresada(%s, %s)' % (self._cantidad, self._unidad)
+
+    def _reducir(self, unidad):
+        n = TNumero(1)
+        u = unidad
+        while True:
+            if isinstance(u, TCantidad):
+                n = n * u.numero
+                u = u.unidad
+            elif isinstance(u, TUnidadDeMedidaDerivada):
+                u = u.cantidad()
+            else:
+                break
+        return n, u
+
+    def evaluar_en(self, estado):
+        for cantidad in self._cantidad.evaluar_en(estado):
+            for unidad in self._unidad.evaluar_en(estado):
+                np, up = self._reducir(cantidad)
+                nq, uq = self._reducir(unidad)
+                if up != uq:
+                    raise QuilomboException(u'la cantidad "%s" no se puede expresar en la unidad "%s"' % (cantidad, unidad))
+                yield TCantidad(np / nq, _real_unidad(unidad))
 

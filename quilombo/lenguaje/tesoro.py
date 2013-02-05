@@ -26,7 +26,7 @@ class Tesoro(object):
 
     def sustantivo_comun_singular(self, palabra_normalizada):
         if palabra_normalizada not in self._sustantivos:
-            return self._sustantivos
+            return palabra_normalizada
         original, clase = self._sustantivos[palabra_normalizada]
         if NUMERO_SINGULAR in clase:
             return original
@@ -35,7 +35,7 @@ class Tesoro(object):
 
     def sustantivo_comun_plural(self, palabra_normalizada):
         if palabra_normalizada not in self._sustantivos:
-            return self._sustantivos
+            return palabra_normalizada
         original, clase = self._sustantivos[palabra_normalizada]
         if NUMERO_PLURAL in clase:
             return original

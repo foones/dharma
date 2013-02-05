@@ -8,8 +8,7 @@ from lenguaje.parser import (
     Parser, PSecuencia, PSecuenciaConAccion, PAlternativa,
     PClausuraConTerminadorConAccion, PComplemento, PLookahead,
     POpcional, PValor, PPalabra,
-    PPalabras,
-    agregar_max_its,
+    PPalabras, PARSER_OK, agregar_max_its,
 )
 from lenguaje.numeros.terminos import TNumero
 
@@ -33,7 +32,7 @@ class PEnteroEnDiccionario(Parser):
 
     def _max_match(self, it):
         for res1, it1 in self.match(it):
-            yield it1, 'ok'
+            yield it1, PARSER_OK
         yield it, self
 
 def accion_sumar_par(lista):

@@ -61,6 +61,12 @@ class TNumero(TerminoConstante):
             tokens=self.tokens()
         )
 
+    def __div__(self, otro):
+        return self * otro.inverso()
+
+    def inverso(self):
+        return TNumero(a=1 / self._a, b=1 / self._b)
+
     def _numero_escrito_10(self, base, pico):
         assert 0 <= base and base < 10
         sbase = {
@@ -156,6 +162,7 @@ class TNumero(TerminoConstante):
             sbase = '%s mil' % (smiles,)
         else:
             sbase = '%s mil %s' % (smiles, sresto)
+        sbase = sbase.strip(' ')
 
         if pico == 1000:
             sbase += ' y pico'

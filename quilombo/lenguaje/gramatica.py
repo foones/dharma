@@ -50,6 +50,8 @@ VOCATIVOS = u'escuchame cuchame escucheme cucheme che eh'.split(' ')
 
 APELATIVOS = u'boludo flaco pibe chabon man amigo guacho guachin hermano papa papi mama mami master maestro jefe maquina loco vieja viejo fiera capo'.split(' ')
 
+ADVERBIOS_DE_DUDA = u'quizá quizás'.split(' ')
+
 CONJUNCIONES = u'y o'.split(' ')
 
 # Nota: representarlos sin tildes.
@@ -58,24 +60,6 @@ def _llon(n):
     return 10 ** (n * 6)
 
 NUMEROS_CARDINALES = {
-#    'unidad-monetaria': {
-#        'guita': frac(1, 10),
-#        'guitas': frac(1, 10),
-#        'chirola': frac(1, 10),
-#        'chirolas': frac(1, 10),
-#        'peso': 1,
-#        'pesos': 1,
-#        'mango': 1,
-#        'mangos': 1,
-#        'morlaco': 1,
-#        'morlacos': 1,
-#        'gamba': 100,
-#        'gambas': 100,
-#        'luca': 1000,
-#        'lucas': 1000,
-#        'palo': 10 ** 6,
-#        'palos': 10 ** 6,
-#    },
     'unidades': {
         'cero': 0,
         'cerapio': 0,
@@ -108,7 +92,7 @@ NUMEROS_CARDINALES = {
         'diecinueve': 19,
     },
     'decenas': {
-        'veinte': 30,
+        'veinte': 20,
         'treinta': 30,
         'cuarenta': 40,
         'cincuenta': 50,
@@ -181,6 +165,9 @@ PALABRAS_CLAVE.append('pico')
 PALABRAS_CLAVE.append('medio')
 PALABRAS_CLAVE.append('media')
 PALABRAS_CLAVE.append('coma')
+PALABRAS_CLAVE.append('posta')
+PALABRAS_CLAVE.append('dimension')
+PALABRAS_CLAVE.extend(['expresado', 'expresados', 'expresada', 'expresadas'])
 for clave, diccionario in NUMEROS_CARDINALES.items():
     for nombre, numero in diccionario.items():
         PALABRAS_CLAVE.append(nombre)
