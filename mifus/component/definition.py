@@ -74,9 +74,6 @@ class ComponentDefinition(object):
             for port in self.external_ports()
         ])
 
-    def __repr__(self):
-        return '<ComponentDefinition %s %s>' % (self.name, self.show_external_ports())
-
     def component_class(self):
         raise Exception('subclass responsibility')
 
@@ -89,6 +86,9 @@ class BuiltinComponentDefinition(ComponentDefinition):
     def component_class(self):
         return BuiltinComponent
 
+    def __repr__(self):
+        return '<BuiltinComponentDefinition %s %s>' % (self.name, self.show_external_ports())
+
 class UserComponentDefinition(ComponentDefinition):
 
     def __init__(self, name, input_ports, output_ports):
@@ -96,6 +96,9 @@ class UserComponentDefinition(ComponentDefinition):
 
     def component_class(self):
         return UserComponent
+
+    def __repr__(self):
+        return '<UserComponentDefinition %s %s>' % (self.name, self.show_external_ports())
 
 BIT0 = 0
 BIT1 = 1
@@ -155,6 +158,7 @@ class Component(object):
         return self._definition.is_output_port(port_name)
 
     def state_of_port(self, port_name):
+        print self, port_name
         return self._state[port_name]
 
     def _read_inputs(self, inputs):
@@ -179,6 +183,9 @@ class BuiltinComponent(Component):
         self._read_inputs(inputs)
         self._definition.tick_state(self._state)
 
+    def __repr__(self):
+        return '<BuiltinComponent %s>' % (self._definition,)
+
 class UserComponent(Component):
 
     def __init__(self, component_def):
@@ -201,5 +208,8 @@ class UserComponent(Component):
 
         for connector in self._connectors:
             if connector.subcomponent.is_output_port(connector.remote_port):
-                self._state[connector.local_port] = subcomponent.state_of_port(connector.remote_port)
+                self._state[connector.local_port] = connector.subcomponent.state_of_port(connector.remote_port)
+
+    def __repr__(self):
+        return '<UserComponent %s>' % (self._definition,)
 

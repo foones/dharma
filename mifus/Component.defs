@@ -4,7 +4,28 @@ component Not a !b
   Nand a=a b=a c=b
 end
 
-component True !b
-  False a=a
-  Not a=a b=b
+component True !a
+  False a=x
+  Not a=x b=a
+end
+
+component And a b !c
+  Nand a=a b=b c=x
+  Not a=x b=c
+end
+
+component Or a b !c
+  Not a=a b=x
+  Not a=b b=y
+  Nand a=x b=y c=c
+end
+
+component Test_or !res
+  False a=x
+  False a=y
+  Or a=x b=y c=res
+end
+
+component Test !res
+  Test_or res=res
 end
