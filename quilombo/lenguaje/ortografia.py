@@ -1,4 +1,5 @@
 # coding:utf-8
+from lenguaje.gramatica import VERBOS_RESERVADOS
 
 def normalizar(texto):
     reemplazo = {
@@ -45,4 +46,30 @@ def pluralizar_sustantivo_comun(palabra):
         return palabra[-1] + 'ces'
     else:
         return palabra + 'es'
+
+VERBO_INFINITIVO_DESINENCIAS = ['ar', 'er', 'ir']
+VERBO_INFINITIVO_SUFIJOS = ['lo', 'la', 'le', 'las', 'los', 'les', 'se', 'selo', 'sela', 'selas', 'selos']
+
+def normalizar_verbo_infinitivo(palabra):
+    for s in VERBO_INFINITIVO_SUFIJOS:
+        if palabra.endswith(s):
+            palabra = palabra[:-len(s)]
+            break
+    for d in VERBO_INFINITIVO_DESINENCIAS:
+        if palabra.endswith(d):
+            palabra = palabra[:-len(d)]
+            break
+    return palabra + '*'
+
+def es_verbo_infinitivo(palabra, nuevo=False):
+    if palabra[:1].lower() != palabra[:1]:
+        return False
+    for d in VERBO_INFINITIVO_DESINENCIAS:
+        for s in [''] + VERBO_INFINITIVO_SUFIJOS:
+            if palabra.endswith(d + s):
+                if nuevo and normalizar_verbo_infinitivo(palabra) in VERBOS_RESERVADOS:
+                    return False
+                else:
+                    return True
+    return False
 

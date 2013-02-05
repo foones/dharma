@@ -1,6 +1,7 @@
-from lenguaje.parser import PPalabra, PSecuenciaConAccion
+from lenguaje.parser import PAlternativa, PSecuenciaConAccion
 from lenguaje.basico.parser import (
     PVocativo, PApelativo, PComa, PNominal, PPalabras, PAlternativaPalabras,
+    PVerboInfinitivo,
 )
 from lenguaje.terminos import TVariable
 from lenguaje.numeros.parser import (
@@ -8,7 +9,7 @@ from lenguaje.numeros.parser import (
 )
 from lenguaje.dimensiones.terminos import (
     TDefinicionDeDimension, TDefinicionDeUnidadBasica, TDefinicionDeUnidadDerivada,
-    TCantidad, TCantidadExpresada,
+    TCantidad, TExpresarCantidadEn,
 )
 
 class PDefinicionDeDimension(PSecuenciaConAccion):
@@ -31,7 +32,10 @@ class PDefinicionDeUnidadBasica(PSecuenciaConAccion):
             PVocativo(), PApelativo(), PComa(),
             PNominal(),
             PPalabras('mide'),
-            parser_expresion,
+            PAlternativa(
+                PNominal(devolver_variable=True),
+                parser_expresion,
+            )
         )
 
 class PDefinicionDeUnidadDerivada(PSecuenciaConAccion):
@@ -53,17 +57,16 @@ class PCantidad(PNumeroEspecificado):
             envolver=lambda numero, unidad: TCantidad(numero, TVariable(unidad))
         )
 
-class PCantidadExpresada(PSecuenciaConAccion):
+class PExpresarCantidadEn(PSecuenciaConAccion):
 
     def __init__(self, parser_expresion):
         def accion(xs):
-            return TCantidadExpresada(xs[1], xs[3])
+            return TExpresarCantidadEn(xs[2])
         PSecuenciaConAccion.__init__(self, accion,
-            PAlternativaPalabras([
-                'expresado', 'expresados', 'expresada', 'expresadas',
-            ]),
-            parser_expresion,
-            PPalabra('en'),
+            PVerboInfinitivo('expres*'), PPalabras('en'),
             PNominal(devolver_variable=True),
+            #PAlternativa(
+            #    parser_expresion,
+            #),
         )
 

@@ -170,15 +170,14 @@ class TCantidad(Termino):
             for unidad in self.unidad.evaluar_en(estado):
                 yield TCantidad(numero, unidad)
 
-class TCantidadExpresada(Termino):
+class TExpresarCantidadEn(Termino):
 
-    def __init__(self, cantidad, unidad, *args, **kwargs):
+    def __init__(self, unidad, *args, **kwargs):
         Termino.__init__(self, *args, **kwargs)
-        self._cantidad = cantidad
         self._unidad = unidad
 
     def __unicode__(self):
-        return u'TCantidadExpresada(%s, %s)' % (self._cantidad, self._unidad)
+        return u'TExpresarCantidadEn(%s)' % (self._unidad,)
 
     def _reducir(self, unidad):
         n = TNumero(1)
@@ -194,11 +193,12 @@ class TCantidadExpresada(Termino):
         return n, u
 
     def evaluar_en(self, estado):
-        for cantidad in self._cantidad.evaluar_en(estado):
-            for unidad in self._unidad.evaluar_en(estado):
-                np, up = self._reducir(cantidad)
-                nq, uq = self._reducir(unidad)
-                if up != uq:
-                    raise QuilomboException(u'la cantidad "%s" no se puede expresar en la unidad "%s"' % (cantidad, unidad))
-                yield TCantidad(np / nq, _real_unidad(unidad))
+        #for cantidad in self._cantidad.evaluar_en(estado):
+        cantidad = estado.pop()
+        for unidad in self._unidad.evaluar_en(estado):
+            np, up = self._reducir(cantidad)
+            nq, uq = self._reducir(unidad)
+            if up != uq:
+                raise QuilomboException(u'la cantidad "%s" no se puede expresar en la unidad "%s"' % (cantidad, unidad))
+            yield TCantidad(np / nq, _real_unidad(unidad))
 

@@ -22,10 +22,8 @@ from lenguaje.basico.parser import (
 )
 from lenguaje.dimensiones.parser import (
     PDefinicionDeDimension, PDefinicionDeUnidadBasica, PDefinicionDeUnidadDerivada,
-    PCantidad, PCantidadExpresada,
+    PCantidad, PExpresarCantidadEn,
 )
-
-VERBOS_RESERVADOS = ['agarrar']
 
 class PCabezaDefinicionDeFuncion(PAlternativa):
 
@@ -67,6 +65,8 @@ class PSeparadorExpresiones(PAlternativa):
                     )
                 )
             ),
+
+            PPalabra('pero'),
             **kwargs
         )
 
@@ -171,7 +171,7 @@ class PExpresion(PAlternativa):
             lambda: PDefinicionDeUnidadBasica(parser_expresion=PExpresion()),
             lambda: PDefinicionDeUnidadDerivada(parser_expresion=PExpresion()),
             PCantidad(),
-            lambda: PCantidadExpresada(parser_expresion=PExpresion()),
+            lambda: PExpresarCantidadEn(parser_expresion=PExpresion()),
 
             **kwargs
         )

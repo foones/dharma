@@ -6,7 +6,11 @@ from lenguaje.parser import (
     PComplemento, POpcional, PValor, PPalabra,
     PPalabras, PPuntuacion, PClausuraConTerminadorConAccion,
 )
-from lenguaje.ortografia import normalizar_sustantivo_comun
+from lenguaje.ortografia import (
+    normalizar_sustantivo_comun,
+    es_verbo_infinitivo,
+    normalizar_verbo_infinitivo,
+)
 from lenguaje.gramatica import (
     ARTICULOS, PREPOSICIONES, VOCATIVOS, APELATIVOS, NUMEROS_CARDINALES,
     PALABRAS_CLAVE,
@@ -14,43 +18,27 @@ from lenguaje.gramatica import (
 from lenguaje.terminos import TVariable
 from lenguaje.numeros.parser import PEnteroEnDiccionario
 
-VERBOS_RESERVADOS = ['agarrar']
+class PVerboInfinitivo(PToken):
+    "Parser para verbos en infinitivo fijos."
+    def __init__(self, raiz, **kwargs):
+        print raiz
+        PToken.__init__(self,
+                        tipo='palabra',
+                        predicado=lambda tok:
+                                    es_verbo_infinitivo(tok.valor) and \
+                                    normalizar_verbo_infinitivo(tok.valor) == raiz,
+                        func_resultado=lambda tok: normalizar_verbo_infinitivo(tok.valor),
+                        **kwargs
+        )
 
 class PVerboNuevoInfinitivoBasico(PToken):
     "Parser para nuevos verbos en infinitivo definidos por el usuario."
 
     def __init__(self, **kwargs):
-
-        desinencias = ['ar', 'er', 'ir']
-        sufijos = ['lo', 'le', 'los', 'les', 'se', 'selo', 'selos']
-
-        def es_verbo_infinitivo(tok):
-            if tok.valor[:1].lower() != tok.valor[:1]:
-                return False
-            if tok.valor in VERBOS_RESERVADOS:
-                return False
-            for d in desinencias:
-                for s in [''] + sufijos:
-                    if tok.valor.endswith(d + s):
-                        return True
-            return False
-
-        def sacar_sufijos(tok):
-            res = tok.valor
-            for s in sufijos:
-                if res.endswith(s):
-                    res = res[:-len(s)]
-                    break
-            for d in desinencias:
-                if res.endswith(d):
-                    res = res[:-len(d)]
-                    break
-            return res + '*'
-
         PToken.__init__(self,
                         tipo='palabra',
-                        predicado=es_verbo_infinitivo,
-                        func_resultado=sacar_sufijos,
+                        predicado=lambda tok: es_verbo_infinitivo(tok.valor, nuevo=True),
+                        func_resultado=lambda tok: normalizar_verbo_infinitivo(tok.valor),
                         **kwargs
         )
 

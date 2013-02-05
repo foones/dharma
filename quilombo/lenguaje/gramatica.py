@@ -24,7 +24,7 @@ GENERO_MASCULINO = Genero('masculino')
 GENERO_FEMENINO = Genero('femenino')
 
 ##
-
+VERBOS_RESERVADOS = ['agarr*', 'expres*']
 PREPOSICIONES = u'a ante bajo cabe con contra de desde en entre hacia hasta para por segun sin so sobre tras mediante durante'.split(' ')
 
 DATOS_ARTICULOS = {
@@ -52,7 +52,7 @@ APELATIVOS = u'boludo flaco pibe chabon man amigo guacho guachin hermano papa pa
 
 ADVERBIOS_DE_DUDA = u'quizá quizás'.split(' ')
 
-CONJUNCIONES = u'y o'.split(' ')
+CONJUNCIONES = u'y o pero'.split(' ')
 
 # Nota: representarlos sin tildes.
 
@@ -167,7 +167,6 @@ PALABRAS_CLAVE.append('media')
 PALABRAS_CLAVE.append('coma')
 PALABRAS_CLAVE.append('posta')
 PALABRAS_CLAVE.append('dimension')
-PALABRAS_CLAVE.extend(['expresado', 'expresados', 'expresada', 'expresadas'])
 for clave, diccionario in NUMEROS_CARDINALES.items():
     for nombre, numero in diccionario.items():
         PALABRAS_CLAVE.append(nombre)
