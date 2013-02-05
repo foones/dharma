@@ -1,6 +1,6 @@
 #!/usr/bin/python
 from common.utils import file_lines, MifusException
-from component.definition import ComponentDefinition, FALSE_COMPONENT, NAND_COMPONENT
+from component.definition import UserComponentDefinition, FALSE_COMPONENT_DEFINITION, NAND_COMPONENT_DEFINITION
 
 def read_component_defs_from_file(fn):
     numline = None
@@ -9,7 +9,7 @@ def read_component_defs_from_file(fn):
         if not cond:
             raise MifusException('"%s":%u: ' % (fn, numline,) + msg)
 
-    component_defs = {'False': FALSE_COMPONENT, 'Nand': NAND_COMPONENT}
+    component_defs = {'False': FALSE_COMPONENT_DEFINITION, 'Nand': NAND_COMPONENT_DEFINITION}
     current_component_def = None
 
     for numline1, l in file_lines(fn):
@@ -26,7 +26,7 @@ def read_component_defs_from_file(fn):
                     output_ports.append(p[1:])
                 else:
                     input_ports.append(p)
-            current_component_def = ComponentDefinition(name, input_ports, output_ports)
+            current_component_def = UserComponentDefinition(name, input_ports, output_ports)
         elif l == 'end':
             or_die(current_component_def is not None, 'no component to end')
             component_defs[current_component_def.name] = current_component_def

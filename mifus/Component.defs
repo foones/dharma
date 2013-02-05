@@ -3,3 +3,8 @@
 component Not a !b
   Nand a=a b=a c=b
 end
+
+component True !b
+  False a=a
+  Not a=a b=b
+end

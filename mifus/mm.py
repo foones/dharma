@@ -1,6 +1,7 @@
 #!/usr/bin/python
 from common.utils import MifusException
 from component.parser import read_component_defs_from_file
+from component.definition import make_component
 
 try:
     component_defs = read_component_defs_from_file('Component.defs')
@@ -9,10 +10,15 @@ try:
     print component_defs['Not'].subcomponent_definitions()
     print component_defs['Not'].connector_definitions()
 
-    #inst = ComponentInstance(component_defs['Not'])
-    #print inst.external_state()
-    #inst.tick([('a', 0)])
-    #print inst.external_state()
+    inst = make_component(component_defs['True'])
+    print inst.external_state()
+    inst.tick([])
+    print inst.external_state()
+    inst.tick([])
+    print inst.external_state()
+    inst.tick([])
+    print inst.external_state()
+    inst.tick([])
 
 except MifusException as e:
     print e
