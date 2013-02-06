@@ -392,7 +392,9 @@ class TExpresarCantidadEn(Termino):
             dp = up.dimension()
             dq = uq.dimension()
             if dp != dq:
-                raise QuilomboException(u'la cantidad "%s" es de dimensión "%s" y no se puede expresar en la unidad "%s" que es de dimensión "%s"' % (cantidad, dp, unidad, dq))
+                raise QuilomboException(
+                    u'la cantidad "%s" es de dimensión "%s"' % (cantidad, dp) + \
+                    u'y no se puede expresar en la unidad "%s" que es de dimensión "%s"' % (unidad, dq))
             factorp, up2 = up.en_unidades_basicas().extraer_coeficiente()
             factorq, uq2 = uq.en_unidades_basicas().extraer_coeficiente()
             factorp = factorp * np

@@ -31,6 +31,8 @@ es
     un año
 boludo,
 
+che, un buliano puede ser posta o quizás ni_en_pedo boludo,
+
 che, un día_de_la_semana puede ser
   lunes,
   martes,
@@ -51,6 +53,13 @@ che, un lambda_término puede ser
   o capaz una aplicación de una función a un argumento
   o capaz una abstracción con el parámetro y el cuerpo
 boludo,
+
+posta,
+diez metros,
+un millón de kilómetros,
+
+un lambda_termino,
+un círculo,
 
 un <año^2> pero expresarlo en <días^2>
 

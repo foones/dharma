@@ -39,7 +39,7 @@ class Entorno(object):
             res_costilla = []
             for k, v in sorted(costilla.items()):
                 res_costilla.append(u'%s -> %s' % (k, v))
-            res.append(u'{%s}' % (', '.join(res_costilla),))
+            res.append(u'{\n%s\n}' % (identar('\n'.join(res_costilla)),))
         return u'Entorno([\n%s\n])' % (identar(',\n'.join(res),))
 
 class Estado(object):

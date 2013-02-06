@@ -160,7 +160,7 @@ PALABRAS_CLAVE.append('pico')
 PALABRAS_CLAVE.append('medio')
 PALABRAS_CLAVE.append('media')
 PALABRAS_CLAVE.append('coma')
-PALABRAS_CLAVE.append('posta')
+#PALABRAS_CLAVE.append('posta')
 PALABRAS_CLAVE.append('dimension')
 for clave, diccionario in NUMEROS_CARDINALES.items():
     for nombre, numero in diccionario.items():

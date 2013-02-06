@@ -206,6 +206,8 @@ class PNumeroEspecificado(PSecuenciaConAccion):
         ]
 
         def accion_sumar_millones(lista):
+            if lista == []:
+                return None
             res = TNumero(0)
             for s in lista:
                 base = NUMEROS_CARDINALES['separadores-millones'][s[1]]
@@ -223,23 +225,32 @@ class PNumeroEspecificado(PSecuenciaConAccion):
 
         def accion_sumar_final(lista):
             millones = lista[0]
-            miles, decimales, unidad_de_medida = lista[1]
+            miles, decimales, unidad_de_medida, resto_todo_vacio = lista[1]
             algo_mas = lista[2]
+
+            if millones is None and resto_todo_vacio and algo_mas == ():
+                return unidad_de_medida
+            elif millones is None:
+                millones = TNumero(0)
+
             numero = millones + miles + decimales
             if algo_mas == ('medio',):
                 numero = numero + TNumero(frac(1, 2))
             return envolver(numero, unidad_de_medida)
 
         def entuplar(xs):
+            todo_vacio = True
             if xs[0] != ():
                 num = xs[0][0]
+                todo_vacio = False
             else:
                 num = TNumero(0)
             if xs[1] != ():
                 decimales = xs[1][0]
+                todo_vacio = False
             else:
                 decimales = TNumero(0)
-            return num, decimales, xs[3]
+            return num, decimales, xs[3], todo_vacio
 
         algun_separador = PAlternativa(*[
             PValor(sep,
