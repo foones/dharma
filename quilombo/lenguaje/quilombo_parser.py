@@ -162,16 +162,39 @@ class PDefinicionDeFuncion(PAlternativa):
 class PExpresion(PAlternativa):
     def __init__(self, **kwargs):
         PAlternativa.__init__(self,
+            # un numero
+            # Fulano De Tal 
             PVariable(),
+
+            # salir
+            # sumar ... con ...
             lambda: PInvocacionVerboInfinitivo(),
+
+            # che, la posta para salir es ... boludo
+            # che, la posta para sumar una cosa con otra es ... boludo
             lambda: PDefinicionDeFuncion(),
 
-            # dimensiones
+            ## Dimensiones, unidades y cantidades
+    
+            # che boludo, la distancia es una dimension
             lambda: PDefinicionDeDimension(),
+
+            # che boludo, un metro mide distancia
             lambda: PDefinicionDeUnidadBasica(parser_expresion=PExpresion()),
+
+            # che boludo, un kilometro son mil metros
+            # che boludo, un kmph es un <kilometro por hora>
             lambda: PDefinicionDeUnidadDerivada(parser_expresion=PExpresion()),
+
+            # veintipico de kilometros
+            # cuatro <kilometros por hora>
             PCantidad(),
+
+            # expresar en metros
+            # expresarlo en <kilometros por hora>
             lambda: PExpresarCantidadEn(parser_expresion=PExpresion()),
+
+            ## Tipos inductivos
 
             **kwargs
         )
