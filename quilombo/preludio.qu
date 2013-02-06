@@ -34,6 +34,13 @@ boludo,
 
 che, un buliano puede ser posta o quizas ñempedo boludo,
 
+che, un natural puede ser
+  el zero
+  o quizás el sucesor de un predecesor
+boludo,
+
+el sucesor, cuyo predecesor es zero,
+
 che, un día_de_la_semana puede ser
   lunes,
   martes,
@@ -56,11 +63,11 @@ che, un lambda_término puede ser
 boludo,
 
 una lambda_abstracción,
-  cuyo parámetro es un metro,
+  cuyo parámetro es un sábado,
   cuyo cuerpo es {
     una lambda_variable,
       cuyo identificador es {
-        diez <kilómetros^2 por minuto> pero expresado en <metros^2 por hora>
+        veintipico de <kilómetros^2 por minuto> pero expresado en <metros^2 por hora>
       }
   }
 
