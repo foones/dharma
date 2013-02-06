@@ -55,13 +55,12 @@ che, un lambda_término puede ser
   o quizás una lambda_abstracción con el parámetro y el cuerpo
 boludo,
 
-posta,
-ñempedo,
-diez metro',
-un millón de kilómetros,
-
-un <año^2> pero expresado en <días^2>,
-un lambda_termino,
-
-un metro, crear un círculo
+una lambda_abstracción,
+  cuyo parámetro es un metro,
+  cuyo cuerpo es {
+    una lambda_variable,
+      cuyo identificador es {
+        diez <kilómetros^2 por minuto> pero expresado en <metros^2 por hora>
+      }
+  }
 

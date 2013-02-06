@@ -150,6 +150,13 @@ class PDefinicionDeFuncionBasico(PSecuenciaConAccion):
             **kwargs
         )
 
+class PBloqueEntreLlaves(PSecuenciaConAccion):
+    def __init__(self):
+        PSecuenciaConAccion.__init__(self, lambda xs: xs[1],
+            PPuntuacion('{'),
+            PBloque(terminador_bloque=PPuntuacion('}')),
+        )
+
 class PDefinicionDeFuncion(PAlternativa):
     def __init__(self, **kwargs):
         PAlternativa.__init__(self,
@@ -170,6 +177,7 @@ class PExpresion(PAlternativa):
             # un numero
             # Fulano De Tal 
             PVariable(),
+            lambda: PBloqueEntreLlaves(),
 
             # salir
             # sumar ... con ...

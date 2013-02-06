@@ -81,7 +81,7 @@ class PAplicacionParcialConstructor(PSecuenciaConAccion):
             lambda xs: TAplicacionParcialConstructor(xs[1], xs[3]),
             PAlternativaPalabras(['cuyo', 'cuya', 'cuyos', 'cuyas']),
             PNominal(),
-            PAlternativaPalabras(['sea', 'sean']),
+            PAlternativaPalabras(['es', 'son', 'sea', 'sean']),
             parser_expresion,
         )
 

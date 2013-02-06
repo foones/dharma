@@ -40,6 +40,17 @@ class TConstructor(Termino):
                 return TConstructor(self._tipo, self._nombre_constructor, self._nombres_parametros, valores)
         raise QuilomboException(u'no se le puede pasar un parámetro más al constructor %s, pues ya es un valor' % (self,))
 
+    def currificar_parametro(self, param, arg):
+        if param not in self._nombres_parametros:
+            raise QuilomboException(u'el constructor %s no tiene un campo %s' % (self._nombre_constructor, param))
+        if param in self._valores_parametros:
+            raise QuilomboException(u'el constructor %s ya tiene el campo %s definido' % (self, param))
+        valores = {}
+        for k, v in self._valores_parametros.items():
+            valores[k] = v
+        valores[param] = arg
+        return TConstructor(self._tipo, self._nombre_constructor, self._nombres_parametros, valores)
+
     def __unicode__(self):
         res = []
         for param in self._nombres_parametros:
@@ -104,6 +115,11 @@ class TAplicacionTotalConstructor(Termino):
 
     def evaluar_en(self, estado):
         for constructor in self._constructor.evaluar_en(estado):
+
+            if estado.tam_pila() > 0:
+                estado.pop() # sacar el mismo constructor, que fue empujado
+                             # al evaluar
+
             if not isinstance(constructor, TConstructor):
                 raise QuilomboException(u'%s no es un constructor' % (constructor,))
             npop = min(estado.tam_pila(), constructor.aridad())
@@ -112,6 +128,7 @@ class TAplicacionTotalConstructor(Termino):
             for i in range(npop):
                 args.append(estado.pop())
 
+            print args
             constructor_ap = constructor
             for arg in reversed(args):
                 constructor_ap = constructor_ap.currificar(arg)
@@ -120,5 +137,23 @@ class TAplicacionTotalConstructor(Termino):
             yield constructor_ap
 
 class TAplicacionParcialConstructor(Termino):
-    pass
+
+    def __init__(self, nombre_parametro, valor):
+        self._nombre_parametro = nombre_parametro
+        self._valor = valor
+
+    def __unicode__(self):
+        return u'TAplicacionParcialConstructor(%s, %s)' % (self._nombre_parametro, self._valor)
+
+    def evaluar_en(self, estado):
+        constructor = estado.pop()
+        for valor in self._valor.evaluar_en(estado):
+            if not isinstance(constructor, TConstructor):
+                raise QuilomboException(u'%s no es un constructor' % (constructor,))
+            constructor_ap = constructor.currificar_parametro(
+                self._nombre_parametro, 
+                valor
+            )
+            estado.push(constructor_ap)
+            yield constructor_ap
 
