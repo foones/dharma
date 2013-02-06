@@ -106,7 +106,14 @@ class PExpresarCantidadEn(PSecuenciaConAccion):
         def accion(xs):
             return TExpresarCantidadEn(xs[2])
         PSecuenciaConAccion.__init__(self, accion,
-            PVerboInfinitivo('expres*'), PPalabras('en'),
+            PAlternativa(
+                PVerboInfinitivo('expres*'),
+                PPalabra('expresado'),
+                PPalabra('expresada'),
+                PPalabra('expresados'),
+                PPalabra('expresadas'),
+            ),
+            PPalabras('en'),
             PUnidad(),
         )
 

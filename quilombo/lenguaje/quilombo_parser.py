@@ -26,6 +26,8 @@ from lenguaje.dimensiones.parser import (
 )
 from lenguaje.inductivos.parser import (
     PDefinicionDeTipoInductivo,
+    PAplicacionTotalConstructor,
+    PAplicacionParcialConstructor,
 )
 
 class PCabezaDefinicionDeFuncion(PAlternativa):
@@ -198,7 +200,15 @@ class PExpresion(PAlternativa):
             lambda: PExpresarCantidadEn(parser_expresion=PExpresion()),
 
             ## Tipos inductivos
+
+            # che, un booleano puede ser posta o quizás ni_en_pedo boludo
             PDefinicionDeTipoInductivo(),
+
+            # un círculo, cuyo centro es un metro, cuyo radio es dos metros
+            lambda: PAplicacionParcialConstructor(parser_expresion=PExpresion()),
+
+            # dos metros, un metro, crear un círculo
+            lambda: PAplicacionTotalConstructor(parser_expresion=PExpresion()),
 
             **kwargs
         )

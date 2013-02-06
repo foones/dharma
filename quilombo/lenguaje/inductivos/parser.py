@@ -5,9 +5,11 @@ from lenguaje.parser import (
 )
 from lenguaje.basico.parser import (
     PPalabras, PApelativo, PVocativo, PComa, PPreposicion, PNominal,
+    PAlternativaPalabras, PVerboInfinitivo,
 )
 from lenguaje.inductivos.terminos import (
     TDefinicionDeTipoInductivo, TDeclaracionConstructorConParametros,
+    TAplicacionTotalConstructor, TAplicacionParcialConstructor,
 )
 
 class PSeparadorUnionDisjunta(PAlternativa):
@@ -56,5 +58,30 @@ class PDefinicionDeTipoInductivo(PSecuenciaConAccion):
                 terminador=PApelativo(),
                 separador=PSeparadorUnionDisjunta(),
             ),
+        )
+
+from lenguaje.terminos import TNada
+
+class PAplicacionTotalConstructor(PSecuenciaConAccion):
+
+    def __init__(self, parser_expresion):
+        PSecuenciaConAccion.__init__(self,
+            lambda xs: TAplicacionTotalConstructor(xs[1]),
+            PAlternativa(
+                PVerboInfinitivo('cre*'),
+                PVerboInfinitivo('constru*'),
+            ),
+            parser_expresion,
+        )
+
+class PAplicacionParcialConstructor(PSecuenciaConAccion):
+
+    def __init__(self, parser_expresion):
+        PSecuenciaConAccion.__init__(self,
+            lambda xs: TAplicacionParcialConstructor(xs[1], xs[3]),
+            PAlternativaPalabras(['cuyo', 'cuya', 'cuyos', 'cuyas']),
+            PNominal(),
+            PAlternativaPalabras(['sea', 'sean']),
+            parser_expresion,
         )
 

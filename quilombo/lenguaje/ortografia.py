@@ -9,14 +9,14 @@ def normalizar(texto):
         u'ó': 'o',
         u'ú': 'u',
         u'ü': 'u',
-        u'ñ': '`n',
+        #u'ñ': '`n',
         u'Á': 'A',
         u'É': 'E',
         u'Í': 'I',
         u'Ó': 'O',
         u'Ú': 'U',
         u'Ü': 'U',
-        u'Ñ': '`N',
+        #u'Ñ': '`N',
         "\'": 's',   # Identificar ' con s
     }
     for original, cambiado in reemplazo.items():

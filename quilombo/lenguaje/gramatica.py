@@ -24,7 +24,7 @@ GENERO_MASCULINO = Genero('masculino')
 GENERO_FEMENINO = Genero('femenino')
 
 ##
-VERBOS_RESERVADOS = ['agarr*', 'expres*']
+VERBOS_RESERVADOS = ['agarr*', 'expres*', 'cre*', 'constru*']
 PREPOSICIONES = u'a ante bajo cabe con contra de desde en entre hacia hasta para por segun sin so sobre tras mediante durante'.split(' ')
 
 DATOS_ARTICULOS = {
@@ -154,7 +154,8 @@ PALABRAS_CLAVE = PREPOSICIONES + \
                  ARTICULOS + \
                  VOCATIVOS + \
                  APELATIVOS + \
-                 CONJUNCIONES
+                 CONJUNCIONES + \
+                 ADVERBIOS_DE_DUDA
 
 PALABRAS_CLAVE.append('pico')
 PALABRAS_CLAVE.append('medio')

@@ -54,6 +54,9 @@ class Estado(object):
     def pop(self):
         return self.pila.pop(-1)
 
+    def tam_pila(self):
+        return len(self.pila)
+
     def __unicode__(self):
         return u'Estado(\n%s,\n%s\n)' % (
             identar(unicode(self.entorno)),

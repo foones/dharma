@@ -1,3 +1,4 @@
+
 che boludo, la plata es una dimensión,
   che boludo, el peso mide plata,
   che boludo, un centavo son cero coma cero un pesos,
@@ -31,7 +32,7 @@ es
     un año
 boludo,
 
-che, un buliano puede ser posta o quizás ni_en_pedo boludo,
+che, un buliano puede ser posta o quizas ñempedo boludo,
 
 che, un día_de_la_semana puede ser
   lunes,
@@ -40,26 +41,27 @@ che, un día_de_la_semana puede ser
   jueves,
   viernes,
   sábado
-  o capaz domingo
+  o quizás domingo
 boludo,
 
 che, una forma puede ser
-  un círculo con el centro y el radio
-  o capaz un cuadrado con un vértice y el lado
+  un círculo con radio
+  o quizás un cuadrado con un vértice y el lado
 boludo,
 
 che, un lambda_término puede ser
-  una variable con un identificador
-  o capaz una aplicación de una función a un argumento
-  o capaz una abstracción con el parámetro y el cuerpo
+  una lambda_variable con un identificador
+  o quizás una lambda_aplicación de una función a un argumento
+  o quizás una lambda_abstracción con el parámetro y el cuerpo
 boludo,
 
 posta,
-diez metros,
+ñempedo,
+diez metro',
 un millón de kilómetros,
 
+un <año^2> pero expresado en <días^2>,
 un lambda_termino,
-un círculo,
 
-un <año^2> pero expresarlo en <días^2>
+un metro, crear un círculo
 
