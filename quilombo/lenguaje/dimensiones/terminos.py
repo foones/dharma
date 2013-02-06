@@ -93,7 +93,7 @@ class TUnidadDeMedidaBasica(TerminoConstante):
     def __unicode__(self):
         return u'%s' % (self._nombre_unidad,)
 
-    def mostrar(self, flexion_numero):
+    def mostrar(self, flexion_numero='s'):
         if flexion_numero == 's':
             return tesoro_actual().sustantivo_comun_singular(self._nombre_unidad)
         else:
@@ -176,7 +176,7 @@ class TUnidadDeMedidaCompuesta(TerminoConstante):
     def __unicode__(self):
         return self.mostrar('s')
 
-    def mostrar(self, flexion_numero):
+    def mostrar(self, flexion_numero='s'):
         if self._nombre is not None:
             if flexion_numero == 's':
                 return tesoro_actual().sustantivo_comun_singular(self._nombre)
@@ -314,7 +314,10 @@ class TCantidad(Termino):
         else:
             return u'TCantidad(%s, %s)' % (self.numero, self.unidad)
 
-    def mostrar(self, flexion_numero):
+    def dimension(self):
+        return self.unidad.dimension()
+
+    def mostrar(self, flexion_numero='s'):
         numero = self.numero
         factor, unidad = self.unidad.en_unidades_naturales().extraer_coeficiente()
         numero = numero * factor
@@ -323,7 +326,7 @@ class TCantidad(Termino):
         nombre_unidad_normalizado = unidad.mostrar(fn)
 
         nombre_unidad = nombre_unidad_normalizado
-        if ' ' in nombre_unidad_normalizado or nombre_unidad_normalizado == '':
+        if ' ' in nombre_unidad_normalizado or '^' in nombre_unidad_normalizado or nombre_unidad_normalizado == '':
             nombre_unidad = u'<%s>' % (nombre_unidad_normalizado,)
 
         nombre_unidad_normalizado = nombre_unidad_normalizado.split(' ')[0]
@@ -390,12 +393,11 @@ class TExpresarCantidadEn(Termino):
             dq = uq.dimension()
             if dp != dq:
                 raise QuilomboException(u'la cantidad "%s" es de dimensión "%s" y no se puede expresar en la unidad "%s" que es de dimensión "%s"' % (cantidad, dp, unidad, dq))
-            #np, up = _reducir_unidad(cantidad)
-            #nq, uq = _reducir_unidad(unidad)
-            #if up != uq:
-            #    raise QuilomboException(u'la cantidad "%s" no se puede expresar en la unidad "%s"' % (cantidad, unidad))
-            #yield TCantidad(np / nq, _real_unidad(unidad))
-            yield TNada()
+            factorp, up2 = up.en_unidades_basicas().extraer_coeficiente()
+            factorq, uq2 = uq.en_unidades_basicas().extraer_coeficiente()
+            factorp = factorp * np
+            factorq = factorq * nq
+            yield TCantidad(factorp / factorq, unidad)
 
 class TProductoCantidades(Termino):
 

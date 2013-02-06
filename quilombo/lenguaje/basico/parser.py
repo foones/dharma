@@ -21,7 +21,6 @@ from lenguaje.numeros.parser import PEnteroEnDiccionario
 class PVerboInfinitivo(PToken):
     "Parser para verbos en infinitivo fijos."
     def __init__(self, raiz, **kwargs):
-        print raiz
         PToken.__init__(self,
                         tipo='palabra',
                         predicado=lambda tok:
