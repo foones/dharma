@@ -1,11 +1,14 @@
 from lenguaje.parser import (
     PSecuenciaConAccion, PPuntuacion, PAlternativa,
-    PClausuraConTerminadorConAccion, PLookahead,
+    PClausuraConTerminador, PClausuraConTerminadorConAccion,
+    PLookahead, PPalabra, POpcional,
 )
 from lenguaje.basico.parser import (
     PPalabras, PApelativo, PVocativo, PComa, PPreposicion, PNominal,
 )
-from lenguaje.terminos import TNada
+from lenguaje.inductivos.terminos import (
+    TDefinicionDeTipoInductivo, TDeclaracionConstructorConParametros,
+)
 
 class PSeparadorUnionDisjunta(PAlternativa):
 
@@ -19,14 +22,16 @@ class PSeparadorUnionDisjunta(PAlternativa):
             PPalabras('o por ahi'),
         )
 
-class PConstructorConParametros(PSecuenciaConAccion):
+class PDeclaracionConstructorConParametros(PSecuenciaConAccion):
 
     def __init__(self):
-        PSecuenciaConAccion.__init__(self, lambda xs: TNada(),
+        PSecuenciaConAccion.__init__(self,
+            lambda xs: TDeclaracionConstructorConParametros(xs[0], xs[1]),
             PNominal(),
-            PClausuraConTerminadorConAccion(lambda xs: xs,
-                PSecuenciaConAccion(lambda xs: xs,
-                    PPreposicion(),
+            PClausuraConTerminador(
+                PSecuenciaConAccion(lambda xs: xs[2],
+                    POpcional(PPalabra('y')),
+                    POpcional(PPreposicion()),
                     PNominal(),
                 ),
                 terminador=PLookahead(
@@ -41,12 +46,13 @@ class PConstructorConParametros(PSecuenciaConAccion):
 class PDefinicionDeTipoInductivo(PSecuenciaConAccion):
 
     def __init__(self):
-        PSecuenciaConAccion.__init__(self, lambda xs: TNada(),
+        PSecuenciaConAccion.__init__(self,
+            lambda xs: TDefinicionDeTipoInductivo(xs[2], xs[4]),
             PVocativo(), PPuntuacion(','),
             PNominal(), # nombre del tipo
             PPalabras('puede ser'),
             PClausuraConTerminadorConAccion(lambda xs: xs,
-                PConstructorConParametros(),
+                PDeclaracionConstructorConParametros(),
                 terminador=PApelativo(),
                 separador=PSeparadorUnionDisjunta(),
             ),

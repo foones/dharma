@@ -42,8 +42,14 @@ che, un día_de_la_semana puede ser
 boludo,
 
 che, una forma puede ser
-  un círculo con un centro con un radio
-  o quizás un cuadrado
+  un círculo con el centro y el radio
+  o capaz un cuadrado con un vértice y el lado
+boludo,
+
+che, un lambda_término puede ser
+  una variable con un identificador
+  o capaz una aplicación de una función a un argumento
+  o capaz una abstracción con el parámetro y el cuerpo
 boludo,
 
 un <año^2> pero expresarlo en <días^2>
