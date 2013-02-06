@@ -17,7 +17,7 @@ class Entorno(object):
 
     def declarar(self, nombre, valor=None):
         if nombre in self._entorno[-1]:
-            raise QuilomboException('Epa: "%s" ya estaba declarada.' % (nombre,))
+            raise QuilomboException(u'Epa: "%s" ya estaba declarada.' % (nombre,))
         self._entorno[-1][nombre] = valor
 
     def asignar(self, nombre, valor):
@@ -25,13 +25,13 @@ class Entorno(object):
             if nombre in costilla:
                 costilla[nombre] = valor
                 return valor
-        raise QuilomboException('Epa: "%s" no estaba ligada.' % (nombre,))
+        raise QuilomboException(u'Epa: "%s" no estaba ligada.' % (nombre,))
 
     def valor(self, nombre):
         for costilla in reversed(self._entorno):
             if nombre in costilla:
                 return costilla[nombre]
-        raise QuilomboException('Epa: "%s" no estaba ligada.' % (nombre,))
+        raise QuilomboException(u'Epa: "%s" no estaba ligada.' % (nombre,))
 
     def __unicode__(self):
         res = []

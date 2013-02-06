@@ -10,6 +10,7 @@ from lenguaje.tesoro import armar_tesoro
 LETRAS_MINUSCULAS = u'abcdefghijklmnopqrstuvwxyzáéíóúüñ'
 LETRAS_MAYUSCULAS = u'ABCDEFGHIJKLMNOPQRSTUVWXYZÁÉÍÓÚÜñ'
 LETRAS = LETRAS_MINUSCULAS + LETRAS_MAYUSCULAS + "'"
+DIGITOS = '0123456789'
 
 class Posicion(object): 
     u"Representa una posición dentro de un archivo."
@@ -94,7 +95,18 @@ def stream_de_tokens(texto, nombre_archivo='...'):
 
             i = j
             pos = pos_final
-        elif texto[i] in [',', '.', '<', '>', '$', '/']:
+
+        elif texto[i] in DIGITOS:
+            j = i
+            pos_final = pos
+            while j < len(texto) and texto[j] in DIGITOS:
+                pos_final = pos_final.avanzar(texto[j])
+                j += 1
+            yield Token('numero', texto[i:j], pos, pos_final)
+            i = j
+            pos = pos_final
+
+        elif texto[i] in [',', '.', '<', '>', '$', '/', '^']:
             j = i + 1
             pos_final = pos.avanzar(texto[i:j])
             yield Token('puntuacion', texto[i:j], pos, pos_final)

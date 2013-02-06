@@ -511,6 +511,10 @@ class PPuntuacion(PToken):
     def __init__(self, punt, **kwargs):
         PToken.__init__(self, tipo='puntuacion', valor=punt, **kwargs)
 
+class PTokenNumerico(PToken):
+    def __init__(self):
+        PToken.__init__(self, tipo='numero', func_resultado=lambda tok: int(tok.valor))
+
 class PPalabras(PSecuencia):
 
     def __init__(self, palabras, **kwargs):

@@ -1,4 +1,7 @@
-from lenguaje.parser import PAlternativa, PSecuenciaConAccion
+from lenguaje.parser import (
+    PAlternativa, PSecuenciaConAccion, POpcional, PClausuraConTerminadorConAccion,
+    PPuntuacion, PPalabra, PTokenNumerico,
+)
 from lenguaje.basico.parser import (
     PVocativo, PApelativo, PComa, PNominal, PPalabras, PAlternativaPalabras,
     PVerboInfinitivo,
@@ -9,7 +12,8 @@ from lenguaje.numeros.parser import (
 )
 from lenguaje.dimensiones.terminos import (
     TDefinicionDeDimension, TDefinicionDeUnidadBasica, TDefinicionDeUnidadDerivada,
-    TCantidad, TExpresarCantidadEn,
+    TCantidad, TExpresarCantidadEn, TProductoCantidades, TPotenciaCantidad,
+    INDICADOR_RECIPROCO,
 )
 
 class PDefinicionDeDimension(PSecuenciaConAccion):
@@ -50,23 +54,59 @@ class PDefinicionDeUnidadDerivada(PSecuenciaConAccion):
             parser_expresion,
         )
 
+class PUnidad(PAlternativa):
+
+    def __init__(self):
+
+        def accion(xs):
+            return xs[1]
+
+        def accion_clausura(xs):
+            return TProductoCantidades(xs)
+
+        def accion_interna(xs):
+            if xs[0] == ():
+                p = 1
+            else:
+                p = -1
+            if xs[2] != ():
+                p = p * xs[2][0]
+            return TPotenciaCantidad(xs[1], p)
+
+        PAlternativa.__init__(self,
+            PNominal(devolver_variable=True),
+            PSecuenciaConAccion(accion,
+                PPuntuacion('<'),
+                PClausuraConTerminadorConAccion(accion_clausura,
+                    PSecuenciaConAccion(accion_interna,
+                        POpcional(PPalabra(INDICADOR_RECIPROCO)),
+                        PNominal(devolver_variable=True),
+                        POpcional(
+                            PSecuenciaConAccion(lambda xs: xs[1],
+                                PPuntuacion('^'),
+                                PTokenNumerico(),
+                            )
+                        )
+                    ),
+                    terminador=PPuntuacion('>'),
+                )
+            )
+        )
+
 class PCantidad(PNumeroEspecificado):
+
     def __init__(self):
         PNumeroEspecificado.__init__(self,
-            parser_especificador_unidad=PNominal(),
-            envolver=lambda numero, unidad: TCantidad(numero, TVariable(unidad))
+            parser_especificador_unidad=PUnidad(),
+            envolver=lambda numero, unidad: TCantidad(numero, unidad)
         )
 
 class PExpresarCantidadEn(PSecuenciaConAccion):
-
     def __init__(self, parser_expresion):
         def accion(xs):
             return TExpresarCantidadEn(xs[2])
         PSecuenciaConAccion.__init__(self, accion,
             PVerboInfinitivo('expres*'), PPalabras('en'),
-            PNominal(devolver_variable=True),
-            #PAlternativa(
-            #    parser_expresion,
-            #),
+            PUnidad(),
         )
 

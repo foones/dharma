@@ -61,11 +61,34 @@ class TNumero(TerminoConstante):
             tokens=self.tokens()
         )
 
+    def __neg__(self):
+        return self * TNumero(-1)
+
     def __div__(self, otro):
         return self * otro.inverso()
 
     def inverso(self):
         return TNumero(a=1 / self._a, b=1 / self._b)
+
+    def __pow__(self, otro):
+        if isinstance(otro, int) or isinstance(otro, long):
+            if otro == 0:
+                return TNumero(1)
+
+            base = self
+            if otro < 0:
+                base = base.inverso()
+                otro = -otro
+
+            res = TNumero(1)
+            while otro > 0:
+                if otro % 2 == 1:
+                    res = res * base
+                otro = otro // 2
+                base = base * base
+            return res
+        else:
+            raise Exception(u'potencia de números en general no implementada')
 
     def _numero_escrito_10(self, base, pico):
         assert 0 <= base and base < 10
