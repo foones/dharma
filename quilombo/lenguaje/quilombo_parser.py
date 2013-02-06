@@ -24,6 +24,9 @@ from lenguaje.dimensiones.parser import (
     PDefinicionDeDimension, PDefinicionDeUnidadBasica, PDefinicionDeUnidadDerivada,
     PCantidad, PExpresarCantidadEn,
 )
+from lenguaje.inductivos.parser import (
+    PDefinicionDeTipoInductivo,
+)
 
 class PCabezaDefinicionDeFuncion(PAlternativa):
 
@@ -195,6 +198,7 @@ class PExpresion(PAlternativa):
             lambda: PExpresarCantidadEn(parser_expresion=PExpresion()),
 
             ## Tipos inductivos
+            PDefinicionDeTipoInductivo(),
 
             **kwargs
         )

@@ -9,7 +9,7 @@ from lenguaje.tesoro import armar_tesoro
 
 LETRAS_MINUSCULAS = u'abcdefghijklmnopqrstuvwxyzáéíóúüñ'
 LETRAS_MAYUSCULAS = u'ABCDEFGHIJKLMNOPQRSTUVWXYZÁÉÍÓÚÜñ'
-LETRAS = LETRAS_MINUSCULAS + LETRAS_MAYUSCULAS + "'"
+LETRAS = LETRAS_MINUSCULAS + LETRAS_MAYUSCULAS + "_'"
 DIGITOS = '0123456789'
 
 class Posicion(object): 
