@@ -326,8 +326,8 @@ class TNumero(TerminoConstante):
 
         if restante != 0:
             escrito += self._escribir_decimales(restante)
-            if pico_decimal:
-                escrito += ' y pico'
+        if pico_decimal:
+            escrito += ' y pico'
         return escrito
 
     def __unicode__(self):
