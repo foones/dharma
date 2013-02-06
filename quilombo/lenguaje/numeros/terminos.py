@@ -104,7 +104,7 @@ class TNumero(TerminoConstante):
             8: 'ocho',
             9: 'nueve',
           }[base]
-        if pico == 1: sbase += ' y pico'
+        #if pico == 1: sbase += ' y pico'
         return sbase
 
     def _numero_escrito_100(self, base, pico):
@@ -200,9 +200,9 @@ class TNumero(TerminoConstante):
         ]
         if base == 0:
             sbase = 'cero'
-            if pico == 1:
-                sbase += ' y pico'
+            #if pico == 1: sbase += ' y pico'
             return sbase
+
         partes = []
         while base > 0:
             pot = 0
@@ -235,7 +235,11 @@ class TNumero(TerminoConstante):
         i = 0
 
         significativos = 0
-        while significativos < 1000 or i < 20:
+
+        max_significativos = 1000
+        max_i = 20
+
+        while significativos < max_significativos or i < max_i:
             decimales *= 100
             num = int(decimales)
             decimales = decimales - num
@@ -248,7 +252,7 @@ class TNumero(TerminoConstante):
                 pals.append('cero')
                 pals.append(self._numero_escrito_10(num, 0))
             elif num < 100:
-                significativos += significativos * 10 + 1
+                significativos += significativos * 100 + 1
                 if num % 10 == 0:
                     pals.append(self._numero_escrito_10(num // 10, 0))
                     pals.append('cero')
@@ -274,8 +278,28 @@ class TNumero(TerminoConstante):
         if ancho == 0:
             pico = 0
 
+        if pico != 0:
+            while pico > 1 and int(self._a) // pico == 0:
+                pico = pico // 10
+
+        pico_decimal = False
         if pico == 0:
             restante = self._a - int(self._a)
+            base = int(self._a)
+        elif pico == 1:
+            pico_decimal = True
+            pico = 0
+            min_restante = self._a - int(self._a)
+            max_restante = self._b - int(self._b)
+
+            nshifts = 0
+            while nshifts < 20:
+                nshifts += 1
+                min_restante *= 10
+                max_restante *= 10
+                if int(min_restante) != int(max_restante):
+                    break
+            restante = float(int(min_restante)) / 10.0 ** nshifts
             base = int(self._a)
         else:
             restante = 0
@@ -302,6 +326,8 @@ class TNumero(TerminoConstante):
 
         if restante != 0:
             escrito += self._escribir_decimales(restante)
+            if pico_decimal:
+                escrito += ' y pico'
         return escrito
 
     def __unicode__(self):
