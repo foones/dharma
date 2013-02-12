@@ -9,9 +9,9 @@ che, un día_de_la_semana puede ser
   o quizás domingo
 boludo,
 
-che, una lista puede ser
-  una lista_cons con una cabeza y una cola,
-  la lista_vacía
+che, una lista_de_cosas puede ser
+  una lista_compuesta con una cabeza y una cola
+  o quizás la lista_vacía
 boludo,
 
 che, un nat puede ser
@@ -19,7 +19,15 @@ che, un nat puede ser
   o quizas el nat_sucesor del nat_predecesor
 boludo,
 
-la lista_cons que tiene
+una lista_compuesta que tiene
   cabeza: uno <>,
   cola  : la lista_vacía
+y eso,
+
+fijarse
+  si es tipo una lista_compuesta que tiene
+                 cabeza: un nat,
+                 cola:   un nat
+      entonces
+        dos <>
 y listo

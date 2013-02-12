@@ -5,7 +5,7 @@ from lenguaje.parser import (
 )
 from lenguaje.basico.parser import (
     PPalabras, PApelativo, PVocativo, PComa, PPreposicion, PNominal,
-    PAlternativaPalabras, PVerboInfinitivo,
+    PAlternativaPalabras, PVerboInfinitivo, PTerminadorFrase,
 )
 from lenguaje.inductivos.terminos import (
     TDefinicionDeTipoInductivo, TDeclaracionConstructorConParametros,
@@ -65,7 +65,7 @@ from lenguaje.terminos import TNada
 
 class PAplicacionDirectaConstructor(PSecuenciaConAccion):
 
-    def __init__(self, parser_expresion):
+    def __init__(self, parser_expresion, parser_terminador_constructor):
         PSecuenciaConAccion.__init__(self,
             lambda xs: TAplicacionDirectaConstructor(xs[0], xs[2]),
             PNominal(devolver_variable=True),
@@ -81,7 +81,7 @@ class PAplicacionDirectaConstructor(PSecuenciaConAccion):
                     parser_expresion,
                 ),
                 separador=PPuntuacion(','),
-                terminador=PPalabras('y listo'),
+                terminador=parser_terminador_constructor,
             ),
         )
 
@@ -106,5 +106,22 @@ class PAplicacionParcialConstructor(PSecuenciaConAccion):
             PNominal(),
             PAlternativaPalabras(['es', 'son', 'sea', 'sean']),
             parser_expresion,
+        )
+
+class PAnalisisDeCasosTopePila(PSecuenciaConAccion):
+
+    def __init__(self, parser_expresion):
+        PSecuenciaConAccion.__init__(self,
+            lambda xs: TNada(),
+            PVerboInfinitivo('fij*'),
+            PClausuraConTerminador(
+                PSecuencia(
+                    PPalabras('si es tipo'),
+                    PAplicacionDirectaConstructor(parser_expresion, PPalabra('entonces')),
+                    parser_expresion,
+                ),
+                separador=PPuntuacion(','),
+                terminador=PTerminadorFrase(),
+            ),
         )
 

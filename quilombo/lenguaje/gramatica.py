@@ -167,6 +167,8 @@ PALABRAS_CLAVE.append('coma')
 PALABRAS_CLAVE.append('listo')
 #PALABRAS_CLAVE.append('posta')
 PALABRAS_CLAVE.append('dimension')
+PALABRAS_CLAVE.append('si')
+PALABRAS_CLAVE.append('entonces')
 for clave, diccionario in NUMEROS_CARDINALES.items():
     for nombre, numero in diccionario.items():
         PALABRAS_CLAVE.append(nombre)

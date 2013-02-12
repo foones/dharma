@@ -17,7 +17,7 @@ from lenguaje.terminos import (
 )
 from lenguaje.basico.parser import (
     PVerboNuevoInfinitivo, PVocativo, PApelativo, PComa, PPuntoFinal,
-    PNominal, PPreposicion, PAlternativaPalabras,
+    PNominal, PPreposicion, PAlternativaPalabras, PTerminadorFrase,
 )
 from lenguaje.dimensiones.parser import (
     PDefinicionDeDimension, PDefinicionDeUnidadBasica, PDefinicionDeUnidadDerivada,
@@ -28,6 +28,7 @@ from lenguaje.inductivos.parser import (
     PAplicacionDirectaConstructor,
     PAplicacionTotalConstructor,
     PAplicacionParcialConstructor,
+    PAnalisisDeCasosTopePila,
 )
 
 class PCabezaDefinicionDeFuncion(PAlternativa):
@@ -216,13 +217,19 @@ class PExpresion(PAlternativa):
             #    centro: un metro,
             #    radio: dos metros
             # y listo
-            lambda: PAplicacionDirectaConstructor(parser_expresion=PExpresion()),
+            lambda: PAplicacionDirectaConstructor(
+                        parser_expresion=PExpresion(),
+                        parser_terminador_constructor=PTerminadorFrase()
+                    ),
 
             # dos metros, un metro, crear un círculo
             lambda: PAplicacionTotalConstructor(parser_expresion=PExpresion()),
 
             # un círculo, cuyo centro es un metro, cuyo radio es dos metros
             lambda: PAplicacionParcialConstructor(parser_expresion=PExpresion()),
+
+            # 
+            lambda: PAnalisisDeCasosTopePila(parser_expresion=PExpresion()),
 
             **kwargs
         )

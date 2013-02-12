@@ -198,3 +198,18 @@ class PPuntoFinal(PPuntuacion):
     def __init__(self, **kwargs):
         PPuntuacion.__init__(self, '.', **kwargs)
 
+class PTerminadorFrase(PSecuencia):
+    def __init__(self):
+        PSecuencia.__init__(self,
+            PPalabra('y'),
+            PAlternativa(
+                PPalabras('chau'),
+                PPalabras('listo'),
+                PPalabras('punto'),
+                PPalabras('nada'),
+                PPalabras('nada mas'),
+                PPalabras('eso'),
+                PPalabras('ya esta'),
+            )
+        )
+
