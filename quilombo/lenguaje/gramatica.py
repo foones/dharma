@@ -24,7 +24,7 @@ GENERO_MASCULINO = Genero('masculino')
 GENERO_FEMENINO = Genero('femenino')
 
 ##
-VERBOS_RESERVADOS = ['agarr*', 'expres*', 'cre*', 'constru*']
+VERBOS_RESERVADOS = ['agarr*', 'expres*', 'cre*', 'constru*', 'met*', 'guard*']
 PREPOSICIONES = u'a ante bajo cabe con contra de desde en entre hacia hasta para por segun sin so sobre tras mediante durante'.split(' ')
 
 DATOS_ARTICULOS = {
@@ -167,6 +167,8 @@ PALABRAS_CLAVE.append('coma')
 PALABRAS_CLAVE.append('listo')
 #PALABRAS_CLAVE.append('posta')
 PALABRAS_CLAVE.append('dimension')
+PALABRAS_CLAVE.append('resultado')
+PALABRAS_CLAVE.append('numero')
 PALABRAS_CLAVE.append('si')
 PALABRAS_CLAVE.append('entonces')
 for clave, diccionario in NUMEROS_CARDINALES.items():

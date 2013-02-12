@@ -129,9 +129,6 @@ class TAplicacionDirectaConstructor(Termino):
             for args in evaluar_lista_en(argumentos_no_evaluados, estado):
                 constructor_ap = constructor
 
-                for i in range(min(len(args) + 1, estado.tam_pila())):
-                    estado.pop()
-
                 for nombre_parametro, arg in zip(nombres_parametros, args):
                     constructor_ap = constructor_ap.currificar_parametro(
                         nombre_parametro, 
@@ -164,6 +161,16 @@ class TAplicacionTotalConstructor(Termino):
             for arg in reversed(args):
                 constructor_ap = constructor_ap.currificar(arg)
 
+            # No meterlo en la pila. Para meterlo usar:
+            #
+            #    guardar el resultado de construir ...
+            # O:
+            #    meter el resultado de construir ...
+            #
+            # En lugar de:
+            #    construir ...
+            #
+            #estado.push(constructor_ap)
             yield constructor_ap
 
 class TAplicacionParcialConstructor(Termino):
@@ -184,5 +191,22 @@ class TAplicacionParcialConstructor(Termino):
                 self._nombre_parametro, 
                 valor
             )
+            estado.push(constructor_ap)
             yield constructor_ap
+
+class TAnalisisDeCasosTopePila(Termino):
+
+    def __init__(self, casos):
+        self._casos = casos 
+
+    def __unicode__(self):
+        s = []
+        for k, v in self._casos:
+            s.append(u'%s => %s' % (k, v))
+        return 'TAnalisisDeCasosTopePila([\n%s\n])' % (
+                    identar(',\n'.join(s)),
+                )
+
+    def evaluar_en(self, estado):
+        yield TNada()
 

@@ -1,6 +1,7 @@
 from lenguaje.parser import (
     PSecuencia, PSecuenciaConAccion, PPuntuacion, PAlternativa,
     PClausuraConTerminador, PClausuraConTerminadorConAccion,
+    PClausura1ConUltimoElemento,
     PLookahead, PPalabra, POpcional,
 )
 from lenguaje.basico.parser import (
@@ -10,7 +11,7 @@ from lenguaje.basico.parser import (
 from lenguaje.inductivos.terminos import (
     TDefinicionDeTipoInductivo, TDeclaracionConstructorConParametros,
     TAplicacionDirectaConstructor, TAplicacionTotalConstructor,
-    TAplicacionParcialConstructor,
+    TAplicacionParcialConstructor, TAnalisisDeCasosTopePila,
 )
 
 class PSeparadorUnionDisjunta(PAlternativa):
@@ -65,7 +66,7 @@ from lenguaje.terminos import TNada
 
 class PAplicacionDirectaConstructor(PSecuenciaConAccion):
 
-    def __init__(self, parser_expresion, parser_terminador_constructor):
+    def __init__(self, parser_expresion):
         PSecuenciaConAccion.__init__(self,
             lambda xs: TAplicacionDirectaConstructor(xs[0], xs[2]),
             PNominal(devolver_variable=True),
@@ -73,7 +74,7 @@ class PAplicacionDirectaConstructor(PSecuenciaConAccion):
                 PPalabras('que'),
                 PAlternativaPalabras(['tiene', 'tienen', 'tenga', 'tengan']),
             ),
-            PClausuraConTerminador(
+            PClausura1ConUltimoElemento(
                 PSecuenciaConAccion(lambda xs: (xs[1], xs[3]),
                     POpcional(PPreposicion()),
                     PNominal(),
@@ -81,7 +82,7 @@ class PAplicacionDirectaConstructor(PSecuenciaConAccion):
                     parser_expresion,
                 ),
                 separador=PPuntuacion(','),
-                terminador=parser_terminador_constructor,
+                marcador_ultimo_elemento=PPalabra('y'),
             ),
         )
 
@@ -108,24 +109,37 @@ class PAplicacionParcialConstructor(PSecuenciaConAccion):
             parser_expresion,
         )
 
+class PEntonces(PSecuencia):
+    def __init__(self):
+        PSecuencia.__init__(self,
+            POpcional(PPuntuacion(',')),
+            PPalabra('entonces'),
+        )
+
 class PAnalisisDeCasosTopePila(PSecuenciaConAccion):
 
     def __init__(self, parser_expresion):
         PSecuenciaConAccion.__init__(self,
-            lambda xs: TNada(),
-            PVerboInfinitivo('fij*'),
-            PClausuraConTerminador(
-                PSecuencia(
+            lambda xs: TAnalisisDeCasosTopePila(xs[1]),
+            PAlternativa(
+                PVerboInfinitivo('fij*'),
+                PVerboInfinitivo('mir*'),
+            ),
+            PClausura1ConUltimoElemento(
+                PSecuenciaConAccion(lambda xs: (xs[2], xs[4]),
                     PPalabra('si'),
                     PAlternativaPalabras(['es', 'son']),
                     PAlternativa(
-                        PSecuencia(PNominal(), PPalabra('entonces')),
-                        PAplicacionDirectaConstructor(parser_expresion, PPalabra('entonces')),
+                        PNominal(devolver_variable=True), 
+                        PAplicacionDirectaConstructor(
+                            parser_expresion=parser_expresion,
+                        ),
                     ),
+                    PEntonces(),
                     parser_expresion,
                 ),
                 separador=PPuntuacion(','),
-                terminador=PTerminadorFrase(),
+                marcador_ultimo_elemento=PPalabra('y'),
             ),
         )
 

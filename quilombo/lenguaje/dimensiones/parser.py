@@ -1,6 +1,6 @@
 from lenguaje.parser import (
     PAlternativa, PSecuenciaConAccion, POpcional, PClausuraConTerminadorConAccion,
-    PPuntuacion, PPalabra, PTokenNumerico,
+    PPuntuacion, PPalabra, PTokenNumerico, PLookahead,
 )
 from lenguaje.basico.parser import (
     PVocativo, PApelativo, PComa, PNominal, PPalabras, PAlternativaPalabras,
@@ -13,7 +13,7 @@ from lenguaje.numeros.parser import (
 from lenguaje.dimensiones.terminos import (
     TDefinicionDeDimension, TDefinicionDeUnidadBasica, TDefinicionDeUnidadDerivada,
     TCantidad, TExpresarCantidadEn, TProductoCantidades, TPotenciaCantidad,
-    INDICADOR_RECIPROCO,
+    INDICADOR_RECIPROCO, UNIDAD_SIN_DIMENSION,
 )
 
 class PDefinicionDeDimension(PSecuenciaConAccion):
@@ -99,6 +99,17 @@ class PCantidad(PNumeroEspecificado):
         PNumeroEspecificado.__init__(self,
             parser_especificador_unidad=PUnidad(),
             envolver=lambda numero, unidad: TCantidad(numero, unidad)
+        )
+
+class PNumeroPuro(PSecuenciaConAccion):
+
+    def __init__(self, parser_separador_expresiones):
+        PSecuenciaConAccion.__init__(self, lambda xs: xs[1],
+            PPalabras('el numero'),
+            PNumeroEspecificado(
+                parser_especificador_unidad=PLookahead(parser_separador_expresiones),
+                envolver=lambda numero, unidad: TCantidad(numero, UNIDAD_SIN_DIMENSION)
+            ),
         )
 
 class PExpresarCantidadEn(PSecuenciaConAccion):

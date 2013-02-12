@@ -39,7 +39,7 @@ che, un natural puede ser
   o quizás el sucesor de un predecesor
 boludo,
 
-el sucesor, cuyo predecesor es zero,
+meter el sucesor, cuyo predecesor es zero,
 
 che, un día_de_la_semana puede ser
   lunes,
@@ -62,18 +62,11 @@ che, un lambda_término puede ser
   o quizás una lambda_abstracción con el parámetro y el cuerpo
 boludo,
 
-una lambda_abstracción,
+meter una lambda_abstracción,
   cuyo parámetro es un sábado,
-  cuyo cuerpo es {
-    una lambda_variable,
-      cuyo identificador es {
-        veintipico de <kilómetros^2 por minuto> pero expresado en <metros^2 por hora>
-      }
-  }
+  cuyo cuerpo es un domingo,
 
-,
 una lambda_abstracción que tenga
-  parámetro: un lunes,
-  cuerpo: un martes
-y listo
+  parámetro: un lunes
+  y cuerpo: un martes
 

@@ -461,6 +461,28 @@ class PClausura1ConTerminador(PClausura1ConTerminadorConAccion):
             **kwargs
         )
 
+class PClausura1ConUltimoElementoConAccion(PSecuenciaConAccion):
+
+    def __init__(self, accion, parser, marcador_ultimo_elemento, separador=None, **kwargs):
+        PSecuenciaConAccion.__init__(self,
+            lambda xs: accion(xs[0] + [xs[1]]),
+            PClausura1ConTerminador(
+                parser,
+                terminador=marcador_ultimo_elemento,
+                separador=separador,
+            ),
+            parser,
+        )
+
+class PClausura1ConUltimoElemento(PClausura1ConUltimoElementoConAccion):
+    def __init__(self, parser, marcador_ultimo_elemento, separador=None, **kwargs):
+        PClausura1ConUltimoElementoConAccion.__init__(self,
+            lambda xs: xs,
+            parser,
+            marcador_ultimo_elemento,
+            separador=separador,
+        )
+
 class POpcional(Parser):
 
     def __init__(self, parser, **kwargs):

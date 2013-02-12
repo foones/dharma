@@ -21,14 +21,15 @@ from lenguaje.basico.parser import (
 )
 from lenguaje.dimensiones.parser import (
     PDefinicionDeDimension, PDefinicionDeUnidadBasica, PDefinicionDeUnidadDerivada,
-    PCantidad, PExpresarCantidadEn,
+    PCantidad, PNumeroPuro, PExpresarCantidadEn,
 )
 from lenguaje.inductivos.parser import (
-    PDefinicionDeTipoInductivo,
-    PAplicacionDirectaConstructor,
-    PAplicacionTotalConstructor,
-    PAplicacionParcialConstructor,
+    PDefinicionDeTipoInductivo, PAplicacionDirectaConstructor,
+    PAplicacionTotalConstructor, PAplicacionParcialConstructor,
     PAnalisisDeCasosTopePila,
+)
+from lenguaje.pila.parser import (
+    PMeterElemento,
 )
 
 class PCabezaDefinicionDeFuncion(PAlternativa):
@@ -56,6 +57,8 @@ class PSeparadorExpresiones(PAlternativa):
 
     def __init__(self, **kwargs):
         PAlternativa.__init__(self,
+            PEOF(),
+
             PComa(),
 
             PSecuencia(
@@ -204,6 +207,9 @@ class PExpresion(PAlternativa):
             # cuatro <kilometros por hora>
             PCantidad(),
 
+            # el número ciento cuatro
+            lambda: PNumeroPuro(PSeparadorExpresiones()),
+
             # expresar en metros
             # expresarlo en <kilometros por hora>
             lambda: PExpresarCantidadEn(parser_expresion=PExpresion()),
@@ -216,11 +222,8 @@ class PExpresion(PAlternativa):
             # un círculo que tenga
             #    centro: un metro,
             #    radio: dos metros
-            # y listo
-            lambda: PAplicacionDirectaConstructor(
-                        parser_expresion=PExpresion(),
-                        parser_terminador_constructor=PTerminadorFrase()
-                    ),
+            #    y en color: azul
+            lambda: PAplicacionDirectaConstructor(parser_expresion=PExpresion()),
 
             # dos metros, un metro, crear un círculo
             lambda: PAplicacionTotalConstructor(parser_expresion=PExpresion()),
@@ -230,6 +233,9 @@ class PExpresion(PAlternativa):
 
             # 
             lambda: PAnalisisDeCasosTopePila(parser_expresion=PExpresion()),
+
+            ## Manipulación de la pila
+            lambda: PMeterElemento(parser_expresion=PExpresion()),
 
             **kwargs
         )

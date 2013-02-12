@@ -19,17 +19,20 @@ che, un nat puede ser
   o quizas el nat_sucesor del nat_predecesor
 boludo,
 
-una lista_compuesta que tiene
-  cabeza: uno <>,
-  cola  : la lista_vacía
-y eso,
+che, un color puede ser rojo, verde o quizás azul boludo,
+
+guardar una lista_compuesta que tiene
+    en la cola: la lista_vacía
+  y en la cabeza: el número uno,
+
+guardar el número ciento cuarenta,
+guardar el número doscientos,
+guardar el resultado de construir una lista_compuesta,
 
 fijarse
-  si es una lista_compuesta que tiene
-             cabeza: X,
-             cola:   Y
+  si es una lista_compuesta
+    que tiene en la cabeza: azul y en la cola: Y
     entonces X,
+  y si es una lista_vacía
+    entonces el número dos
 
-  si es una lista_vacía
-    entonces dos <>
-y listo

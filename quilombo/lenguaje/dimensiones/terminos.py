@@ -220,6 +220,8 @@ class TUnidadDeMedidaCompuesta(TerminoConstante):
     def extraer_coeficiente(self):
         return self._coeficiente, TUnidadDeMedidaCompuesta(self._potencias)
 
+UNIDAD_SIN_DIMENSION = TUnidadDeMedidaCompuesta({})
+
 class TDefinicionDeDimension(Termino):
 
     def __init__(self, nombre_dimension, *args, **kwargs):
@@ -330,21 +332,26 @@ class TCantidad(Termino):
             nombre_unidad = u'<%s>' % (nombre_unidad_normalizado,)
 
         nombre_unidad_normalizado = nombre_unidad_normalizado.split(' ')[0]
-        if tesoro_actual().sustantivo_comun_es_masculino(nombre_unidad_normalizado):
+        if nombre_unidad == '<>':
+            genero = 'msust'
+        elif tesoro_actual().sustantivo_comun_es_masculino(nombre_unidad_normalizado):
             genero = 'madj'
         else:
             genero = 'f'
 
         numero_escrito = numero.numero_escrito(genero)
 
-        intval = int(numero.valor_inferior())
-        llon_redondo = intval % 10 ** 6 == 0 and intval != 0
-        if not numero.es_exacto() or llon_redondo:
-            sep = u' de '
+        if nombre_unidad == '<>':
+            return u'el número ' + numero_escrito
         else:
-            sep = u' '
+            intval = int(numero.valor_inferior())
+            llon_redondo = intval % 10 ** 6 == 0 and intval != 0
+            if not numero.es_exacto() or llon_redondo:
+                sep = u' de '
+            else:
+                sep = u' '
 
-        return numero_escrito + sep + nombre_unidad
+            return numero_escrito + sep + nombre_unidad
 
     def __mul__(self, otro):
         assert isinstance(otro, TCantidad)
@@ -412,7 +419,7 @@ class TProductoCantidades(Termino):
 
     def evaluar_en(self, estado):
         if len(self._cantidades) == 0:
-            yield TCantidad(TNumero(1), TUnidadDeMedidaCompuesta({}))
+            yield TCantidad(TNumero(1), UNIDAD_SIN_DIMENSION)
             return
 
         for cs in evaluar_lista_en(self._cantidades, estado):

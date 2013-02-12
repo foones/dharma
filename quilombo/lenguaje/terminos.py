@@ -128,8 +128,6 @@ class TBloque(Termino):
 
         ti = terminos[i]
         for ri in ti.evaluar_en(estado):
-            if not ri.es_nada():
-                estado.pila.append(ri)
             if i + 1 < len(terminos):
                 for rs in self.evaluar_en(estado, i + 1):
                     yield rs
