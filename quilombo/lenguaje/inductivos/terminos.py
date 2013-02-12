@@ -2,7 +2,7 @@
 
 from comunes.utiles import identar, QuilomboException
 from lenguaje.tesoro import tesoro_actual
-from lenguaje.terminos import Termino, TNada
+from lenguaje.terminos import Termino, TNada, evaluar_lista_en
 
 class TTipoInductivo(Termino):
 
@@ -55,11 +55,15 @@ class TConstructor(Termino):
         res = []
         for param in self._nombres_parametros:
             if param in self._valores_parametros:
-                res.append(u'%s = %s' % (param, self._valores_parametros[param]))
+                param_s = tesoro_actual().sustantivo_comun_singular(param)
+                res.append(u'%s: %s' % (param_s, self._valores_parametros[param]))
+
         if res == []:
-            return self._nombre_constructor
+            nombre_s = tesoro_actual().sustantivo_comun_singular_con_articulo_determinado(self._nombre_constructor)
+            return nombre_s
         else:
-            return self._nombre_constructor + '(' + ', '.join(res) + ')'
+            nombre_s = tesoro_actual().sustantivo_comun_singular_con_articulo_indeterminado(self._nombre_constructor)
+            return nombre_s + ' que tiene\n' + identar(',\n'.join(res)) + '\ny listo'
 
     def aridad(self):
         return len(self._nombres_parametros) - len(self._valores_parametros)
@@ -95,15 +99,46 @@ class TDefinicionDeTipoInductivo(Termino):
         for decl in self._declaraciones_constructores:
             constructor = TConstructor(
                 self,
-                tesoro_actual().sustantivo_comun_singular(
-                    decl.nombre_constructor
-                ),
+                decl.nombre_constructor,
                 decl.nombres_parametros,
             )
             estado.entorno.declarar(decl.nombre_constructor, constructor)
             tipo.agregar_constructor(constructor)
         estado.entorno.declarar(self._nombre_tipo, tipo)
         yield TNada()
+
+class TAplicacionDirectaConstructor(Termino):
+
+    def __init__(self, constructor, parametros):
+        self._constructor = constructor
+        self._parametros = parametros
+
+    def __unicode__(self):
+        ps = []
+        for p, v in self._parametros:
+            ps.append(u'%s = %s' % (p, v))
+        return u'TAplicacionDirectaConstructor(%s, [\n%s\n])' % (
+            self._constructor,
+            identar('\n'.join(map(unicode, ps)))
+        )
+
+    def evaluar_en(self, estado):
+        for constructor in self._constructor.evaluar_en(estado):
+            nombres_parametros = map(lambda xs: xs[0], self._parametros)
+            argumentos_no_evaluados = map(lambda xs: xs[1], self._parametros)
+            for args in evaluar_lista_en(argumentos_no_evaluados, estado):
+                constructor_ap = constructor
+
+                for i in range(min(len(args) + 1, estado.tam_pila())):
+                    estado.pop()
+
+                for nombre_parametro, arg in zip(nombres_parametros, args):
+                    constructor_ap = constructor_ap.currificar_parametro(
+                        nombre_parametro, 
+                        arg
+                    )
+
+                yield constructor_ap
 
 class TAplicacionTotalConstructor(Termino):
 
@@ -116,24 +151,19 @@ class TAplicacionTotalConstructor(Termino):
     def evaluar_en(self, estado):
         for constructor in self._constructor.evaluar_en(estado):
 
-            if estado.tam_pila() > 0:
-                estado.pop() # sacar el mismo constructor, que fue empujado
-                             # al evaluar
-
             if not isinstance(constructor, TConstructor):
                 raise QuilomboException(u'%s no es un constructor' % (constructor,))
+
             npop = min(estado.tam_pila(), constructor.aridad())
 
             args = []
             for i in range(npop):
                 args.append(estado.pop())
 
-            print args
             constructor_ap = constructor
             for arg in reversed(args):
                 constructor_ap = constructor_ap.currificar(arg)
 
-            estado.push(constructor_ap)
             yield constructor_ap
 
 class TAplicacionParcialConstructor(Termino):
@@ -154,6 +184,5 @@ class TAplicacionParcialConstructor(Termino):
                 self._nombre_parametro, 
                 valor
             )
-            estado.push(constructor_ap)
             yield constructor_ap
 

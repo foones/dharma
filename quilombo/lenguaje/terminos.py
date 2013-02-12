@@ -20,6 +20,14 @@ class Termino(object):
     def es_nada(self):
         return False
 
+def evaluar_lista_en(xs, estado):
+    if xs == []:
+        yield []
+    else:
+        for y in xs[0].evaluar_en(estado):
+            for ys in evaluar_lista_en(xs[1:], estado):
+                yield [y] + ys
+
 class TerminoConstante(Termino):
 
     def evaluar_en(self, estado):

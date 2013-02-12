@@ -1,5 +1,6 @@
 #!/usr/bin/python
 # coding:utf-8
+import os
 import sys
 
 from comunes.utiles import leer_archivo, QuilomboException
@@ -14,6 +15,11 @@ def main():
         sys.exit(1)
 
     nombre_archivo = sys.argv[1]
+
+    for ext in ['', '.qu']:
+        if os.path.exists(nombre_archivo + ext):
+            nombre_archivo = nombre_archivo + ext
+            break
 
     try:
         contenido = leer_archivo(nombre_archivo)

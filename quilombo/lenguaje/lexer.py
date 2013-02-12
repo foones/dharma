@@ -106,7 +106,7 @@ def stream_de_tokens(texto, nombre_archivo='...'):
             i = j
             pos = pos_final
 
-        elif texto[i] in [',', '.', '<', '>', '$', '/', '^', '{', '}']:
+        elif texto[i] in [',', '.', ':', '<', '>', '$', '/', '^', '{', '}']:
             j = i + 1
             pos_final = pos.avanzar(texto[i:j])
             yield Token('puntuacion', texto[i:j], pos, pos_final)

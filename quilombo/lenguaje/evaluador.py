@@ -60,7 +60,7 @@ class Estado(object):
     def __unicode__(self):
         return u'Estado(\n%s,\n%s\n)' % (
             identar(unicode(self.entorno)),
-            identar('Pila([' + ', '.join(map(unicode, self.pila)) + '])')
+            identar('Pila([\n' + identar(',\n'.join(map(unicode, self.pila))) + '\n])')
         )
 
 def estado_inicial():

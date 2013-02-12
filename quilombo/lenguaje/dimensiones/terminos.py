@@ -1,7 +1,7 @@
 # coding:utf-8
 
 from comunes.utiles import QuilomboException
-from lenguaje.terminos import Termino, TerminoConstante, TNada
+from lenguaje.terminos import Termino, TerminoConstante, TNada, evaluar_lista_en
 from lenguaje.tesoro import tesoro_actual
 from lenguaje.numeros.terminos import TNumero
 
@@ -410,20 +410,12 @@ class TProductoCantidades(Termino):
     def __unicode__(self):
         return u'TProductoCantidades(%s)' % (self._cantidades,)
 
-    def _evaluar_lista_en(self, xs, estado):
-        if xs == []:
-            yield []
-        else:
-            for y in xs[0].evaluar_en(estado):
-                for ys in self._evaluar_lista_en(xs[1:], estado):
-                    yield [y] + ys
-
     def evaluar_en(self, estado):
         if len(self._cantidades) == 0:
             yield TCantidad(TNumero(1), TUnidadDeMedidaCompuesta({}))
             return
 
-        for cs in self._evaluar_lista_en(self._cantidades, estado):
+        for cs in evaluar_lista_en(self._cantidades, estado):
             res = cs[0]
             for c in cs[1:]:
                 res = res * c

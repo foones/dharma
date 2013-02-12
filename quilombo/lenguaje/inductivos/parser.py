@@ -1,5 +1,5 @@
 from lenguaje.parser import (
-    PSecuenciaConAccion, PPuntuacion, PAlternativa,
+    PSecuencia, PSecuenciaConAccion, PPuntuacion, PAlternativa,
     PClausuraConTerminador, PClausuraConTerminadorConAccion,
     PLookahead, PPalabra, POpcional,
 )
@@ -9,7 +9,8 @@ from lenguaje.basico.parser import (
 )
 from lenguaje.inductivos.terminos import (
     TDefinicionDeTipoInductivo, TDeclaracionConstructorConParametros,
-    TAplicacionTotalConstructor, TAplicacionParcialConstructor,
+    TAplicacionDirectaConstructor, TAplicacionTotalConstructor,
+    TAplicacionParcialConstructor,
 )
 
 class PSeparadorUnionDisjunta(PAlternativa):
@@ -61,6 +62,28 @@ class PDefinicionDeTipoInductivo(PSecuenciaConAccion):
         )
 
 from lenguaje.terminos import TNada
+
+class PAplicacionDirectaConstructor(PSecuenciaConAccion):
+
+    def __init__(self, parser_expresion):
+        PSecuenciaConAccion.__init__(self,
+            lambda xs: TAplicacionDirectaConstructor(xs[0], xs[2]),
+            PNominal(devolver_variable=True),
+            PSecuencia(
+                PPalabras('que'),
+                PAlternativaPalabras(['tiene', 'tienen', 'tenga', 'tengan']),
+            ),
+            PClausuraConTerminador(
+                PSecuenciaConAccion(lambda xs: (xs[1], xs[3]),
+                    POpcional(PPreposicion()),
+                    PNominal(),
+                    POpcional(PPuntuacion(':')),
+                    parser_expresion,
+                ),
+                separador=PPuntuacion(','),
+                terminador=PPalabras('y listo'),
+            ),
+        )
 
 class PAplicacionTotalConstructor(PSecuenciaConAccion):
 

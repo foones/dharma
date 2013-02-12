@@ -1,4 +1,5 @@
 # coding:utf-8
+from comunes.utiles import identar
 from lenguaje.gramatica import (
     DATOS_ARTICULOS,
     NUMERO_SINGULAR,
@@ -18,6 +19,12 @@ class Tesoro(object):
 
     def __init__(self):
         self._sustantivos = {}
+
+    def __unicode__(self):
+        kvs = []
+        for k, v in self._sustantivos.items():
+            kvs.append(u'%s -> %s' % (k, v))
+        return 'Tesoro(sustantivos = {\n' + identar(',\n'.join(kvs)) + '\n})'
 
     def declarar_sustantivo_comun(self, palabra, clase):
         normalizada = normalizar_sustantivo_comun(normalizar(palabra))
@@ -48,6 +55,20 @@ class Tesoro(object):
         else:
             original, clase = self._sustantivos[palabra_normalizada]
             return GENERO_MASCULINO in clase
+
+    def sustantivo_comun_singular_con_articulo_determinado(self, palabra_normalizada):
+        if self.sustantivo_comun_es_masculino(palabra_normalizada):
+            art = 'el'
+        else:
+            art = 'la'
+        return art + ' ' + self.sustantivo_comun_singular(palabra_normalizada)
+
+    def sustantivo_comun_singular_con_articulo_indeterminado(self, palabra_normalizada):
+        if self.sustantivo_comun_es_masculino(palabra_normalizada):
+            art = 'un'
+        else:
+            art = 'una'
+        return art + ' ' + self.sustantivo_comun_singular(palabra_normalizada)
 
 def armar_tesoro(lista_tokens):
     tesoro = Tesoro()

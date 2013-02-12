@@ -49,6 +49,8 @@ ADVERBIOS_DE_DUDA = u'quizá quizás'.split(' ')
 
 CONJUNCIONES = u'y o pero'.split(' ')
 
+SUBORDINANTES = u'que'.split(' ')
+
 # Nota: representarlos sin tildes.
 
 def _llon(n):
@@ -155,12 +157,14 @@ PALABRAS_CLAVE = PREPOSICIONES + \
                  VOCATIVOS + \
                  APELATIVOS + \
                  CONJUNCIONES + \
+                 SUBORDINANTES + \
                  ADVERBIOS_DE_DUDA
 
 PALABRAS_CLAVE.append('pico')
 PALABRAS_CLAVE.append('medio')
 PALABRAS_CLAVE.append('media')
 PALABRAS_CLAVE.append('coma')
+PALABRAS_CLAVE.append('listo')
 #PALABRAS_CLAVE.append('posta')
 PALABRAS_CLAVE.append('dimension')
 for clave, diccionario in NUMEROS_CARDINALES.items():

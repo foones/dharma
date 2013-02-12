@@ -7,7 +7,6 @@ from lenguaje.parser import (
     PComplemento, PLookahead, POpcional, PValor, PPalabra,
     PPalabras, PPuntuacion, PEOF,
 )
-from lenguaje.ortografia import normalizar_sustantivo_comun
 from lenguaje.gramatica import (
     ARTICULOS, PREPOSICIONES, VOCATIVOS, APELATIVOS, NUMEROS_CARDINALES,
     PALABRAS_CLAVE,
@@ -26,6 +25,7 @@ from lenguaje.dimensiones.parser import (
 )
 from lenguaje.inductivos.parser import (
     PDefinicionDeTipoInductivo,
+    PAplicacionDirectaConstructor,
     PAplicacionTotalConstructor,
     PAplicacionParcialConstructor,
 )
@@ -212,11 +212,17 @@ class PExpresion(PAlternativa):
             # che, un booleano puede ser posta o quizás ni_en_pedo boludo
             PDefinicionDeTipoInductivo(),
 
-            # un círculo, cuyo centro es un metro, cuyo radio es dos metros
-            lambda: PAplicacionParcialConstructor(parser_expresion=PExpresion()),
+            # un círculo que tenga
+            #    centro: un metro,
+            #    radio: dos metros
+            # y listo
+            lambda: PAplicacionDirectaConstructor(parser_expresion=PExpresion()),
 
             # dos metros, un metro, crear un círculo
             lambda: PAplicacionTotalConstructor(parser_expresion=PExpresion()),
+
+            # un círculo, cuyo centro es un metro, cuyo radio es dos metros
+            lambda: PAplicacionParcialConstructor(parser_expresion=PExpresion()),
 
             **kwargs
         )
