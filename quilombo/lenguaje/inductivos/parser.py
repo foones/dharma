@@ -116,8 +116,12 @@ class PAnalisisDeCasosTopePila(PSecuenciaConAccion):
             PVerboInfinitivo('fij*'),
             PClausuraConTerminador(
                 PSecuencia(
-                    PPalabras('si es tipo'),
-                    PAplicacionDirectaConstructor(parser_expresion, PPalabra('entonces')),
+                    PPalabra('si'),
+                    PAlternativaPalabras(['es', 'son']),
+                    PAlternativa(
+                        PSecuencia(PNominal(), PPalabra('entonces')),
+                        PAplicacionDirectaConstructor(parser_expresion, PPalabra('entonces')),
+                    ),
                     parser_expresion,
                 ),
                 separador=PPuntuacion(','),

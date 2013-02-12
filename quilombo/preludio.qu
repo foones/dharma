@@ -25,9 +25,11 @@ una lista_compuesta que tiene
 y eso,
 
 fijarse
-  si es tipo una lista_compuesta que tiene
-                 cabeza: un nat,
-                 cola:   un nat
-      entonces
-        dos <>
+  si es una lista_compuesta que tiene
+             cabeza: X,
+             cola:   Y
+    entonces X,
+
+  si es una lista_vacía
+    entonces dos <>
 y listo
