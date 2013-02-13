@@ -61,6 +61,17 @@ class TNumero(TerminoConstante):
             tokens=self.tokens()
         )
 
+    def __cmp__(self, otro):
+        if not isinstance(otro, TNumero):
+            return -1
+
+        if self._a > otro._b:
+            return 1
+        elif self._b < otro._a:
+            return -1
+        else:
+            return 0
+
     def __neg__(self):
         return self * TNumero(-1)
 

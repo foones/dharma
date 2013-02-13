@@ -1,0 +1,38 @@
+
+che, un día_de_la_semana puede ser
+  lunes,
+  martes,
+  miércoles,
+  jueves,
+  viernes,
+  sábado
+  o quizás domingo
+boludo,
+
+che, una lista_de_cosas puede ser
+  una lista_compuesta con una cabeza y una cola
+  o quizás la lista_vacía
+boludo,
+
+che, un nat puede ser
+  el nat_cero
+  o quizas el nat_sucesor del nat_predecesor
+boludo,
+
+che, un color puede ser rojo, verde o quizás azul boludo,
+
+guardar una lista_compuesta que tiene
+    en la cola: la lista_vacía
+  y en la cabeza: el número uno,
+
+guardar el número ciento cuarenta,
+guardar el número doscientos,
+guardar el resultado de construir una lista_compuesta,
+
+fijarse
+  si es una lista_compuesta
+    que tiene en la cabeza: azul y en la cola: Y?
+    entonces X,
+  y si es una lista_vacía
+    entonces el número dos
+

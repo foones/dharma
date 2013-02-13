@@ -26,7 +26,7 @@ from lenguaje.dimensiones.parser import (
 from lenguaje.inductivos.parser import (
     PDefinicionDeTipoInductivo, PAplicacionDirectaConstructor,
     PAplicacionTotalConstructor, PAplicacionParcialConstructor,
-    PAnalisisDeCasosTopePila,
+    PAnalisisDeCasosTopePila, PMatcheable,
 )
 from lenguaje.pila.parser import (
     PMeterElemento,
@@ -230,6 +230,10 @@ class PExpresion(PAlternativa):
 
             # un círculo, cuyo centro es un metro, cuyo radio es dos metros
             lambda: PAplicacionParcialConstructor(parser_expresion=PExpresion()),
+
+            # un valor?
+            # X?
+            PMatcheable(),
 
             # 
             lambda: PAnalisisDeCasosTopePila(parser_expresion=PExpresion()),

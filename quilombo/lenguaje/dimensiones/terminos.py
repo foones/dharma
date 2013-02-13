@@ -150,6 +150,40 @@ class TUnidadDeMedidaCompuesta(TerminoConstante):
             dimension = dimension * u.dimension() ** p
         return dimension
 
+    def __cmp__(self, otra):
+        if not isinstance(otra, TUnidadDeMedidaCompuesta):
+            return -1
+        n1, u1 = self.en_unidades_basicas().extraer_coeficiente()
+        n2, u2 = otra.en_unidades_basicas().extraer_coeficiente()
+        cn = cmp(n1, n2)
+        if cn != 0: return cn
+
+        pot1 = {}
+        for k, v in u1._potencias.items():
+            assert isinstance(k, TUnidadDeMedidaBasica)
+            k = k.identificador()
+            pot1[k] = pot1.get(k, 0) + v
+
+        pot2 = {}
+        for k, v in u2._potencias.items():
+            assert isinstance(k, TUnidadDeMedidaBasica)
+            k = k.identificador()
+            pot2[k] = pot2.get(k, 0) + v
+
+        for k in pot1.keys():
+            if k not in pot2:
+                return 1
+
+        for k in pot2.keys():
+            if k not in pot1:
+                return -1
+
+        for k in pot1.keys():
+            c = cmp(pot1[k], pot2[k])
+            if c != 0: return c
+
+        return 0
+
     def __pow__(self, p):
         return TUnidadDeMedidaCompuesta({self: p})
 
@@ -350,8 +384,19 @@ class TCantidad(Termino):
                 sep = u' de '
             else:
                 sep = u' '
-
             return numero_escrito + sep + nombre_unidad
+
+    def __cmp__(self, otro):
+        if not isinstance(otro, TCantidad):
+            return -1
+        else:
+            n1, u1 = self.en_unidades_basicas().extraer_coeficiente()
+            n2, u2 = otro.en_unidades_basicas().extraer_coeficiente()
+            cn = cmp(n1, n2)
+            cu = cmp(u1, u2)
+            if cn != 0: return cn
+            if cu != 0: return cu
+            return 0
 
     def __mul__(self, otro):
         assert isinstance(otro, TCantidad)

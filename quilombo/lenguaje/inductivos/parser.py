@@ -12,6 +12,7 @@ from lenguaje.inductivos.terminos import (
     TDefinicionDeTipoInductivo, TDeclaracionConstructorConParametros,
     TAplicacionDirectaConstructor, TAplicacionTotalConstructor,
     TAplicacionParcialConstructor, TAnalisisDeCasosTopePila,
+    TMatcheable,
 )
 
 class PSeparadorUnionDisjunta(PAlternativa):
@@ -64,6 +65,14 @@ class PDefinicionDeTipoInductivo(PSecuenciaConAccion):
 
 from lenguaje.terminos import TNada
 
+class PMarcadorUltimoElemento(PAlternativaPalabras):
+    def __init__(self):
+        PAlternativaPalabras.__init__(self, [
+            'y',
+            'solamente',
+            'como',
+        ])
+
 class PAplicacionDirectaConstructor(PSecuenciaConAccion):
 
     def __init__(self, parser_expresion):
@@ -82,7 +91,7 @@ class PAplicacionDirectaConstructor(PSecuenciaConAccion):
                     parser_expresion,
                 ),
                 separador=PPuntuacion(','),
-                marcador_ultimo_elemento=PPalabra('y'),
+                marcador_ultimo_elemento=PMarcadorUltimoElemento(),
             ),
         )
 
@@ -109,11 +118,36 @@ class PAplicacionParcialConstructor(PSecuenciaConAccion):
             parser_expresion,
         )
 
-class PEntonces(PSecuencia):
+class PEntonces(PAlternativa):
+    def __init__(self):
+        PAlternativa.__init__(self,
+            PSecuencia(
+                PPuntuacion(','),
+                POpcional(PPalabra('entonces')),
+            ),
+            PPalabra('entonces'),
+        )
+
+class PMatcheable(PSecuenciaConAccion):
+
+    def __init__(self):
+        PSecuenciaConAccion.__init__(self,
+            lambda xs: TMatcheable(xs[0]),
+            PNominal(),
+            PPuntuacion('?'),
+        )
+
+
+class PEsDeLaForma(PSecuencia):
     def __init__(self):
         PSecuencia.__init__(self,
-            POpcional(PPuntuacion(',')),
-            PPalabra('entonces'),
+            PAlternativaPalabras(['es', 'son']),
+            POpcional(
+                PAlternativa(
+                    PPalabras('de la forma'),
+                    PPalabras('tipo'),
+                )
+            )
         )
 
 class PAnalisisDeCasosTopePila(PSecuenciaConAccion):
@@ -128,18 +162,13 @@ class PAnalisisDeCasosTopePila(PSecuenciaConAccion):
             PClausura1ConUltimoElemento(
                 PSecuenciaConAccion(lambda xs: (xs[2], xs[4]),
                     PPalabra('si'),
-                    PAlternativaPalabras(['es', 'son']),
-                    PAlternativa(
-                        PNominal(devolver_variable=True), 
-                        PAplicacionDirectaConstructor(
-                            parser_expresion=parser_expresion,
-                        ),
-                    ),
+                    PEsDeLaForma(),
+                    parser_expresion,
                     PEntonces(),
                     parser_expresion,
                 ),
                 separador=PPuntuacion(','),
-                marcador_ultimo_elemento=PPalabra('y'),
+                marcador_ultimo_elemento=PMarcadorUltimoElemento(),
             ),
         )
 

@@ -171,6 +171,8 @@ PALABRAS_CLAVE.append('resultado')
 PALABRAS_CLAVE.append('numero')
 PALABRAS_CLAVE.append('si')
 PALABRAS_CLAVE.append('entonces')
+PALABRAS_CLAVE.append('solamente')
+PALABRAS_CLAVE.append('como')
 for clave, diccionario in NUMEROS_CARDINALES.items():
     for nombre, numero in diccionario.items():
         PALABRAS_CLAVE.append(nombre)
@@ -180,36 +182,3 @@ for k in PALABRAS_CLAVE:
     d[k] = True
 PALABRAS_CLAVE = d
 
-#class Lexema(object):
-#    """Cada instancia de lexema representa una palabra, que puede
-#       llegar a tener varias formas. Por ejemplo, 'perro' podría
-#       ser un lexema."""
-#    pass
-#
-#class Sustantivo(Lexema):
-#    "Clase de los lexemas nominales."
-#
-#    def __init__(self, raiz):
-#        self._raiz = raiz
-#
-#    def formas(self):
-#        pass
-#
-####
-#
-#class Categoria(object):
-#    u"""Cada instancia de Categoria representa una categoría gramatical.
-#        Por ejemplo: 'número singular', 'tiempo pasado', etc."""
-#    pass
-#
-####
-#
-#class Flexion(object):
-#    u"""Cada instancia de Flexion representa la flexión de un
-#        lexema expresando alguna categoría gramatical."""
-#
-#    def __init__(self, lexema, categoria):
-#        self._lexema = lexema
-#        self._categoria = categoria
-#        self._texto = texto 
-#

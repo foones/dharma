@@ -61,12 +61,21 @@ class TConstructor(Termino):
         if res == []:
             nombre_s = tesoro_actual().sustantivo_comun_singular_con_articulo_determinado(self._nombre_constructor)
             return nombre_s
+        elif len(res) == 1:
+            nombre_s = tesoro_actual().sustantivo_comun_singular_con_articulo_indeterminado(self._nombre_constructor)
+            return nombre_s + ' que tiene como ' + res[0]
         else:
             nombre_s = tesoro_actual().sustantivo_comun_singular_con_articulo_indeterminado(self._nombre_constructor)
-            return nombre_s + ' que tiene\n' + identar(',\n'.join(res)) + '\ny listo'
+            return nombre_s + ' que tiene\n' + identar(',\n'.join(res[:-1]) + '\ny ' + res[-1])
 
     def aridad(self):
         return len(self._nombres_parametros) - len(self._valores_parametros)
+
+    def valores_parametros(self):
+        return self._valores_parametros
+
+    def nombre_constructor(self):
+        return self._nombre_constructor
 
 class TDeclaracionConstructorConParametros(Termino):
 
@@ -121,6 +130,9 @@ class TAplicacionDirectaConstructor(Termino):
             self._constructor,
             identar('\n'.join(map(unicode, ps)))
         )
+
+    def nombre_constructor(self):
+        return self._constructor
 
     def evaluar_en(self, estado):
         for constructor in self._constructor.evaluar_en(estado):
@@ -194,6 +206,60 @@ class TAplicacionParcialConstructor(Termino):
             estado.push(constructor_ap)
             yield constructor_ap
 
+class TMatcheable(Termino):
+
+    def __init__(self, nombre_variable):
+        self._nombre_variable = nombre_variable
+
+    def __unicode__(self):
+        return u'%s?' % (self._nombre_variable,)
+
+    def nombre(self):
+        return self._nombre_variable
+
+    def evaluar_en(self, entorno):
+        yield self
+
+def es_matcheable(x):
+    return len(x) > 0 and x[0].upper() == x[0]
+
+def join_matches(patron, match1, match2):
+    for k, v in match2.items():
+        if k in match1:
+            raise QuilomboException(u'el patrón "%s" no es un patrón lineal' % (patron,))
+        match1[k] = v
+    return match1
+
+def pattern_matching(patron, valor):
+    if isinstance(patron, TMatcheable):
+        return {patron.nombre(): valor}
+    elif isinstance(patron, TConstructor):
+        if not isinstance(valor, TConstructor):
+            return None
+        else:
+            pn = patron.nombre_constructor()
+            vn = valor.nombre_constructor()
+            if pn != vn: return None
+            ps = patron.valores_parametros()
+            vs = valor.valores_parametros()
+
+            match = {}
+            for nombre_parametro, subpatron in ps.items():
+                if nombre_parametro not in vs:
+                    return None
+                subvalor = vs[nombre_parametro]
+                submatch = pattern_matching(subpatron, subvalor)
+                if submatch is None:
+                    return None
+                else:
+                    match = join_matches(patron, match, submatch)
+            return match
+    else:
+        if patron == valor:
+            return {}
+        else:
+            return None
+
 class TAnalisisDeCasosTopePila(Termino):
 
     def __init__(self, casos):
@@ -208,5 +274,14 @@ class TAnalisisDeCasosTopePila(Termino):
                 )
 
     def evaluar_en(self, estado):
+        valor = estado.pop()
+        for patron_no_evaluado, cuerpo in self._casos:
+            for patron in patron_no_evaluado.evaluar_en(estado):
+                sustitucion = pattern_matching(patron, valor)
+                if sustitucion is not None:
+                    estado2 = estado.extender(sustitucion)
+                    for res in cuerpo.evaluar_en(estado2):
+                        yield res
+                    return
         yield TNada()
 

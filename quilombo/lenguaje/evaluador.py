@@ -9,6 +9,11 @@ class Entorno(object):
     def __init__(self):
         self._entorno = [{}]
 
+    def extender(self, bindings):
+        e = Entorno()
+        e._entorno = self._entorno + [bindings]
+        return e
+
     def push(self):
         self._entorno.append({})
 
@@ -44,9 +49,15 @@ class Entorno(object):
 
 class Estado(object):
 
-    def __init__(self):
-        self.entorno = Entorno()
-        self.pila = []
+    def __init__(self, entorno, pila):
+        self.entorno = entorno
+        self.pila = pila
+
+    def extender(self, bindings):
+        return Estado(
+            self.entorno.extender(bindings),
+            self.pila
+        )
 
     def push(self, x):
         self.pila.append(x)
@@ -64,7 +75,7 @@ class Estado(object):
         )
 
 def estado_inicial():
-    return Estado()
+    return Estado(Entorno(), [])
 
 def evaluar(termino, estado):
     if not isinstance(termino, Termino):

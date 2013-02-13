@@ -53,6 +53,9 @@ class TVariable(Termino):
     def __unicode__(self):
         return u'TVariable(%s)' % (self._nombre,)
 
+    def nombre(self):
+        return self._nombre
+
     def evaluar_en(self, estado):
         yield estado.entorno.valor(self._nombre)
 

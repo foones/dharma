@@ -19,20 +19,33 @@ che, un nat puede ser
   o quizas el nat_sucesor del nat_predecesor
 boludo,
 
-che, un color puede ser rojo, verde o quizás azul boludo,
+che, un color puede ser
+  rojo,
+  verde
+o quizás
+  azul
+boludo,
 
-guardar una lista_compuesta que tiene
-    en la cola: la lista_vacía
-  y en la cabeza: el número uno,
+OJO guardar una lista_compuesta que tiene
+OJO     en la cola: la lista_vacía
+OJO   y en la cabeza: el número uno,
 
-guardar el número ciento cuarenta,
-guardar el número doscientos,
-guardar el resultado de construir una lista_compuesta,
+che boludo, el tiempo es una dimensión,
+che boludo, un segundo mide el tiempo,
+che boludo, un minuto son sesenta segundos,
+che boludo, la distancia es una dimensión,
+che boludo, un metro mide la distancia,
+che boludo, un kilómetro son mil metros,
 
-fijarse
-  si es una lista_compuesta
-    que tiene en la cabeza: azul y en la cola: Y
-    entonces X,
-  y si es una lista_vacía
-    entonces el número dos
+OJO guardar dos kilómetros,
+OJO fijarse y si son dos mil metros,
+OJO  meter el número cien
+
+OJO guardar dos kilómetros,
+OJO fijarse y si es tipo un equis?,
+OJO   guardar el equis
+
+guardar una lista_compuesta que tenga en la cola: la lista_vacía y en la
+cabeza: el número veintipico, fijarse y si es tipo una lista_compuesta que
+tiene como cabeza: un maní?, guardar el maní
 

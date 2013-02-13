@@ -65,10 +65,23 @@ def stream_de_tokens(texto, nombre_archivo='...'):
     pos = Posicion(nombre_archivo, texto)
     while i < len(texto):
 
-        while i < len(texto) and texto[i] in ' \t\r\n':
-            # Se come los espacios
-            pos = pos.avanzar(texto[i])
-            i += 1
+        # Se come los espacios y comentarios
+        while True:
+            while i < len(texto) and texto[i] in ' \t\r\n':
+                # Se come los espacios
+                pos = pos.avanzar(texto[i])
+                i += 1
+
+            if texto[i:i + 3] == 'OJO' and texto[i + 3:i + 4] in ' \t\r\n':
+                pos = pos.avanzar(texto[i:i + 4])
+                i = i + 4
+                while i < len(texto) and texto[i] != '\n':
+                    pos = pos.avanzar(texto[i])
+                    i += 1
+            else:
+                break
+
+        # Procesa el próximo token
 
         if i >= len(texto):
             yield Token('EOF', 'EOF', pos, pos)
@@ -106,7 +119,7 @@ def stream_de_tokens(texto, nombre_archivo='...'):
             i = j
             pos = pos_final
 
-        elif texto[i] in [',', '.', ':', '<', '>', '$', '/', '^', '{', '}']:
+        elif texto[i] in [',', '.', ':', '<', '>', '$', '/', '^', '{', '}', '?']:
             j = i + 1
             pos_final = pos.avanzar(texto[i:j])
             yield Token('puntuacion', texto[i:j], pos, pos_final)

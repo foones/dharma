@@ -153,7 +153,7 @@ class PSustantivoPropio(PClausura1ConTerminadorConAccion):
         else:
             envolver = lambda x: x
 
-        PClausura1ConTerminadorConAccion.__init__(self, lambda xs: ' '.join(xs),
+        PClausura1ConTerminadorConAccion.__init__(self, lambda xs: envolver(' '.join(xs)),
             PSustantivoPropioBasico(),
             terminador=PComplemento(PSustantivoPropioBasico())
         )
