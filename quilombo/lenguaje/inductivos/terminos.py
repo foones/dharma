@@ -280,7 +280,7 @@ class TAnalisisDeCasosTopePila(Termino):
         s = []
         for k, v in self._casos:
             s.append(u'%s => %s' % (k, v))
-        return 'TAnalisisDeCasosTopePila([\n%s\n])' % (
+        return u'TAnalisisDeCasosTopePila([\n%s\n])' % (
                     identar(',\n'.join(s)),
                 )
 
@@ -299,7 +299,7 @@ class TAnalisisDeCasosExpresion(Termino):
         s = []
         for k, v in self._casos:
             s.append(u'%s => %s' % (k, v))
-        return 'TAnalisisDeCasosExpresion(%s, [\n%s\n])' % (
+        return u'TAnalisisDeCasosExpresion(%s, [\n%s\n])' % (
                     self._expresion,
                     identar(',\n'.join(s)),
                 )

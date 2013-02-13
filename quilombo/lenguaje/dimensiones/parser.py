@@ -111,6 +111,7 @@ class PNumeroPuro(PSecuenciaConAccion):
                     PAlternativa(
                         parser_separador_expresiones,
                         PToken(tipo='puntuacion'),
+                        PApelativo,
                     )
                 ),
                 envolver=lambda numero, unidad: TCantidad(numero, UNIDAD_SIN_DIMENSION)

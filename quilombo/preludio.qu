@@ -1,58 +1,30 @@
 
-che, un día_de_la_semana puede ser
-  lunes,
-  martes,
-  miércoles,
-  jueves,
-  viernes,
-  sábado
-  o quizás domingo
-boludo,
-
 che, una lista_de_cosas puede ser
   una lista_compuesta con una cabeza y una cola
   o quizás la lista_vacía
 boludo,
 
-che, un nat puede ser
-  el nat_cero
-  o quizas el nat_sucesor del nat_predecesor
-boludo,
+che boludo, la longitud_de_una_lista es una dimensión,
+che boludo, un elemento mide la longitud_de_una_lista,
 
-che, un color puede ser
-  rojo,
-  verde
-o quizás
-  azul
-boludo,
-
-OJO guardar una lista_compuesta que tiene
-OJO     en la cola: la lista_vacía
-OJO   y en la cabeza: el número uno,
-
-che boludo, el tiempo es una dimensión,
-che boludo, un segundo mide el tiempo,
-che boludo, un minuto son sesenta segundos,
-che boludo, la distancia es una dimensión,
-che boludo, un metro mide la distancia,
-che boludo, un kilómetro son mil metros,
-
-OJO guardar dos kilómetros,
-OJO fijarse y si son dos mil metros,
-OJO  meter el número cien
-
-OJO guardar dos kilómetros,
-OJO fijarse y si es tipo un equis?,
-OJO   guardar el equis
-
-fijarse qué pinta tiene {
-	una lista_compuesta que tenga
-		en la cola: la lista_vacía
-		y en la cabeza: el número veintipico
-} y si es tipo {
+fijarse qué pinta tiene
 	una lista_compuesta que tiene
-		como cabeza: un maní?
-} entonces {
-	guardar el maní
-}
+	  en la cabeza: {el número cien}
+	  y en la cola:
+		una lista_compuesta que tiene
+		  en la cabeza: {el número doscientos}
+		  y en la cola: la lista_vacía,
+  si es la lista_vacía, cero elementos
+  y si es tipo
+      una lista_compuesta que tiene como cola: X?
+    entonces
+       fijarse qué pinta tiene X
+       si es la lista_vacía, un elemento
+       y si es una lista_compuesta, dos elementos
+
+OJO che, la posta para medir una lista es
+OJO   fijarse qué pinta tiene la lista
+OJO   si es la lista_vacía, cero elementos
+OJO   y si es tipo una lista_compuesta, un elemento
+OJO boludo
 
