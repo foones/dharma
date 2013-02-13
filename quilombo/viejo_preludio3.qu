@@ -45,14 +45,7 @@ OJO guardar dos kilómetros,
 OJO fijarse y si es tipo un equis?,
 OJO   guardar el equis
 
-fijarse qué pinta tiene {
-	una lista_compuesta que tenga
-		en la cola: la lista_vacía
-		y en la cabeza: el número veintipico
-} y si es tipo {
-	una lista_compuesta que tiene
-		como cabeza: un maní?
-} entonces {
-	guardar el maní
-}
+guardar una lista_compuesta que tenga en la cola: la lista_vacía y en la
+cabeza: el número veintipico, fijarse y si es tipo una lista_compuesta que
+tiene como cabeza: un maní?, guardar el maní
 

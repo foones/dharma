@@ -12,7 +12,7 @@ from lenguaje.inductivos.terminos import (
     TDefinicionDeTipoInductivo, TDeclaracionConstructorConParametros,
     TAplicacionDirectaConstructor, TAplicacionTotalConstructor,
     TAplicacionParcialConstructor, TAnalisisDeCasosTopePila,
-    TMatcheable,
+    TAnalisisDeCasosExpresion, TMatcheable,
 )
 
 class PSeparadorUnionDisjunta(PAlternativa):
@@ -159,6 +159,31 @@ class PAnalisisDeCasosTopePila(PSecuenciaConAccion):
                 PVerboInfinitivo('fij*'),
                 PVerboInfinitivo('mir*'),
             ),
+            PClausura1ConUltimoElemento(
+                PSecuenciaConAccion(lambda xs: (xs[2], xs[4]),
+                    PPalabra('si'),
+                    PEsDeLaForma(),
+                    parser_expresion,
+                    PEntonces(),
+                    parser_expresion,
+                ),
+                separador=PPuntuacion(','),
+                marcador_ultimo_elemento=PMarcadorUltimoElemento(),
+            ),
+        )
+
+class PAnalisisDeCasosExpresion(PSecuenciaConAccion):
+
+    def __init__(self, parser_expresion):
+        PSecuenciaConAccion.__init__(self,
+            lambda xs: TAnalisisDeCasosExpresion(xs[2], xs[4]),
+            PAlternativa(
+                PVerboInfinitivo('fij*'),
+                PVerboInfinitivo('mir*'),
+            ),
+            PPalabras('que pinta tiene'),
+            parser_expresion,
+            POpcional(PPuntuacion(',')),
             PClausura1ConUltimoElemento(
                 PSecuenciaConAccion(lambda xs: (xs[2], xs[4]),
                     PPalabra('si'),

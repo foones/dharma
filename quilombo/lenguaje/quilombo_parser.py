@@ -26,7 +26,8 @@ from lenguaje.dimensiones.parser import (
 from lenguaje.inductivos.parser import (
     PDefinicionDeTipoInductivo, PAplicacionDirectaConstructor,
     PAplicacionTotalConstructor, PAplicacionParcialConstructor,
-    PAnalisisDeCasosTopePila, PMatcheable,
+    PAnalisisDeCasosTopePila, PAnalisisDeCasosExpresion,
+    PMatcheable,
 )
 from lenguaje.pila.parser import (
     PMeterElemento,
@@ -235,8 +236,18 @@ class PExpresion(PAlternativa):
             # X?
             PMatcheable(),
 
-            # 
+            # fijarse
+            #    si es ... entonces ...,
+            #    si es ... entonces ...
+            #  y si es ... entonces ...
             lambda: PAnalisisDeCasosTopePila(parser_expresion=PExpresion()),
+
+            # fijarse qué pinta tiene ...
+            #    si es ... entonces ...,
+            #    si es ... entonces ...
+            #  y si es ... entonces ...
+            #
+            lambda: PAnalisisDeCasosExpresion(parser_expresion=PExpresion()),
 
             ## Manipulación de la pila
             lambda: PMeterElemento(parser_expresion=PExpresion()),

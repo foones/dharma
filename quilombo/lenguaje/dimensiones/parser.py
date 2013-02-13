@@ -1,6 +1,6 @@
 from lenguaje.parser import (
     PAlternativa, PSecuenciaConAccion, POpcional, PClausuraConTerminadorConAccion,
-    PPuntuacion, PPalabra, PTokenNumerico, PLookahead,
+    PPuntuacion, PPalabra, PTokenNumerico, PLookahead, PToken,
 )
 from lenguaje.basico.parser import (
     PVocativo, PApelativo, PComa, PNominal, PPalabras, PAlternativaPalabras,
@@ -107,7 +107,12 @@ class PNumeroPuro(PSecuenciaConAccion):
         PSecuenciaConAccion.__init__(self, lambda xs: xs[1],
             PPalabras('el numero'),
             PNumeroEspecificado(
-                parser_especificador_unidad=PLookahead(parser_separador_expresiones),
+                parser_especificador_unidad=PLookahead(
+                    PAlternativa(
+                        parser_separador_expresiones,
+                        PToken(tipo='puntuacion'),
+                    )
+                ),
                 envolver=lambda numero, unidad: TCantidad(numero, UNIDAD_SIN_DIMENSION)
             ),
         )

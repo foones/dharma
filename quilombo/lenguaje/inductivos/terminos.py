@@ -260,6 +260,17 @@ def pattern_matching(patron, valor):
         else:
             return None
 
+def evaluar_casos_en(valor, casos, estado):
+    for patron_no_evaluado, cuerpo in casos:
+        for patron in patron_no_evaluado.evaluar_en(estado):
+            sustitucion = pattern_matching(patron, valor)
+            if sustitucion is not None:
+                estado2 = estado.extender(sustitucion)
+                for res in cuerpo.evaluar_en(estado2):
+                    yield res
+                return
+    yield TNada()
+
 class TAnalisisDeCasosTopePila(Termino):
 
     def __init__(self, casos):
@@ -275,13 +286,26 @@ class TAnalisisDeCasosTopePila(Termino):
 
     def evaluar_en(self, estado):
         valor = estado.pop()
-        for patron_no_evaluado, cuerpo in self._casos:
-            for patron in patron_no_evaluado.evaluar_en(estado):
-                sustitucion = pattern_matching(patron, valor)
-                if sustitucion is not None:
-                    estado2 = estado.extender(sustitucion)
-                    for res in cuerpo.evaluar_en(estado2):
-                        yield res
-                    return
-        yield TNada()
+        for res in evaluar_casos_en(valor, self._casos, estado):
+            yield res
+
+class TAnalisisDeCasosExpresion(Termino):
+
+    def __init__(self, expresion, casos):
+        self._expresion = expresion 
+        self._casos = casos 
+
+    def __unicode__(self):
+        s = []
+        for k, v in self._casos:
+            s.append(u'%s => %s' % (k, v))
+        return 'TAnalisisDeCasosExpresion(%s, [\n%s\n])' % (
+                    self._expresion,
+                    identar(',\n'.join(s)),
+                )
+
+    def evaluar_en(self, estado):
+        for valor in self._expresion.evaluar_en(estado):
+            for res in evaluar_casos_en(valor, self._casos, estado):
+                yield res
 
