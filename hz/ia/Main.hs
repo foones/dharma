@@ -24,5 +24,5 @@ connect :: GameState -> IO ()
 connect s0 = runConnectorM s0 $ messagePipe nextState
 
 main :: IO ()
-main = connect Nothing
+main = connect 0
 
