@@ -1,0 +1,31 @@
+
+<suit>   ::= H | D | C | S
+<number> ::= 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | J | Q | K | A
+<card>   ::= <number> <suit>
+
+<player> ::= [a-zA-Z0-9_]+
+
+---
+--- Messages:
+
+** Initializing the game
+
+server -> client
+
+=> start | <card1> ... <cardN> | <player1> ... <playerN> | <card>
+<= ACK
+
+** Playing
+
+=> hand | <card1> ... <cardN>
+<= ACK
+
+=> swap_with | <player> <num_cards>
+<= swap | <card1> ... <cardN>
+
+=> your_turn
+<= play | <card>
+
+=> plays | <player> <card>
+<= ACK
+

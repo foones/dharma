@@ -1,7 +1,7 @@
 module Main where 
 
 import Connector
-import IA
+import AI
 
 --- Main
 

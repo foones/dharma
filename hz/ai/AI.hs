@@ -1,4 +1,4 @@
-module IA where 
+module AI where 
 
 import Data.Ord
 import List
@@ -164,7 +164,7 @@ aiBestCard round
 deal0 = DD {
           dealCards     = allCards,
           dealFirstCard = Card Num2 Club,
-          dealPlayers   = ["N", "O", "S", "E"], -- CCW
+          dealPlayers   = ["N", "E", "S", "O"], -- CW
           dealAIPlayer  = "S",
           dealAICards   = [Card Num3 Club, Card NumJ Spade, Card Num2 Club]
         }
