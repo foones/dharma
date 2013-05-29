@@ -6,12 +6,11 @@ typedef unsigned long long int MMFlags;
 typedef unsigned long long int MMSize;
 typedef char MMColor;
 
-#define MM_BLACK				0x0
-#define MM_WHITE				0x1
-#define MM_FLAGS(SIZE, COLOR)			(((SIZE) << 1) | (COLOR))
-#define MM_FLAGS_SET_COLOR(FLAGS, COLOR)	((((FLAGS) >> 1) << 1) | (COLOR))
-#define MM_FLAGS_COLOR(FLAGS)			((FLAGS) & 0x1)
-#define MM_FLAGS_SIZE(FLAGS)			((FLAGS) >> 1)
+#define MM_COLOR_NBITS				1
+#define MM_FLAGS(SIZE, COLOR)			(((SIZE) << MM_COLOR_NBITS) | (COLOR))
+#define MM_FLAGS_COLOR(FLAGS)			((FLAGS) & ((1 << MM_COLOR_NBITS) - 1))
+#define MM_FLAGS_SIZE(FLAGS)			((FLAGS) >> MM_COLOR_NBITS)
+#define MM_FLAGS_SET_COLOR(FLAGS, COLOR)	MM_FLAGS(MM_FLAGS_SIZE(FLAGS), (COLOR))
 
 #define	MM_KB	1024
 #define	MM_MB	(1024 * MM_KB)
@@ -27,9 +26,7 @@ typedef void (*MMRefIterator)(struct _MM *, struct _MMObject *, MMRefCallback);
 
 typedef struct _MMObject {
 	struct _MMTag *tag;
-	/*struct _MMObject *prev, *next;*/
-	struct _MMObject *next;
-	MMFlags flags;
+	struct _MMObject *prev, *next; MMFlags flags;
 	MMData data[];
 } MMObject;
 
@@ -38,10 +35,16 @@ typedef struct _MMTag {
 } MMTag;
 
 typedef struct _MM {
-	MMObject *objects;
-	MMObject *root;
-	MMSize nalloc;
-	MMSize gc_threshold;
+	MMObject *objects;	/* Pointer to one of the live objects
+				   	in the system, which form a doubly
+					linked list */
+	MMSize nalloc;		/* Amount of allocated memory in bytes */
+	MMSize gc_threshold;	/* GC triggers when the allocated memory reaches
+				 	this number of bytes */
+	MMObject *root;		/* For marking the root */
+	MMObject *black, *gray;	/* For the temporary black and gray sets */
+
+	MMColor graycol;	/* Current gray color, (1 - graycol) is white color */
 } MM;
 
 void mm_gc(MM *mm);
