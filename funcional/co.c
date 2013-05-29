@@ -34,7 +34,7 @@ int main()
 
 	lst = NULL;
 
-	for (i = 0; i < 10000000; i++) {
+	for (i = 0; i < 1000000; i++) {
 		/*if (i % 1000000 == 0) printf("%u\n", i / 1000000);*/
 		if (i % 3 == 0) {
 			lst = mk_cons_cell(mm, lst, lst);

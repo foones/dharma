@@ -21,6 +21,7 @@ typedef unsigned long long int MMSize;
 typedef char MMColor;
 
 #define MM_COLOR_NBITS				1
+#define MM_MAX_FREELIST				1024
 #define MM_FLAGS(SIZE, COLOR)			(((SIZE) << MM_COLOR_NBITS) | (COLOR))
 #define MM_FLAGS_COLOR(FLAGS)			((FLAGS) & ((1 << MM_COLOR_NBITS) - 1))
 #define MM_FLAGS_SIZE(FLAGS)			((FLAGS) >> MM_COLOR_NBITS)
@@ -73,13 +74,15 @@ typedef struct _MM {
 	 *
 	 */
 
-	MMObject *black, *gray, *white; /* Linked lists for the black, gray
-					 * and white sets */
-	MMSize nalloc;		/* Amount of allocated memory in bytes */
-	MMSize gc_threshold;	/* GC triggers when the allocated memory reaches
-				 * this number of bytes */
-	MMObject *root;		/* For marking the root */
-	MMColor graycol;	/* Current gray color, (1 - graycol) is white color */
+	MMObject *black, *gray, *white;		/* Linked lists for the black, gray
+						 * and white sets */
+	MMObject *freelist[MM_MAX_FREELIST];	/* Linked list for the free cells */
+	MMSize nalloc;				/* Amount of allocated memory in the black list */
+	MMSize gc_threshold;			/* GC triggers when the allocated memory reaches
+						 * this number of bytes */
+	MMObject *root;				/* For marking the root */
+	MMColor graycol;			/* Current gray color, (1 - graycol) is white
+						 * color */
 } MM;
 
 void mm_gc(MM *mm);
