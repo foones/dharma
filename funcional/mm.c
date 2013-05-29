@@ -42,15 +42,19 @@ void list_add_front(MMObject **list, MMObject *obj)
 
 void mm_init(MM *mm)
 {
-	mm->objects = NULL;
+	mm->black = NULL;
+	mm->gray = NULL;
+	mm->white = NULL;
 	mm->root = NULL;
 	mm->nalloc = 0;
-	mm->gray = NULL;
-	mm->black = NULL;
 	mm->graycol = 0;
-	mm->gc_threshold = MM_MIN_GC_THRESHOLD;
+	mm->gc_threshold = MM_FIRST_GC_THRESHOLD;
 }
 
+/*
+ * If the allocation of an object would exceed the
+ * current GC threshold, trigger GC.
+ */
 MMObject *mm_allocate(MM *mm, MMTag *tag, MMSize size)
 {
 	MMSize nalloc = sizeof(MMObject) + size;
@@ -60,19 +64,21 @@ MMObject *mm_allocate(MM *mm, MMTag *tag, MMSize size)
 	}
 
 	MMObject *obj = (MMObject *)malloc(nalloc);
-	obj->tag = tag;
 	obj->flags = MM_FLAGS(size, GRAY(mm));
+	obj->tag = tag;
 	obj->prev = NULL;
-	list_add_front(&mm->objects, obj);
+	list_add_front(&mm->black, obj);
 	mm->nalloc += nalloc;
 	return obj;
 }
 
-/* Mark clearing */
+/* Mark all the objects white in O(1) */
 
 static void whiten_all(MM *mm)
 {
 	mm->graycol = 1 - mm->graycol;
+	mm->white = mm->black;
+	mm->black = NULL;
 }
 
 /* Mark */
@@ -80,7 +86,7 @@ static void whiten_all(MM *mm)
 static void mark_as_gray(MM *mm, MMObject *referenced)
 {
 	if (referenced != NULL && MM_FLAGS_COLOR(referenced->flags) == WHITE(mm)) {
-		list_remove(&mm->objects, referenced);
+		list_remove(&mm->white, referenced);
 		grayen(referenced);
 		list_add_front(&mm->gray, referenced);
 	}
@@ -89,7 +95,7 @@ static void mark_as_gray(MM *mm, MMObject *referenced)
 static void mark(MM *mm)
 {
 	assert(mm->root != NULL);
-	assert(mm->black == NULL);
+	assert(mm->white == NULL);
 	assert(mm->gray == NULL);
 
 	/* Whiten all objects */
@@ -112,13 +118,10 @@ static void mark(MM *mm)
 	}
 }
 
-/* Sweep */
-
-static void sweep(MM *mm)
+static void free_list(MM *mm, MMObject **list)
 {
 	MMObject *p;
-	for (p = mm->objects; p != NULL;) {
-		assert(MM_FLAGS_COLOR(p->flags) == WHITE(mm));
+	for (p = *list; p != NULL;) {
 		MMObject *obj = p;
 		MMSize sz = MM_FLAGS_SIZE(obj->flags);
 		p = p->next;
@@ -126,19 +129,45 @@ static void sweep(MM *mm)
 		mm->nalloc -= sizeof(MMObject) + sz;
 		free(obj);
 	}
-	mm->gc_threshold = MAX(2 * mm->nalloc, MM_MIN_GC_THRESHOLD);
+	*list = NULL;
+}
+
+/* Sweep */
+
+static void sweep(MM *mm)
+{
+	free_list(mm, &mm->white);
+	mm->gc_threshold = MAX(2 * mm->nalloc, MM_FIRST_GC_THRESHOLD);
 	assert(mm->black != NULL);
-	mm->objects = mm->black;
-	mm->black = NULL;
 	assert(mm->gray == NULL);
 }
 
-/* Garbage collection */
-
+/*
+ * Sketch of the GC algorithm:
+ *
+ * Mark:
+ *
+ * - Invert graycol, so all the objects are now colored white.
+ *
+ * - By DFS, mark all the reachable objects as gray, and
+ *   put them in the <black> list.
+ *
+ * Sweep:
+ *
+ * - Free the objects remaining in the <white> list, for
+ *   they are unreachable.
+ *
+ */
 void mm_gc(MM *mm)
 {
 	printf("gc\n");
 	mark(mm);
 	sweep(mm);
+}
+
+/* Free all the remaining objects. */
+void mm_end(MM *mm)
+{
+	free_list(mm, &mm->black);
 }
 
