@@ -1,60 +1,64 @@
-#ifndef _MM_H_
-#define _MM_H_
+#ifndef _Fu_MM_H_
+#define _Fu_MM_H_
 
-typedef char MMData;
+typedef char Fu_MMData;
 
-#define	MM_KB	1024
-#define	MM_MB	(1024 * MM_KB)
+#define	Fu_MM_KB	1024
+#define	Fu_MM_MB	(1024 * Fu_MM_KB)
 
-/* MM_FIRST_GC_THRESHOLD is the amount of allocated bytes that,
+/* Fu_MM_FIRST_GC_THRESHOLD is the amount of allocated bytes that,
  * when reached, triggers GC for the very first time.
  */
-#define MM_FIRST_GC_THRESHOLD	MM_MB
+#define Fu_MM_FIRST_GC_THRESHOLD	Fu_MM_MB
 #define MAX(X, Y)		((X) < (Y) ? (Y) : (X))
 
-/* The MMFlags type is used to represent both the size and the color
+/* The Fu_MMFlags type is used to represent both the size and the color
  * of an object.
  */
 
-typedef unsigned long long int MMFlags;
-typedef unsigned long long int MMSize;
-typedef char MMColor;
+typedef unsigned long long int Fu_MMFlags;
+typedef unsigned long long int Fu_MMSize;
+typedef char Fu_MMColor;
 
-#define MM_COLOR_NBITS				1
-#define MM_MAX_FREELIST				1024
-#define MM_FLAGS(SIZE, COLOR)			(((SIZE) << MM_COLOR_NBITS) | (COLOR))
-#define MM_FLAGS_COLOR(FLAGS)			((FLAGS) & ((1 << MM_COLOR_NBITS) - 1))
-#define MM_FLAGS_SIZE(FLAGS)			((FLAGS) >> MM_COLOR_NBITS)
-#define MM_FLAGS_SET_COLOR(FLAGS, COLOR)	MM_FLAGS(MM_FLAGS_SIZE(FLAGS), (COLOR))
+#define Fu_MM_COLOR_NBITS				1
+#define Fu_MM_MAX_FREELIST				1024
+#define Fu_MM_FLAGS(SIZE, COLOR)			(((SIZE) << Fu_MM_COLOR_NBITS) | (COLOR))
+#define Fu_MM_FLAGS_COLOR(FLAGS)			((FLAGS) & ((1 << Fu_MM_COLOR_NBITS) - 1))
+#define Fu_MM_FLAGS_SIZE(FLAGS)			((FLAGS) >> Fu_MM_COLOR_NBITS)
+#define Fu_MM_FLAGS_SET_COLOR(FLAGS, COLOR)	Fu_MM_FLAGS(Fu_MM_FLAGS_SIZE(FLAGS), (COLOR))
 
-struct _MM;
-struct _MMObject;
+/* Object */
 
-typedef void (*MMRefCallback)(struct _MM *, struct _MMObject *);
-typedef void (*MMRefIterator)(struct _MM *, struct _MMObject *, MMRefCallback);
+struct _Fu_MM;
+struct _Fu_MMObject;
 
-typedef struct _MMTag {
-	MMRefIterator ref_iterator;
-} MMTag;
+typedef void (*Fu_MMRefCallback)(struct _Fu_MM *, struct _Fu_MMObject *);
+typedef void (*Fu_MMRefIterator)(struct _Fu_MM *, struct _Fu_MMObject *, Fu_MMRefCallback);
 
-typedef struct _MMObject {
-	struct _MMObject *prev, *next;	/* Most objects belong to a doubly linked list. */
-	MMFlags flags;			/* The flags for an object indicate its color and
+typedef struct _Fu_MMTag {
+	Fu_MMRefIterator ref_iterator;
+} Fu_MMTag;
+
+typedef struct _Fu_MMObject {
+	struct _Fu_MMObject *prev, *next;	/* Most objects belong to a doubly linked list. */
+	Fu_MMFlags flags;			/* The flags for an object indicate its color and
 				  	 * size. */
-	MMTag *tag;			/* Tag indicating the type of the object.
+	Fu_MMTag *tag;			/* Tag indicating the type of the object.
 					 * The main reason for the tag is
 					 * being able to know which parts of an object data are
 					 * pointers to other objects, for the memory
 					 * manager to calculate reachability.
 					 */
-	MMData data[];			/* Raw data. */
-} MMObject;
+	Fu_MMData data[];			/* Raw data. */
+} Fu_MMObject;
 
-typedef struct _MM {
+/* Memory manager */
+
+typedef struct _Fu_MM {
 	/*
 	 * Representation of the memory manager:
 	 *
-	 * - All MMObject instances are able to form doubly linked lists
+	 * - All Fu_MMObject instances are able to form doubly linked lists
 	 *   by means of their prev and next fields.
 	 *
 	 * - <graycol> indicates which is the current gray color.
@@ -74,20 +78,23 @@ typedef struct _MM {
 	 *
 	 */
 
-	MMObject *black, *gray, *white;		/* Linked lists for the black, gray
+	Fu_MMObject *black, *gray, *white;		/* Linked lists for the black, gray
 						 * and white sets */
-	MMObject *freelist[MM_MAX_FREELIST];	/* Linked list for the free cells */
-	MMSize nalloc;				/* Amount of allocated memory in the black list */
-	MMSize gc_threshold;			/* GC triggers when the allocated memory reaches
+	Fu_MMObject *freelist[Fu_MM_MAX_FREELIST];	/* Linked list for the free cells,
+						 * indexed by the allocation size */
+	Fu_MMSize nalloc;				/* Amount of allocated memory in the black list */
+	Fu_MMSize gc_threshold;			/* GC triggers when the allocated memory reaches
 						 * this number of bytes */
-	MMObject *root;				/* For marking the root */
-	MMColor graycol;			/* Current gray color, (1 - graycol) is white
+	Fu_MMObject *root;				/* For marking the root */
+	Fu_MMColor graycol;			/* Current gray color, (1 - graycol) is white
 						 * color */
-} MM;
+} Fu_MM;
 
-void mm_gc(MM *mm);
-void mm_init(MM *mm);
-MMObject *mm_allocate(MM *mm, MMTag *tag, MMSize size);
-void mm_end(MM *mm);
+typedef Fu_MMObject Fu_Object;
+
+void fu_mm_gc(Fu_MM *mm);
+void fu_mm_init(Fu_MM *mm);
+Fu_MMObject *fu_mm_allocate(Fu_MM *mm, Fu_MMTag *tag, Fu_MMSize size);
+void fu_mm_end(Fu_MM *mm);
 
 #endif

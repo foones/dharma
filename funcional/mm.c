@@ -6,8 +6,8 @@
 
 /* Helpers */
 
-#define whiten(X)	(X)->flags = MM_FLAGS_SET_COLOR((X)->flags, WHITE(mm))
-#define grayen(X)	(X)->flags = MM_FLAGS_SET_COLOR((X)->flags, GRAY(mm))
+#define whiten(X)	(X)->flags = Fu_MM_FLAGS_SET_COLOR((X)->flags, WHITE(mm))
+#define grayen(X)	(X)->flags = Fu_MM_FLAGS_SET_COLOR((X)->flags, GRAY(mm))
 
 #define forn(I, N)	for (I = 0; I < (N); i++)
 #define foreach(X, L)	for (X = (L); X != NULL; X = X->next)
@@ -15,7 +15,7 @@
 #define GRAY(mm)	(mm)->graycol
 #define WHITE(mm)	(1 - GRAY(mm))
 
-static void list_remove(MMObject **list, MMObject *obj)
+static void list_remove(Fu_MMObject **list, Fu_MMObject *obj)
 {
 	if (*list == obj) {
 		*list = obj->next;
@@ -30,14 +30,14 @@ static void list_remove(MMObject **list, MMObject *obj)
 	obj->next = NULL;
 }
 
-static MMObject *list_pop(MMObject **list)
+static Fu_MMObject *list_pop(Fu_MMObject **list)
 {
-	MMObject *obj = *list;
+	Fu_MMObject *obj = *list;
 	list_remove(list, obj);
 	return obj;
 }
 
-static void list_add_front(MMObject **list, MMObject *obj)
+static void list_add_front(Fu_MMObject **list, Fu_MMObject *obj)
 {
 	obj->prev = NULL;
 	obj->next = *list;
@@ -47,9 +47,9 @@ static void list_add_front(MMObject **list, MMObject *obj)
 	*list = obj;
 }
 
-/* MM functions */
+/* Fu_MM functions */
 
-void mm_init(MM *mm)
+void fu_mm_init(Fu_MM *mm)
 {
 	int i;
 	mm->black = NULL;
@@ -58,8 +58,8 @@ void mm_init(MM *mm)
 	mm->root = NULL;
 	mm->nalloc = 0;
 	mm->graycol = 0;
-	mm->gc_threshold = MM_FIRST_GC_THRESHOLD;
-	forn (i, MM_MAX_FREELIST) {
+	mm->gc_threshold = Fu_MM_FIRST_GC_THRESHOLD;
+	forn (i, Fu_MM_MAX_FREELIST) {
 		mm->freelist[i] = NULL;
 	}
 }
@@ -68,26 +68,25 @@ void mm_init(MM *mm)
  * If the allocation of an object would exceed the
  * current GC threshold, trigger GC.
  */
-MMObject *mm_allocate(MM *mm, MMTag *tag, MMSize size)
+Fu_MMObject *fu_mm_allocate(Fu_MM *mm, Fu_MMTag *tag, Fu_MMSize size)
 {
-	MMSize sz = sizeof(MMObject) + size;
+	Fu_MMSize sz = sizeof(Fu_MMObject) + size;
 
 	char reach_gc_threshold = mm->nalloc + sz > mm->gc_threshold;
-	/*char freelist_empty = sz < MM_MAX_FREELIST && mm->freelist[sz] == NULL;*/
 	if (reach_gc_threshold) {
-		mm_gc(mm);
+		fu_mm_gc(mm);
 	}
 
-	MMObject *obj;
+	Fu_MMObject *obj;
 
 	/* Get memory for the object */
-	if (sz < MM_MAX_FREELIST && mm->freelist[sz] != NULL) {
+	if (sz < Fu_MM_MAX_FREELIST && mm->freelist[sz] != NULL) {
 		obj = list_pop(&mm->freelist[sz]);
 	} else {
-		obj = (MMObject *)malloc(sz);
+		obj = (Fu_MMObject *)malloc(sz);
 	}
 
-	obj->flags = MM_FLAGS(size, GRAY(mm));
+	obj->flags = Fu_MM_FLAGS(size, GRAY(mm));
 	obj->tag = tag;
 	obj->prev = NULL;
 	list_add_front(&mm->black, obj);
@@ -97,7 +96,7 @@ MMObject *mm_allocate(MM *mm, MMTag *tag, MMSize size)
 
 /* Mark all the objects white in O(1) */
 
-static void whiten_all(MM *mm)
+static void whiten_all(Fu_MM *mm)
 {
 	mm->graycol = 1 - mm->graycol;
 	mm->white = mm->black;
@@ -106,16 +105,16 @@ static void whiten_all(MM *mm)
 
 /* Mark */
 
-static void mark_as_gray(MM *mm, MMObject *referenced)
+static void mark_as_gray(Fu_MM *mm, Fu_MMObject *referenced)
 {
-	if (referenced != NULL && MM_FLAGS_COLOR(referenced->flags) == WHITE(mm)) {
+	if (referenced != NULL && Fu_MM_FLAGS_COLOR(referenced->flags) == WHITE(mm)) {
 		list_remove(&mm->white, referenced);
 		grayen(referenced);
 		list_add_front(&mm->gray, referenced);
 	}
 }
 
-static void mark(MM *mm)
+static void mark(Fu_MM *mm)
 {
 	assert(mm->root != NULL);
 	assert(mm->white == NULL);
@@ -125,14 +124,14 @@ static void mark(MM *mm)
 	whiten_all(mm);
 
 	/* Set the root gray */
-	assert(MM_FLAGS_COLOR(mm->root->flags) == WHITE(mm));
+	assert(Fu_MM_FLAGS_COLOR(mm->root->flags) == WHITE(mm));
 	mark_as_gray(mm, mm->root);
 
 	/* While there are gray nodes */
 	while (mm->gray != NULL) {
 		/* Blacken the first gray object */
-		MMObject *obj = list_pop(&mm->gray);
-		assert(MM_FLAGS_COLOR(obj->flags) == GRAY(mm));
+		Fu_MMObject *obj = list_pop(&mm->gray);
+		assert(Fu_MM_FLAGS_COLOR(obj->flags) == GRAY(mm));
 		list_add_front(&mm->black, obj);
 
 		/* Grayen the white objects referenced by it */
@@ -140,26 +139,30 @@ static void mark(MM *mm)
 	}
 }
 
-static void list_deallocate(MMObject *list)
+static void list_deallocate(Fu_MMObject *list)
 {
-	MMObject *p;
+	Fu_MMObject *p;
 	for (p = list; p != NULL;) {
-		MMObject *obj = p;
+		Fu_MMObject *obj = p;
 		p = p->next;
 		free(obj);
 	}
 }
 
-static void list_free(MM *mm, MMObject **list)
+/*
+ * Free the big objects, and add the small objects to the
+ * corresponding freelist.
+ */
+static void list_free(Fu_MM *mm, Fu_MMObject **list)
 {
-	MMObject *p;
+	Fu_MMObject *p;
 	for (p = *list; p != NULL;) {
-		MMObject *obj = p;
-		MMSize sz = sizeof(MMObject) + MM_FLAGS_SIZE(obj->flags);
+		Fu_MMObject *obj = p;
+		Fu_MMSize sz = sizeof(Fu_MMObject) + Fu_MM_FLAGS_SIZE(obj->flags);
 		p = p->next;
 		assert(mm->nalloc >= sz);
 		mm->nalloc -= sz;
-		if (sz < MM_MAX_FREELIST) {
+		if (sz < Fu_MM_MAX_FREELIST) {
 			list_add_front(&mm->freelist[sz], obj);
 		} else {
 			free(obj);
@@ -170,10 +173,10 @@ static void list_free(MM *mm, MMObject **list)
 
 /* Sweep */
 
-static void sweep(MM *mm)
+static void sweep(Fu_MM *mm)
 {
 	list_free(mm, &mm->white);
-	mm->gc_threshold = MAX(2 * mm->nalloc, MM_FIRST_GC_THRESHOLD);
+	mm->gc_threshold = MAX(2 * mm->nalloc, Fu_MM_FIRST_GC_THRESHOLD);
 	assert(mm->black != NULL);
 	assert(mm->gray == NULL);
 }
@@ -194,7 +197,7 @@ static void sweep(MM *mm)
  *   they are unreachable.
  *
  */
-void mm_gc(MM *mm)
+void fu_mm_gc(Fu_MM *mm)
 {
 	printf("gc\n");
 	mark(mm);
@@ -202,11 +205,11 @@ void mm_gc(MM *mm)
 }
 
 /* Free all the remaining objects. */
-void mm_end(MM *mm)
+void fu_mm_end(Fu_MM *mm)
 {
 	int i;
 	list_deallocate(mm->black);
-	forn (i, MM_MAX_FREELIST) {
+	forn (i, Fu_MM_MAX_FREELIST) {
 		if (mm->freelist[i] != NULL) {
 			list_deallocate(mm->freelist[i]);
 		}

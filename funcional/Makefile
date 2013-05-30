@@ -2,9 +2,17 @@
 
 all : co
 
-co : co.c mm.h mm.c
-	gcc -o co co.c mm.c -Wall -ansi -g -ggdb -pg -O2
+#CC=clang
+CC=gcc
+CFLAGS+= -Wall -ansi -g -ggdb -pg -O2
+
+OBJS=co.o mm.o obj/cons.o
+co : ${OBJS} mm.h
+	$(CC) -o co $(OBJS)
 
 clean :
-	rm -f *.o
+	rm -f *.o obj/*.o gmon.out
+
+%.o : %.c
+	$(CC) $(CFLAGS) -c $< -o $@ -I.
 
