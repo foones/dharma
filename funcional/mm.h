@@ -1,5 +1,5 @@
-#ifndef _Fu_MM_H_
-#define _Fu_MM_H_
+#ifndef _FU_MM_H_
+#define _FU_MM_H_
 
 typedef char Fu_MMData;
 

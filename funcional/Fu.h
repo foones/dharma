@@ -3,4 +3,6 @@
 
 #include "mm.h"
 
+#include "obj/cons.h"
+
 #endif
