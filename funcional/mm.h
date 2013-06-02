@@ -1,15 +1,14 @@
 #ifndef _FU_MM_H_
 #define _FU_MM_H_
 
-typedef char Fu_MMData;
+#include "common.h"
 
-#define	Fu_MM_KB	1024
-#define	Fu_MM_MB	(1024 * Fu_MM_KB)
+typedef char Fu_MMData;
 
 /* Fu_MM_FIRST_GC_THRESHOLD is the amount of allocated bytes that,
  * when reached, triggers GC for the very first time.
  */
-#define Fu_MM_FIRST_GC_THRESHOLD	Fu_MM_MB
+#define Fu_MM_FIRST_GC_THRESHOLD	Fu_MB
 #define MAX(X, Y)		((X) < (Y) ? (Y) : (X))
 
 /* The Fu_MMFlags type is used to represent both the size and the color

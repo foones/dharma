@@ -7,7 +7,8 @@ CC=gcc
 CFLAGS+= -Wall -ansi -g -ggdb -pg -O2
 
 OBJS=co.o mm.o objects/cons.o
-co : ${OBJS} mm.h
+INCS=mm.h common.h objects/cons.h
+co : ${OBJS} $(INCS)
 	$(CC) -o co $(OBJS)
 
 clean :
