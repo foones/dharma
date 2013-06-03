@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include "Fu.h"
 
-int main()
+void test_mm()
 {
 	Fu_MM _mm;
 	Fu_MM *mm = &_mm;
@@ -25,7 +25,17 @@ int main()
 		/*printf("nalloc: %llu gc_threshold: %llu\n", mm->nalloc, mm->gc_threshold);*/
 	}
 	fu_mm_end(mm);
+}
 
+void test_lexer()
+{
+	Fu_Stream *stream = fu_stream_from_file(stdin);
+	printf("%u\n", fu_next_token(stream));
+}
+
+int main()
+{
+	test_lexer();
 	return 0;
 }
 

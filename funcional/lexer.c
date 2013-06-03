@@ -1,15 +1,24 @@
-#include "common.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include "lexer.h"
 
-typedef unsigned int Fu_Token; 
-
-#define Fu_STREAM_MAX_BUF	Fu_MB
-typedef struct _Fu_Stream {
-	char buffer[Fu_STREAM_MAX_BUF];
-	void *sync(struct _Fu_Stream *);
-};
-
-Fu_Token tokenize(Fu_Stream *stream)
+void sync_file_stream(Fu_Stream *stream)
 {
-	fu_stream_sync(stream);
+	printf("stream: syncing\n");
+}
+
+Fu_Stream *fu_stream_from_file(FILE *f)
+{
+	Fu_Stream *stream = (Fu_Stream *)malloc(sizeof(Fu_Stream));
+	stream->bufi = Fu_STREAM_MAX_BUF;
+	stream->rep = (void *)f;
+	stream->sync = &sync_file_stream;
+	return stream;
+}
+
+Fu_Token fu_next_token(Fu_Stream *stream)
+{
+	stream->sync(stream);
+	return 0;
 }
 

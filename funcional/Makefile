@@ -6,8 +6,8 @@ all : co
 CC=gcc
 CFLAGS+= -Wall -ansi -g -ggdb -pg -O2
 
-OBJS=co.o mm.o objects/cons.o
-INCS=mm.h common.h objects/cons.h
+OBJS=co.o mm.o objects/cons.o lexer.o
+INCS=mm.h common.h objects/cons.h lexer.h
 co : ${OBJS} $(INCS)
 	$(CC) -o co $(OBJS)
 
