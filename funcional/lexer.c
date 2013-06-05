@@ -11,5 +11,6 @@ typedef struct _Fu_Stream {
 Fu_Token tokenize(Fu_Stream *stream)
 {
 	fu_stream_sync(stream);
+	if (streastream
 }
 
