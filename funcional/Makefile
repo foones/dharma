@@ -2,9 +2,15 @@
 
 all : co
 
-#CC=clang
-CC=gcc
-CFLAGS+= -Wall -ansi -g -ggdb -pg -O2 -fno-strict-aliasing
+CC=clang
+#CC=gcc
+CFLAGS+= -Wall -ansi -O2 -fno-strict-aliasing
+
+## Debugging
+CFLAGS+= -g -ggdb 
+
+## Profiling
+#CFLAGS+= -pg
 
 OBJS=co.o mm.o objects/cons.o lexer.o
 INCS=mm.h common.h objects/cons.h lexer.h

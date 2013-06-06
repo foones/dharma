@@ -15,7 +15,7 @@ static void sync_file_stream(Fu_Stream *stream)
 	stream->buflen = fread(current_buffer(stream), sizeof(char), stream->bufsiz, f);
 }
 
-Fu_Stream *fu_stream_from_file(FILE *f)
+Fu_Stream *fu_stream_from_file(char *filename, FILE *f)
 {
 	int size = Fu_STREAM_MAX_BUF;
 	Fu_Stream *stream = (Fu_Stream *)malloc(sizeof(Fu_Stream) + 2 * size);
@@ -25,6 +25,9 @@ Fu_Stream *fu_stream_from_file(FILE *f)
 	stream->bufi = stream->bufsiz;
 	stream->rep = (void *)f;
 	stream->sync = &sync_file_stream;
+	stream->pos.source = filename;
+	stream->pos.col = 1;
+	stream->pos.row = 1;
 	return stream;
 }
 
@@ -105,15 +108,6 @@ Fu_Token fu_lexer_next_token(Fu_Lexer *lexer)
 		return Fu_TOK_EOF;
 	}
 
-	/*
-	if (is_digit(ch)) {
-		while (is_digit(ch)) {
-			printf("%c", ch);
-			fu_stream_next(lexer->stream);
-			ch = fu_stream_peek(lexer->stream);
-		}
-	} else
-	*/
 	if (is_ident(ch)) {
 		int len = 0;
 		while (is_ident(ch)) {
@@ -122,6 +116,7 @@ Fu_Token fu_lexer_next_token(Fu_Lexer *lexer)
 			ch = fu_stream_peek(lexer->stream);
 		}
 
+		/* Test */
 		{
 			int j;
 			uchar mybuf[1000];

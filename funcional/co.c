@@ -30,8 +30,10 @@ void test_mm()
 void test_lexer()
 {
 	FILE *f = fopen("test.txt", "r");
-	if (!f) { fu_fail("file test.txt does not exist\n"); }
-	Fu_Stream *stream = fu_stream_from_file(f);
+	if (!f) {
+		fu_fail("%s", "file test.txt does not exist\n");
+	}
+	Fu_Stream *stream = fu_stream_from_file("test.txt", f);
 
 	Fu_Lexer *lexer = fu_lexer_from_stream(stream);
 	while (TRUE) {
@@ -45,6 +47,7 @@ void test_lexer()
 
 int main()
 {
+	/*test_mm();*/
 	test_lexer();
 	return 0;
 }
