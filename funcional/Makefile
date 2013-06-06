@@ -4,7 +4,7 @@ all : co
 
 #CC=clang
 CC=gcc
-CFLAGS+= -Wall -ansi -g -ggdb -pg -O2
+CFLAGS+= -Wall -ansi -g -ggdb -pg -O2 -fno-strict-aliasing
 
 OBJS=co.o mm.o objects/cons.o lexer.o
 INCS=mm.h common.h objects/cons.h lexer.h

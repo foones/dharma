@@ -29,8 +29,18 @@ void test_mm()
 
 void test_lexer()
 {
-	Fu_Stream *stream = fu_stream_from_file(stdin);
-	printf("%u\n", fu_next_token(stream));
+	FILE *f = fopen("test.txt", "r");
+	if (!f) { fu_fail("file test.txt does not exist\n"); }
+	Fu_Stream *stream = fu_stream_from_file(f);
+
+	Fu_Lexer *lexer = fu_lexer_from_stream(stream);
+	while (TRUE) {
+		Fu_Token tok = fu_lexer_next_token(lexer);
+		if (tok == Fu_TOK_EOF) break;
+		printf("t %u\n", tok);
+	}
+
+	fclose(f);
 }
 
 int main()

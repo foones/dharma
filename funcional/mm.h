@@ -3,7 +3,7 @@
 
 #include "common.h"
 
-typedef char Fu_MMData;
+typedef uchar Fu_MMData;
 
 /* Fu_MM_FIRST_GC_THRESHOLD is the amount of allocated bytes that,
  * when reached, triggers GC for the very first time.
