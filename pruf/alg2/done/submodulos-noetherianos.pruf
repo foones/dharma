@@ -1,0 +1,12 @@
+[title Submódulo de un módulo Noetheriano es Noetheriano]
+[category Álgebra 2]
+[tags módulo,noetheriano,submódulo]
+
+Sea $M$ un módulo sobre un anillo $A$ y $S \subseteq M$ un
+submódulo. Si $M$ es Noetheriano, entonces $S$ es Noetheriano.
+
+<strong>Demostración.</strong> Usando que un módulo es Noetheriano
+<a href="/noetheriano-sii-nucleo-imagen-noetherianos">si y sólo si</a>
+el núcleo y la imagen de un morfismo lo son, basta con tomar
+$\pi : M \to M / S$ la proyección al cociente, cuyo núcleo es $S$.
+

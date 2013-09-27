@@ -1,0 +1,177 @@
+[title Funtor Hom covariante de módulos es exacto a izquierda]
+[category Álgebra 2]
+[tags sucesión exacta,funtor,covariante,hom]
+
+La siguiente sucesión de $A$-módulos:
+
+$0 \longrightarrow
+M_1 \overset{f}{\longrightarrow}
+M_2 \overset{g}{\longrightarrow}
+M_3$
+
+es exacta si y sólo si para todo $A$-módulo $P$ la
+sucesión de $\mathbb{Z}$-módulos inducida:
+
+$0 \longrightarrow
+\mathop{\rm{Hom}}_A(P, M_1) \overset{f_*}{\longrightarrow}
+\mathop{\rm{Hom}}_A(P, M_2) \overset{g_*}{\longrightarrow}
+\mathop{\rm{Hom}}_A(P, M_3)$
+
+es exacta.
+
+Recordar que todo morfismo $f \in \mathop{\rm{Hom}}_A(M, N)$
+induce un morfismo
+$f_* : \mathop{\rm{Hom}}_A(P, M) \to \mathop{\rm{Hom}}_A(P, N)$
+que se define por $f_*(\psi) = f \cdot \psi$.
+La situación es la siguiente:
+
+%%{
+\xymatrix{
+  & P \ar[ld]_{\psi} \ar[rd]^{f_{*}(\psi) = f \cdot \psi} \\
+M \ar[rr]^{f} & & N \\
+}
+%%}
+
+<strong>Demostración.</strong> 
+
+Se analizan por separado las condiciones:
+<ol>
+<li> $f$ monomorfismo $\iff$ $f_*$ monomorfismo.
+<li> ${\mathop{\rm{im}}}(f) = \ker(g) \iff {\mathop{\rm{im}}}(f_*) = \ker(g_*)$
+</ol>
+
+<strong>1. Monomorfismos</strong>
+
+Se verá que $f : M_1 \to M_2$ es un monomorfismo si y sólo si para
+todo $A$-módulo $P$ se tiene que $f_* : {\mathop{\rm Hom}}_A(P, M_1) \to
+{\mathop{\rm Hom}}_A(P, M_2) $ es un monomorfismo.
+
+ ($\Rightarrow$)
+ Sea $f$ un monomorfismo y fijar un $A$-módulo $P$. Suponer que
+ $f_*(\psi) = 0$ para algún $\psi \in \mathop{\rm{Hom}}_A(P, M_1)$.
+ Entonces $f \cdot \psi \equiv 0$. Sea $x \in P$. Entonces
+ $f(\psi(x)) = 0$. Como $f$ es un monomorfismo, $\psi(x) = 0$,
+ y por lo tanto $\psi \equiv 0$.
+
+ ($\Leftarrow$)
+ Suponer que $f_*$ es un monomorfismo para cualquier elección de $P$.
+ En particular, lo es para el anillo $P = A$ mirado como $A$-módulo.
+ Dado $x \in M_1$, considerar el morfismo $\psi_x : A \to M_1$
+ determinado por $\alpha \mapsto \alpha\,x$. La situación es la siguiente:
+
+%%{
+\xymatrix{
+  & A \ar[ld]_{\psi_x} \ar[rd]^{f_{*}(\psi_x) = f \cdot \psi_x} \\
+M_1 \ar[rr]^{f} & & M_2 \\
+}
+%%}
+
+ Si $x \neq 0$, entonces $\psi_x$ no es el morfismo nulo (ya
+ que justamente manda el $1 \in A$ a $x \neq 0$).
+ Como $f_*$ es un monomorfismo, $f_*(\psi_x) \in {\mathop{\rm Hom}}_A(A, M_2)$
+ no es el morfismo
+ nulo, es decir $f_*(\psi_x) = f \cdot \psi_x \not\equiv 0$,
+ y por lo tanto existe un $\alpha \in A$ tal que
+ $f(\psi_x(\alpha)) \neq 0$. Notar que $\alpha \neq 0$.
+ Evaluando $\psi_x$, lo que se tiene es que $f(\alpha\,x) = \alpha\,f(x) \neq 0$.
+ Esto implica que $f(x) \neq 0$.
+
+ Resumiendo, para todo elemento $x \in M_1$ no nulo, se tiene que
+ $f(x) \neq 0$, y por lo tanto $f$ es un monomorfismo.
+
+<strong>2. Coincidencia de imagen y núcleo</strong>
+
+Se verá que la imagen de $f : M_1 \to M_2$ coincide con el núcleo de $g : M_2 \to M_3$
+si y sólo si para todo $A$-módulo $P$ se tiene que
+la imagen de
+$f_* : {\mathop{\rm Hom}}_A(P, M_1) \to {\mathop{\rm Hom}}_A(P, M_2)$
+coincide con el núcleo de
+$g_* : {\mathop{\rm Hom}}_A(P, M_2) \to {\mathop{\rm Hom}}_A(P, M_3)$.
+La situación es la siguiente:
+
+%%{
+\xymatrix{
+           & P \ar[ld] \ar[d]^{\varphi} \ar[rd] \\
+M_1 \ar[r]^{f} & M_2 \ar[r]^{g} & M_3 \\
+}
+%%}
+
+
+($\Rightarrow$)
+Suponer que ${\mathop{\rm{im}}}(f) = \ker(g)$ y fijar un $A$-módulo
+$P$. Para ver que se verifica ${\mathop{\rm{im}}}(f_*) = \ker(g_*)$,
+se probará la doble inclusión:
+
+  <ul>
+  <li> ${\mathop{\rm{im}}}(f_*) \subseteq \ker(g_*)$.
+
+       Sea $\varphi \in {\mathop{\rm Hom}}_A(P, M_2)$ en la imagen
+       de $f_*$. Se tiene que $\varphi = f_*(\psi) = f \cdot \psi$,
+       y entonces $g_*(\varphi) = g \cdot f \cdot \psi \equiv 0$ pues
+       $g \cdot f \equiv 0$.
+
+  <li> ${\mathop{\rm{im}}}(f_*) \supseteq \ker(g_*)$.
+
+       Sea $\varphi \in {\mathop{\rm Hom}}_A(P, M_2)$ en el núcleo
+       de $g_*$. Se tiene que $g_*(\varphi) = g \cdot \varphi \equiv 0$.
+       Entonces ${\mathop{\rm{im}}}(\varphi) \subseteq \ker(g) = {\mathop{\rm{im}}}(f)$.
+       Como $f : M_1 \to M_2$ es un monomorfismo,
+       se tiene un isomorfismo $\tilde{f} : M_1 \overset{\simeq}{\to} {\mathop{\rm{im}}}(f)$.
+       Más precisamente, $\tilde{f}$ es el morfismo que asocia
+       cada $x \in {\mathop{\rm{im}}}(f) \subseteq M_2$ al único $y \in M_1$ tal que
+       $x = f(y)$.
+
+       Considerar entonces el morfismo $\psi : P \to M_1$ dado por
+       $\psi := \tilde{f}^{-1} \cdot \varphi$. Notar que está bien definido
+       precisamente porque ${\mathop{\rm{im}}}(\varphi) \subseteq {\mathop{\rm{im}}}(f)$.
+       Entonces $\varphi = f \cdot \tilde{f}^{-1} \cdot \varphi = f \cdot \psi = f_*(\psi)$,
+       con lo cual $\varphi \in {\mathop{\rm{im}}}(f_*)$.
+
+
+  </ul>
+
+($\Leftarrow$)
+Suponer que ${\mathop{\rm{im}}}(f_*) = \ker(g_*)$ para todo
+$A$-módulo $P$. En particular, esto vale si $P$ es el anillo $A$.
+La situación es la siguiente:
+
+%%{
+\xymatrix{
+           & A \ar[ld] \ar[d]^{\varphi} \ar[rd] \\
+M_1 \ar[r]^{f} & M_2 \ar[r]^{g} & M_3 \\
+}
+%%}
+
+Se probará
+la doble inclusión de ${\mathop{\rm{im}}}(f) = \ker(g)$.
+
+  <ul>
+  <li> ${\mathop{\rm{im}}}(f) \subseteq \ker(g)$.
+
+       Para cada $x \in M_1$, considerar el morfismo $\psi_x : A \to M_1$
+       determinado por $\alpha \mapsto \alpha\,x$.
+
+       Observar que para todo $x \in M_1$, se tiene que
+       $f_*(\psi_x) = f \cdot \psi_x \in {\mathop{\rm{im}}}(f_*) = \ker(g_*)$.
+       Es decir, $g_*(f_*(\psi_x)) = g \cdot f \cdot \psi_x \equiv 0$.
+       Evaluando en $1$ se concluye que $g(f(x)) = 0$ para todo $x \in M_1$,
+       con lo cual ${\mathop{\rm{im}}}(f) \subseteq \ker(g)$.
+
+  <li> $\ker(g) \subseteq {\mathop{\rm{im}}}(f)$.
+
+       Sea $x \in \ker(g)$. Entonces $g(x) = 0$.
+       Considerar el morfismo $\varphi_x : A \to M_2$ determinado
+       por $\alpha \mapsto \alpha \cdot x$.
+       Observar que
+       $g_*(\varphi_x)(\alpha) = (g \cdot \varphi_x)(\alpha) = g(\varphi_x(\alpha)) = g(\alpha\,x) =
+\alpha\,g(x) = 0$ para todo $\alpha \in A$.
+
+       Por lo tanto,
+       $\varphi_x \in \ker(g_*) = {\mathop{\rm{im}}}(f_*)$, es decir,
+       $\varphi_x = f_*(\psi)$ para cierto
+       $\psi \in {\mathop{\rm Hom}}_A(A, M_1)$.
+       Evaluando en $1 \in A$, se concluye que
+       $\varphi_x(1) = f_*(\psi)(1) = (f \cdot \psi)(1)$, o sea,
+       $x = f(\psi(1)) \in {\mathop{\rm{im}}}(f)$.
+
+  </ul>

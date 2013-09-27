@@ -1,0 +1,61 @@
+[title Teorema chino del resto para anillos conmutativos]
+[category Álgebra 2]
+[tags anillo,ideal,coprimo,teorema,chino,resto]
+
+Sea $A$ un anillo conmutativo. Si $I, J \subseteq A$ son dos ideales
+<em>coprimos</em>, es decir, $I + J = A$, entonces:
+$A / IJ \simeq A / I \times A / J$.
+
+Notar que esto es una generalización del teorema chino del resto,
+que afirma que, para $n,m \in \mathbb{Z}$ coprimos se cumple:
+$\mathbb{Z}/nm\mathbb{Z} \simeq \mathbb{Z}/n\mathbb{Z} \times \mathbb{Z}/m\mathbb{Z}$
+
+<strong>Demostración.</strong>
+
+Considerar $\pi_I : A \to A / I$ y $\pi_J : A \to A / J$ las proyecciones al
+cociente. Ambas son morfismos de anillos. Considerar
+el morfismo de anillos $\pi = (\pi_I, \pi_J) : A \to A / I \times A / J$
+determinado por $a \mapsto (\bar{a}, \bar{a})$.
+
+Por empezar, $\pi$ es un epimorfismo. Por ser $A = I + J$,
+todo elemento de $a \in A$ se escribe como $a = i + j$, con $i \in I$ y $j \in J$. 
+Por lo tanto, todos los
+elementos de $A / I$ son de la forma $a + I = i + j + I = j + I = \bar{j}$.
+Análogamente, todos los elementos de $A / J$ son de la forma $\bar{i}$
+con $i \in I$.
+De este modo, dado un elemento $(\bar{j}, \bar{i}) \in A / I \times A / J$
+cualquiera, tomando $i + j \in A$ se tiene que $\pi(i + j) = (\bar{j}, \bar{i})$,
+con lo cual $\pi$ es un epimorfismo.
+
+Por otro lado, se quiere ver que $\ker(\pi) = IJ$.
+Recordar que, por definición, los
+elementos de $IJ$ son de la forma $\sum_{k=1}^n i_k\,j_k$ con los $i_k \in I$
+y los $j_k \in J$. Se observa primero que se cumple $IJ = I \cap J$:
+<ul>
+<li> La inclusión $(\subseteq)$ es trivial,
+pues dado $\sum_{k=1}^n i_k\,j_k \in IJ$, cada uno de los términos $i_k\,j_k$
+está tanto en $I$ como en $J$,
+pues ambos son ideales, y en consecuencia la suma de todos ellos también
+está en $I \cap J$.
+<li> Para la inclusión $(\supseteq)$, sea $x \in I \cap J$.
+Usando que $A = I + J$, se tiene en particular que el $1 \in A$
+se escribe como $1 = i + j$ para ciertos $i \in I$ y $j \in J$.
+Multiplicando por $x$ se tiene que: $x = i\,x + x\,j$.
+Notar que tanto $i\,x$ como $x\,j$ están en $IJ$ porque
+$x \in I \cap J$, y entonces $x \in IJ$.
+</ul>
+
+Como $IJ = I \cap J$, basta ver que $\ker(\pi) = I \cap J$:
+<ul>
+<li> La inclusión $(\supseteq)$ es clara, porque
+si $x \in I \cap J$, la clase de $x$ es $\pi_I(x) = x + I = I = \bar{0}$
+en el cociente $A / I$ y, análogamente, $\pi_J(x) = x + J = J = \bar{0}$ en el
+cociente $A / J$.
+<li> Para la inclusión $(\subseteq)$, dado un elemento cualquiera $a \in A$
+se tiene, como antes que es de la forma $i + j$ con $i \in I$ y $j \in J$,
+y que $\pi(a) = (\bar{j}, \bar{i})$. Si además $a \in \ker(\pi)$,
+entonces $(\bar{j}, \bar{i}) = (\bar{0}, \bar{0})$, con lo cual se tiene que
+$j \in I$ y que $i \in J$. Tanto $i$ como $j$ están en la intersección
+$I \cap J$, y por ende también lo está la suma $i + j = a \in I \cap J$.
+</ul>
+

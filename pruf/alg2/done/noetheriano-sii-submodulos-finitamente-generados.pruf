@@ -1,0 +1,52 @@
+[title Módulo es Noetheriano sii todo submódulo es finitamente generado]
+[category Álgebra 2]
+[tags módulo,noetheriano,submódulo,finitamente generado]
+
+Sea $M$ un $A$-módulo. Entonces $M$ es Noetheriano si y sólo si todo
+submódulo de $M$ es finitamente generado. (Notar que todos los
+submódulos de $M$ incluyen a $M$ mismo).
+
+<strong>Demostración.</strong>
+
+$(\Rightarrow)$
+Sea $N \subseteq M$ un submódulo de $M$. Se verá que es
+finitamente generado. Considerar el siguiente algoritmo:
+
+<ul>
+<li> $\mathcal{S}_1 \gets \{x_1\}$ para algún $x_1 \in N$
+<li> {\bf para cada} $i \in \mathbb{N}$ {\bf mientras } $\langle \mathcal{S}_i \rangle \neq N$
+  <ul>
+  <li> $\mathcal{S}_i \gets \mathcal{S}_{i-1} \cup \{x_i\}$ para algún $x_i \in N \setminus \langle \mathcal{S}_i \rangle$.
+  </ul>
+</ul>
+
+Si el algoritmo termina, es porque $\langle \mathcal{S}_i \rangle = N$, con lo
+cual $N$ es finitamente generado. El algoritmo debe terminar, porque
+de lo contrario $\langle \mathcal{S}_1 \rangle \subsetneq \langle \mathcal{S}_2
+\rangle \subsetneq \hdots$ es una cadena creciente de submódulos de $M$
+que no se estaciona, contradiciendo el hecho de que $M$ es
+Noetheriano.
+
+$(\Leftarrow)$
+Sea $N_1 \subseteq N_2 \subseteq \hdots$ una cadena creciente de
+submódulos de $M$. Se verá que se estaciona.
+Considerar la unión $S := \bigcup_{i \in \mathbb{N}}N_i$ de
+dichos submódulos; entonces $S \subseteq M$ también es un submódulo
+y, por hipótesis, finitamente generado. Considerar entonces
+un sistema de generadores $\{s_1, \hdots, s_n\}$ finito del
+submódulo $S$.
+Cada uno de los elementos $s_k \in S$ está en algún submódulo
+$N_{r_k}$. Pero como forman una cadena creciente, todos los
+elementos $s_k$ están también en $N_{\max\{r_1,\hdots,r_n\}}$.
+
+Tomando $n_0 = \max\{r_1,\hdots,r_n\}$, se tiene entonces que
+$N_{n_0} = S$, pues $N_{n_0}$ contiene a todos los generadores de $S$
+y a su vez está contenido en $S$, que es la unión de todos los
+$N_i$.
+
+Además, para todo $n \geq n_0$ se tiene que
+$N_{n_0} \subseteq N_n$, ya que forman una cadena creciente,
+y además que $N_n \subseteq N_{n_0}$, pues $N_{n_0} = S$
+es la unión de todos los $N_i$. De este modo, la cadena se
+estaciona a partir de $n_0$.
+

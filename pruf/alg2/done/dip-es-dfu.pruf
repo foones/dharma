@@ -1,0 +1,41 @@
+[title Todo DIP es un DFU]
+[category Álgebra 2]
+[tags anillo,dominio de ideales principales,dominio de factorización única]
+
+Sea $A$ un dominio de ideales principales. Entonces es un dominio de
+factorización única.
+
+<strong>Demostración.</strong>
+Todos los ideales de $A$ son principales, es decir, están generados
+por un elemento del anillo. En particular, todos los ideales son
+finitamente generados. Mirado como $A$-módulo, todos los submódulos
+de $A$ son finitamente generados, y
+<a href="/noetheriano-sii-submodulos-finitamente-generados">por lo tanto</a>
+$A$ es un anillo Noetheriano.
+Además, todo anillo Noetheriano
+<a href="/anillo-noetheriano-es-df">es un dominio de factorización</a>,
+de modo que $A$ es un dominio de factorización.
+Para ver que $A$ es un dominio de factorización única, sólo
+falta ver entonces que
+<a href="/dfu-irreducible-implica-primo">los elementos irreducibles son primos</a>.
+
+Sea $a \in A$ un elemento irreducible. Se verá que es primo.
+Considerar para ello el ideal generado por dicho elemento, y suponer que está incluido
+en otro ideal $\langle a \rangle \subseteq \mathcal{I} \subseteq A$.
+Por ser $A$ un DIP, el ideal $\mathcal{I}$ debe ser de la forma
+$\langle b \rangle$. La inclusión de los ideales implica, en
+particular, que $a \in \langle b \rangle$, es decir, $a = x\,b$ para
+algún $x \in A$. Como $a$ es irreducible, pueden darse dos casos:
+<ul>
+<li> o bien $b \in \mathcal{U}(A)$ es una unidad del anillo, en cuyo
+caso $\langle b \rangle = A$;
+<li> o bien $b \sim a$ es un asociado, en cuyo caso $\langle b \rangle =
+\langle a \rangle$.
+</ul>
+Entonces no puede haber un ideal $\mathcal{I}$ situado estrictamente
+entre el ideal generado $\langle a \rangle$ y todo el anillo $A$,
+de modo que $\langle a \rangle$ es un ideal maximal.
+
+Finalmente, como <a href="/ideal-maximal-es-primo">todo ideal maximal es primo</a>
+se tiene que $\langle a \rangle$ es un ideal primo, o,
+equivalentemente, que $a$ es un elemento primo.

@@ -1,0 +1,72 @@
+[title Funtor Hom contravariante de módulos es exacto a izquierda]
+[category Álgebra 2]
+[tags sucesión exacta,funtor,contravariante,hom]
+
+Sea $A$ un anillo. Entonces, si la sucesión de $A$-módulos:
+
+$
+M_1 \overset{f}{\longrightarrow}
+M_2 \overset{g}{\longrightarrow}
+M_3 \longrightarrow
+0
+$
+
+es exacta, entonces la sucesión de $\mathbb{Z}$-módulos inducida:
+
+$
+0 \longrightarrow
+{\mathop{\rm Hom}}_A(M_3, J) \overset{g^*}{\longrightarrow}
+{\mathop{\rm Hom}}_A(M_2, J) \overset{f^*}{\longrightarrow}
+{\mathop{\rm Hom}}_A(M_1, J)$
+
+es exacta.
+
+Recordar que todo morfismo $f \in \mathop{\rm{Hom}}_A(M, N)$
+induce un morfismo
+$f^* : \mathop{\rm{Hom}}_A(N, J) \to \mathop{\rm{Hom}}_A(M, J)$
+que se define por $f^*(\psi) = \psi \cdot f$.
+La situación es la siguiente:
+
+%%{
+\xymatrix{
+ M \ar[rd]_{f^*(\psi) = \psi \cdot f} \ar[rr]^{f} & & N \ar[ld]^{\psi} \\
+ & J
+}
+%%}
+
+
+<strong>Demostración.</strong>
+
+<ul>
+<li> Por un lado, se afirma que cada vez que $g$ es un epimorfismo,
+se tiene que $g^*$ es un monomorfismo.
+
+Sea $g^*(\psi) \equiv 0$ para $\psi \in {\mathop{\rm Hom}}(M_3, J)$.
+Entonces $\psi \, g(x) = 0$ para todo $x \in M_2$.
+Como $g$ es un epimorfismo, $\psi(y) = 0$ para todo $y \in M_3$.
+Entonces $\psi \equiv 0$.
+
+<li> Por otro lado, cada vez que ${\mathop{\rm{im}}}(f) = \ker(g)$
+se tiene que ${\mathop{\rm{im}}}(g^*) = \ker(f^*)$.
+
+($\subseteq$) Sea $\psi \in {\mathop{\rm{im}}}(g^*)$. Entonces
+$\psi = g^*(\varphi)$ para algún $\varphi \in {\mathop{\rm Hom}}(M_3, J)$,
+y por lo tanto $f^*(\psi) = f^*(g^*(\varphi)) = \varphi \cdot g \cdot f$.
+Este término es igual a $0$ pues se sabe ${\mathop{\rm{im}}}(f) \subseteq \ker(g)$.
+Por lo tanto se tiene
+$f^*(g^*(\varphi)) \equiv 0$, y entonces
+$g^*(\varphi) \in \ker(f^*)$.
+
+($\supseteq$) Sea $\psi \in \ker(f^*)$. Entonces
+$f^*(\psi) \equiv 0$, es decir
+$\psi \, f (x) = 0$ para todo $x \in M_1$.
+Como ${\mathop{\rm{im}}}(f) \supseteq \ker(g)$, esto
+implica que $\psi(y) = 0$ para todo $y \in \ker(g)$.
+Por lo tanto $\ker(g) \subseteq \ker(\psi)$.
+Por un resultado
+básico de morfismos (en este caso, morfismos de $A$-módulos),
+esto permite factorizar a $\psi$ como $\varphi \cdot g$.
+Por lo tanto $\psi = g^*(\varphi) \in {\mathop{\rm{im}}}(g^*)$.
+
+</ul>
+

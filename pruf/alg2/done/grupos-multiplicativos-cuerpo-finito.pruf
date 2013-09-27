@@ -1,0 +1,23 @@
+[title Grupos multiplicativos de un cuerpo finito son cíclicos]
+[category Álgebra 2]
+[tags cíclico,cuerpo,grupo,unidades]
+
+Si $K$ es un cuerpo finito y $G \leq K^{\times}$ un subgrupo
+(multiplicativo), entonces $G$ es cíclico. Notar que en particular
+esto implica que $\mathbb{Z}_p^{\times}$ es cíclico para $p \in
+\mathbb{Z}$ primo.
+
+<strong>Demostración. </strong>Considerar $exp(G)$ el exponente de
+$G$, lo cual tiene sentido porque $G$ es abeliano. Basta ver que
+$exp(G) = |G|$, pues en tal caso, por ser $G$ finito, existirá un
+elemento de orden $|G|$.
+
+$(\leq)$ Hay al menos un elemento $x \in G$ de orden $exp(G)$. Por lo
+tanto $exp(G)$ divide a $|G|$ (por <a href="/teorema-de-lagrange">
+teorema de Lagrange</a>) y $exp(G) \leq
+|G|$.
+
+$(\geq)$ Por otro lado, para todo elemento $x \in G$, se cumple
+$x^{exp(G)} = 1$. La ecuación $x^n = 1$ tiene a lo sumo $n$ soluciones
+en un cuerpo, de modo que hay a lo sumo $exp(G)$ elementos $x \in G$.
+Esto prueba $|G| \leq exp(G)$.

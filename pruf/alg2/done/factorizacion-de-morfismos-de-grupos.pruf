@@ -1,0 +1,49 @@
+[title Factorización de morfismos de grupos]
+[category Álgebra 2]
+[tags morfismo,grupo,núcleo,factorización]
+
+Sean $G$, $G'$ grupos arbitrarios y $\varphi : G \to G'$ un
+morfismo de grupos.
+Sea $H \leq \ker(\varphi)$. (Observar que $H \trianglelefteq G$ porque
+el núcleo es normal). Sea entonces $\pi : G \to G/H$ la proyección al
+cociente. Entonces existe un único morfismo de grupos
+$\bar{\varphi} : G/H \to G'$
+que hace conmutar el siguiente diagrama:
+
+%%{
+\xymatrix{
+  G \ar[dr]_{\pi} \ar[rr]^{\varphi} &                            & G' \\
+                                    & G/H \ar[ur]_{\bar{\varphi}} &
+}
+%%}
+
+Es decir, para todo $x \in G$ dicho morfismo cumple que
+$\varphi(x) = \bar{\varphi}(\pi(x))$.
+
+<strong>Demostración.</strong>
+
+<em>Existencia.</em> Sea $\bar{\varphi} : G/H \to G'$ la aplicación
+dada por $\bar{x} \to \varphi(x)$. Está bien definida porque
+si $\bar{x} = \bar{y}$,
+entonces $1 = \bar{x}\bar{y}^{-1}$, 
+con lo cual $x\,y^{-1} \in H \subseteq \ker(\varphi)$.
+Por lo tanto $\varphi(x\,y^{-1}) = 1$, y entonces
+$\varphi(x) = \varphi(y)$.
+
+Además, define un morfismo porque
+$\bar{\varphi}(\bar{x}\,\bar{y})
+= \varphi(x\,y)
+= \varphi(x)\,\varphi(y)
+= \bar{\varphi}(\bar{x})\,\bar{\varphi}(\bar{y})$.
+
+Para ver que hace conmutar el diagrama, notar que
+para todo $x \in G$ se cumple
+$\varphi(x) = \bar{\varphi}(\bar{x}) = \bar{\varphi}(\pi(x))$.
+
+<em>Unicidad.</em> Para la unicidad, basta observar que
+la manera en que fue definido el morfismo $\bar{\varphi}$
+es la única manera de definirlo de tal manera que conmute
+con el diagrama. Es decir, si se tiene un morfismo $\psi$
+que conmuta con el diagrama, $\psi(\bar{x}) = \varphi(x)$
+para todo $x \in G$, y entonces $\psi = \bar{\varphi}$.
+

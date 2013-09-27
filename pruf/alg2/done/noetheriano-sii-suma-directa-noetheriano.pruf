@@ -1,0 +1,22 @@
+[title Módulos Noetherianos sii suma directa Noetheriano]
+[category Álgebra 2]
+[tags módulo,noetheriano,suma directa,endomorfismo]
+
+Sean $M_1, \hdots, M_n$ módulos sobre un anillo $A$.
+Entonces $M_1, \hdots, M_n$ son Noetherianos si y sólo si
+la suma directa $\bigoplus_{i=1}^{n}{M_i}$ es un
+módulo Noetheriano.
+
+<strong>Demostración.</strong>
+Basta ver el caso $n = 2$. El caso general se sigue por inducción en
+$n$.
+
+Considerar el morfismo $\pi_1 : M_1 \oplus M_2 \to M_1$
+determinado por $(x, y) \mapsto x$.
+Es sobreyectivo, de modo que $\mathop{\rm{im}}(\pi_1) = M_1$.
+Además, $\ker(\pi_1) = \{(0, y)\ |\ y \in M_2\} \simeq M_2$.
+Usando que $M_1 \oplus M_2$ es Noetheriano
+<a href="/noetheriano-sii-nucleo-imagen-noetherianos">si y sólo si</a>
+$\mathop{\rm{im}}(\pi_1)$ y $\ker(\pi_1)$ son Noetherianos,
+se concluye lo afirmado.
+

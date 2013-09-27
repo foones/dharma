@@ -1,0 +1,35 @@
+[title p-grupo tiene centro no trivial]
+[category Álgebra 2]
+[tags grupo,p-grupo,centro,trivial,ecuación,clases]
+
+Si $G \neq \{1\}$ es un $p$-grupo finito, tiene centro no
+trivial.
+
+<strong>Demostración.</strong>
+Considerar al grupo $G$ actuando sobre sí mismo por conjugación.
+Es decir, $G$ actúa sobre el conjunto $X = G$
+mediante la acción: $\varphi : G \to S(G)$ dada por
+$g \mapsto (h \mapsto g\,h\,g^{-1})$.
+Por el <a href="/ecuacion-de-clases">teorema de ecuación de clases</a>
+se tiene, en general, que:
+$\#X = FP_G(X) + \sum_{i=1}^n{[G:H_i]}$, donde los $H_i$ son
+subgrupos propios de $G$.
+
+En este caso particular, se tiene que los puntos fijados por $G$ en $X$
+son: $FP_G(X) = \{x \in G\ |\ x = g\,x\,g^{-1} \text{ para todo } g \in G\}
+= \{x \in G\ |\ x\,g = g\,x \text{ para todo } g \in G\} =
+\mathcal{Z}(G)$ es decir, precisamente el centro del grupo.
+
+Reescribiendo entonces la ecuación de clases, se obtiene:
+$|G| = |\mathcal{Z}(G)| + \sum_{i=1}^n{[G:H_i]}$.
+Mirando los términos de esta igualdad módulo $p$, se tiene que
+$|G| \equiv 0$, ya que es un $p$-grupo no trivial.
+Asimismo, $[G:H_i] \equiv 0$ para todo $i$, porque los subgrupos
+$H_i$ son propios, y por lo tanto $[G:H_i] = |G|/|H_i| = p^n / p^m$
+para ciertos $n, m \in \mathbb{N}$ con $m < n$.
+
+Se concluye que $|\mathcal{Z}(G)| \equiv 0 \mod p$. Además
+$|\mathcal{Z}(G)| \neq 0$ porque el centro del grupo contiene
+al menos un elemento (la identidad). Así,
+$|\mathcal{Z}(G)| > 0$.
+

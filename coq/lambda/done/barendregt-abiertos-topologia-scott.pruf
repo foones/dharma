@@ -1,0 +1,39 @@
+[title Ejemplos de conjuntos abiertos con la topología de Scott]
+[category Lambda]
+[tags Scott,abierto,cpo]
+
+Sea $(D,\sqsubseteq)$ un cpo (<em>complete partial ordering</em>).
+Entonces:
+<ol>
+<li> $\{z\,|\,z \not\sqsubseteq x\}$ es abierto con la topología de Scott
+<li> $\{z\,|\,z \sqsubseteq x\}$ no necesariamente es abierto
+</ol>
+
+<strong>Demostración.</strong>
+Recordar que un conjunto $O$ es abierto con la topología de Scott sii:
+<ul>
+<li> $(\forall x, y \in D)\ x \in O \land x \sqsubseteq y \implies y \in O$ 
+<li> $\sqcup\,X \in O$ con $X \subseteq D$ dirigido $\implies X \cap O \neq \emptyset$
+</ul>
+
+Para el ítem 1.:
+<ul>
+<li>
+Sean $z \not\sqsubseteq x$ y $z \sqsubseteq y$.
+Queremos ver que $y \not\sqsubseteq x$.
+Suponer lo contrario, es decir que $y \sqsubseteq x$.
+Entonces $z \sqsubseteq y \sqsubseteq x$, lo que es absurdo.
+<li>
+Sea $\sqcup\,X \not\sqsubseteq x$ con $X \subseteq D$ dirigido.
+Suponer que $y \sqsubseteq x$
+para todo $y \in X$. Entonces $x$ es una cota superior de $X$
+y por lo tanto $\sqcup\,X \sqsubseteq x$, lo que es absurdo.
+De modo que existe algún $y \in X$ tal que $y \not\sqsubseteq x$.
+</ul>
+
+Para el ítem 2., considerar el conjunto $A = \{a,b\}$ y
+el cpo $(\mathcal{P}(A), \subseteq)$.
+Observar que el conjunto $X := \{\emptyset,\{a\}\}$ es de la forma
+$\{z\ |\ z \subseteq \{a\}\}$.
+Pero $X$ no es abierto pues
+$\{a\} \subseteq \{a,b\} \not\in X$.

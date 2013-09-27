@@ -1,0 +1,32 @@
+[title Módulos semisimples finitamente generados]
+[category Álgebra 2]
+[tags módulo,semisimple,finitamente generado]
+
+Sea $M$ un $A$-módulo semisimple finitamente generado.
+Entonces $M$ es una suma <em>finita</em> de $A$-módulos simples.
+
+<strong>Demostración.</strong>
+Considerar un sistema de generadores de $M$ finito
+$\{x_1, \hdots, x_n\}$. Como $M$ es semisimple,
+es la suma directa de módulos simples, es decir,
+$M = \bigoplus_{i \in I}{S_i}$, donde $I$ es un conjunto arbitrario
+y cada $S_i$ es simple.
+
+Por lo tanto, cada $x_j$ se escribe de manera única como
+$x_j = \sum_{i \in I}{s_{ij}}$ donde $s_{ij} \in S_i$ y
+la suma es de dominio finito. Como las sumas son de dominio finito y
+hay un número finito de generadores $x_j$, el conjunto de los
+módulos $S_i$ que se requieren para escribir a todos los $x_j$
+es también finito.
+Sea entonces $\{S_1, \hdots, S_k\}$ dicho conjunto.
+ 
+Por un lado, $\sum_{j=1}^{k}{S_i}$ incluye a un conjunto de
+generadores de $M$, y por lo tanto a $M$. Como además los $S_j$ son
+submódulos de $M$, se tiene que $M = \sum_{j=1}^{k}{S_j}$.
+De este modo, $M$ es una suma de finitos módulos simples.
+
+Observar que por la
+<a href="/caracterizacion-modulos-semisimples">definición de módulos semisimples</a>,
+esto implica también que $M$ es una suma <em>directa</em> de
+finitos módulos simples.
+

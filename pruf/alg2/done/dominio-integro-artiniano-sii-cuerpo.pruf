@@ -1,0 +1,45 @@
+[title Dominio íntegro Artiniano sii cuerpo]
+[category Álgebra 2]
+[tags anillo,dominio íntegro,artiniano,cuerpo]
+
+Sea $A$ un anillo conmutativo. Entonces $A$ es un dominio íntegro
+Artiniano si y sólo si es un cuerpo.
+
+<strong>Demostración.</strong>
+
+$(\Rightarrow)$ Sea $A$ un dominio íntegro Artiniano y suponer que $A$ no es un cuerpo. 
+Entonces existe un elemento $a_1 \in A$ no nulo que no es una unidad.
+Por el Lema 1, que se demuestra a continuación, esto implica que
+existe otro elemento $a_2 \in A$ no nulo que no es una unidad, y
+tal que $\langle a_1 \rangle \supsetneq \langle a_2 \rangle$.
+Repitiendo el argumento se construye una cadena decreciente infinita de ideales
+$\langle a_1 \rangle \supsetneq \langle a_2 \rangle \supsetneq \hdots$
+que no se estaciona, lo que contradice la hipótesis de que $A$ es
+Artiniano.
+
+$(\Leftarrow)$ Sea $A$ un cuerpo. Entonces $A$ es un dominio íntegro,
+ya que las unidades no son divisores de cero.
+Además, <a href="/anillo-division-ideales-triviales">los ideales de
+$A$ son sólo los triviales</a>, de modo que toda cadena decreciente
+de ideales se estaciona.
+
+<strong>Lema 1.</strong> Sea $A$ un dominio íntegro Artiniano.
+Dado un elemento no nulo y no inversible $a \not\in \mathcal{U}(A)$,
+existe otro elemento no nulo y no inversible $b \not\in \mathcal{U}(A)$ tal
+que $\langle a \rangle \supsetneq \langle b \rangle$.
+
+<strong>Demostración.</strong> Tomar $b = a^2$. Se tiene que $b$
+es no nulo porque $A$ es un dominio íntegro. Además,
+$a^2$ no puede ser una unidad, porque de lo contrario existe un $c$ tal
+que $c\,a^2 = 1$, concluyendo que $c\,a$ es el inverso
+de $a$, y que $a$ es una unidad, lo cual es absurdo.
+
+Por otro lado, $\langle a \rangle \supseteq \langle a^2 \rangle$ pues
+$a^2 \in \langle a \rangle$. Además, la inclusión es estricta. Si no
+fuera estricta, se tendría en particular que $a \in \langle a^2 \rangle$,
+es decir, que existe un $x \in A$ tal que $a = x\,a^2$.
+Despejando, se tiene $x\,a^2 - a = a\,(x\,a - 1)= 0$. Como $A$
+es un dominio íntegro, esto implica que $x\,a = 1$, y entonces $a$ es
+una unidad, lo cual contradice la hipótesis de que $a \not\in
+\mathcal{U}(A)$.
+

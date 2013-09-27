@@ -1,0 +1,48 @@
+[title Algoritmo de división para polinomios sobre un cuerpo]
+[category Álgebra 2]
+[tags anillo,polinomio,cuerpo,algoritmo,division,euclideo,grado]
+
+Sea $K$ un cuerpo. Entonces el anillo de polinomios $K[X]$ es un
+dominio euclídeo, tomando como norma el grado $\deg(p)$ de un polinomio
+$p \in K[X]$.
+
+<strong>Demostración.</strong> Lo que se quiere probar es que existe
+una noción de norma $\varphi : (K[X] \setminus \{0\}) \to \mathbb{N}_0$
+tal que para
+todo par de polinomios $p_1, p_2 \in K[X]$, con $p_2 \neq 0$,
+se puede dividir $p_1$ por $p_2$, de tal manera que existen un
+cociente y un resto $q, r \in K[X]$ tales que $p_1 = q\,p_2 + r$
+con $r = 0$ o bien $\varphi(r) < \varphi(p_2)$.
+Tal como se enuncia, se tomará como norma el grado: $\varphi = \deg$.
+
+La demostración procede por inducción en el grado del dividendo,
+$n = \deg(p_1)$. Por convención, en el curso de esta demostración
+se toma $\deg{0} = -1$ para simplificar el argumento.
+
+El caso $p_1 = 0$ es trivial, tomando $q = r = 0$.
+
+Suponer ahora que $p_1$ es de la forma $\sum_{i=0}^{n} a_i\,X^i$ y que
+$p_2$ es de la forma $\sum_{j=0}^{m} b_j\,X^j$, con $a_n, b_m \neq 0$.
+Es decir, $\deg(p_1) = n$ y $\deg(p_2) = m$.
+
+Si $n < m$, la situación es que se quiere dividir el polinomio $p_1$
+por otro ``más grande'', de modo que el cociente debe ser cero y el
+resto debe ser $p_1$. Tomando entonces $q = 0$ y $r = p_1$, se tiene
+$p_1 = 0 \cdot p_2 + p_1$, con $\deg r = n < m = \deg p_2$,
+cumpliendo lo enunciado.
+
+Si $n \geq m$, se quiere dividir a $p_1$ por un polinomio ``más
+chico''. Considerar el polinomio $\tilde{q} = a_n/b_m\,X^{n - m}$.
+Notar que $a_n / b_m$ está definido porque $b_m \neq 0$ y los
+coeficientes están en $K$, que es un cuerpo.
+Además, $\tilde{q}$ está construido de tal manera que $p_1$ y
+$\tilde{q}\,p_2$ tienen el mismo grado $n$, y coinciden en el
+coeficiente de $X^n$.
+Por lo tanto, el polinomio $p - \tilde{q}\,p_2$ es de grado
+más chico que $\deg(p) = n$ y se puede aplicar la hipótesis inductiva.
+
+Por h.i. entonces: $p - \tilde{q}\,p_2 = q\,p_2 + r$ con
+$r = 0$ o bien $\deg(r) < \deg(p_2)$. Despejando $p$, se tiene
+que $p = (q + \tilde{q})\,p_2 + r$, y se cumplen las condiciones
+requeridas sobre $r$.
+

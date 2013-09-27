@@ -1,0 +1,37 @@
+[title Anillo es cuerpo sii sus morfismos son inyectivos]
+[category Álgebra 2]
+[tags anillo,cuerpo,morfismo,inyectivo]
+
+<h2>Parte 1</h2>
+
+Si $K$ es un cuerpo y $f : K \to B$ es un morfismo de anillos,
+$f$ es inyectivo.
+
+<strong>Demostración.</strong> Sea $x \in K$ tal que $f(x) = 0$. Se
+verá que $x = 0$, es decir, que $f$ es un monomorfismo. Si $x \neq 0$,
+entonces tiene un inverso multiplicativo $x^{-1} \in K$. Multiplicando por
+$f(x^{-1})$, se tiene $f(x^{-1})\,f(x) = f(x^{-1})\,0$. Pero $f$ es un
+morfismo de anillos, con lo cual
+$1 = f(1) = f(x^{-1}\,x) = f(x^{-1})\,f(x) = 0$. Esto es absurdo pues
+$1 \neq 0$ en $K$.
+
+<h2>Parte 2</h2>
+
+Si $A$ es un anillo conmutativo tal que todo morfismo de anillos que
+tiene como conjunto de partida a $A$ es inyectivo, entonces $A$ es un
+cuerpo.
+
+<strong>Demostración.</strong> Basta ver que $A$ es de división, pues
+junto con el hecho de que es conmutativo, esto implica que $A$ es un
+cuerpo.
+
+Para ver que $A$ es de división, se probará la
+<a href="/anillo-division-ideales-triviales">condición equivalente</a> de
+que sus únicos ideales a izquierda son $\{0\}$ y $A$.
+
+Si $I$ es un ideal a izquierda, como $A$ es conmutativo, también es un
+ideal bilátero, de modo que se puede considerar el cociente $A / I$.
+Además, la proyección al cociente $\pi_I : A \to A / I$ es un morfismo
+cuyo conjunto de partida es $A$, y por lo tanto es inyectivo.
+Entonces $I = \ker(\pi_I) = \{0\}$.
+

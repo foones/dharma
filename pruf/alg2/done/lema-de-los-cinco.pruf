@@ -1,0 +1,68 @@
+[title Lema de los cinco]
+[category Álgebra 2]
+[tags lema,cinco,sucesión exacta corta,isomorfismo]
+
+Sea
+
+%%{
+\xymatrix{
+  M_1 \ar[r]^{f_1} \ar[d]_{\alpha}   &
+  M_2 \ar[r]^{f_2} \ar[d]_{\beta}    &
+  M_3 \ar[r]^{f_3} \ar[d]_{\gamma}   &
+  M_4 \ar[r]^{f_4} \ar[d]_{\delta}   &
+  M_5              \ar[d]_{\varepsilon} \\
+  N_1 \ar[r]^{g_1} &
+  N_2 \ar[r]^{g_2} &
+  N_3 \ar[r]^{g_3} &
+  N_4 \ar[r]^{g_4} &
+  N_5
+}
+%%}
+
+un diagrama conmutativo de $A$-módulos donde las filas son
+sucesiones exactas. Entonces, si
+$\alpha$, $\beta$, $\delta$ y $\varepsilon$ son isomorfismos,
+$\gamma$ es un isomorfismo.
+
+<strong>Demostración.</strong>
+
+<em>Monomorfismo.</em>
+
+Sea $x \in M_3$ tal que $\gamma(x) = 0$. Se quiere ver que $x = 0$.
+
+<ul>
+<li> $g_3 \gamma (x) = 0$
+<li> $\delta f_3 (x) = 0$ pues $g_3 \cdot \gamma = \delta \cdot f_3$
+<li> $f_3 (x) = 0$ pues $\delta$ es un monomorfismo
+<li> $x \in \ker(f_3) = {\mathop{\rm{im}}}(f_2)$
+<li> $x = f_2(y)$ para algún $y \in M_2$
+<li> $0 = \gamma(x) = \gamma f_2(y) = g_2 \beta(y)$ pues
+     $\gamma \cdot f_2 = g_2 \cdot \beta$
+<li> $\beta(y) \in \ker(g_2) = {\mathop{\rm{im}}}(g_1)$
+<li> $\beta(y) = g_1 \alpha(z)$ para algún $z \in M_1$ pues $\alpha$
+     es un epimorfismo
+<li> $y = \beta^{-1} g_1 \alpha(z) = f_1 (z)$ porque $\beta \cdot f_1 = g_1 \cdot \alpha$
+<li> $x = f_2(y) = f_2 f_1(z) = 0$ pues $f_2 \cdot f_1 \equiv 0$
+</ul>
+
+<em>Epimorfismo.</em>
+
+Sea $x \in N_3$. Se quiere ver que $x \in {\mathop{\rm{im}}}(\gamma)$.
+
+<ul>
+<li> $g_4 g_3(x) = 0$ pues $g_4 \cdot g_3 \equiv 0$
+<li> $\varepsilon f_4 \delta^{-1} g_3(x) = 0$ porque $\varepsilon \cdot f_4 = g_4 \cdot \delta$
+<li> $f_4 \delta^{-1} g_3(x) = 0$ porque $\varepsilon$ es un monomorfismo
+<li> $\delta^{-1} g_3(x) \in \ker{f_4} = {\mathop{\rm{im}}}(f_3)$
+<li> $\delta^{-1} g_3(x) = f_3(y)$ para algún $y \in M_3$
+<li> $\delta^{-1} g_3(x) = \delta^{-1} g_3 \gamma(y)$ porque
+     $\delta \cdot f_3 = g_3 \cdot \gamma$
+<li> $g_3(x) = g_3 \gamma(y)$ aplicando $\delta$
+<li> $g_3(x - \gamma(y)) = 0$
+<li> $x - \gamma(y) \in \ker(g_3) = {\mathop{\rm{im}}}(g_2)$
+<li> $x - \gamma(y) = g_2 \beta(z)$ para algún $z \in M_2$ pues
+     $\beta$ es un epimorfismo
+<li> $x - \gamma(y) = \gamma f_2(z)$ pues $g_2 \cdot \beta = \gamma \cdot f_2$
+<li> $x = \gamma(y + f_2(z))$
+<li> $x \in {\mathop{\rm{im}}}(\gamma)$
+</ul>

@@ -1,0 +1,134 @@
+[title Caracterización de los módulos semisimples]
+[category Álgebra 2]
+[tags módulo,definición,semisimple,simple,suma,suma directa,complemento]
+
+Sea $M$ un $A$-módulo. Entonces son equivalentes:
+
+<ol>
+<li> $M$ es una suma directa de la forma $\bigoplus_{i \in I}{S_i}$,
+     donde los $S_i \subseteq M$ son submódulos simples.
+
+<li> $M$ es una suma de la forma $\sum_{j \in J}{S_j}$,
+     donde los $S_j \subseteq M$ son submódulos simples.
+
+<li> Todo submódulo $N \subseteq M$ admite un complemento directo,
+     es decir, existe $T \subseteq M$ tal que $N \oplus T = M$.
+</ol>
+
+Más aún, en los ítems $1$ y $2$, los conjuntos de submódulos
+simples $\{S_i\ |\ i \in I\}$ y $\{S_j\ |\ j \in J\}$ coinciden.
+
+Esta equivalencia motiva la definición de semisimplicidad:
+dado $M$ un $A$-módulo, se dice <em>semisimple</em> si cumple alguna
+(y por lo tanto todas) las condiciones anteriores.
+
+<strong>Demostración.</strong>
+
+<h2>($1 \Rightarrow 2$)</h2>
+
+Es trivial.
+
+<h2>($2 \Rightarrow 3$)</h2>
+Suponer que $M = \sum_{j \in J}{S_j}$,
+y sea $N \subseteq M$. Se verá que $N$ tiene un complemento directo.
+
+Considerar aquellos conjuntos de índices $H \subseteq J$ tales que
+$N$ y los submódulos simples $S_h$ con $h \in H$ están en suma
+directa. Más precisamente, sea $\Omega$ el conjunto
+$\Omega := \{ H \ |\ H \subseteq J,\ N \oplus \bigoplus_{h\in H}{S_h}\}$
+parcialmente ordenado por la inclusión.
+Dicho conjunto es no vacío, porque $H = \emptyset$ cumple
+la propiedad. Además, toda cadena creciente de conjuntos de índices
+$H_1 \subseteq H_2 \subseteq \hdots$ tiene una cota superior, dada
+por $\tilde{H} = \bigcup_{i \in \mathbb{N}}{H_i}$ que además está
+en $\Omega$. Para ver que efectivamente $\tilde{H} \in \Omega$,
+se debe verificar que $N$ y todos los conjuntos $S_h$ con
+$h \in \tilde{H}$ están en suma directa.
+Considerar para ello una escritura del $0$ con elementos
+$n + \sum_{h \in \tilde{H}}{s_h} = 0$, para ciertos $n \in N$,
+$s_h \in S_h$ sólo
+finitos no nulos. Por ser esta suma de dominio finito, existe
+algún $i_0 \in \mathbb{N}$ tal que la suma anterior se puede
+reexpresar con índices $h \in H_{i_0}$, es decir, se tiene que
+$n + \sum_{h \in H_{i_0}}{s_h} = 0$.
+Como $H_{i_0} \in \Omega$, se tiene que
+$N \oplus \bigoplus_{h \in H_{i_0}}$ es efectivamente una suma directa, de modo que
+sólo puede darse el caso $n = 0$ y $s_h = 0$ para todo $h \in \tilde{H}$.
+
+Aplicando el Lema de Zorn sobre el conjunto $\Omega$ se concluye
+que existe un conjunto de índices $H$ maximal, tal que
+$N \oplus \bigoplus_{h \in H}{S_h}$ es efectivamente una suma directa.
+Se verá que $T := \bigoplus_{h \in H}{S_h}$ es el complemento
+directo buscado, es decir, que $N \oplus T = M$. Como ya se sabe que
+están en suma directa, sólo resta ver que $N + T = M$.
+
+Suponer que $N + T \neq M$. Entonces existe algún $j_0 \in J$ tal que
+el submódulo simple $S_{j_0}$ no está contenido en $N + T$.
+Esto es porque si todos los $S_j$ estuvieran contenidos en $N + T$,
+todo el módulo $M$ estaría contenido también en $N + T$, ya que $M$ se escribe
+como la suma de los $S_j$.
+
+El elemento $j_0$ no está en $H$, pues de lo contrario
+$S_{j_0} \subseteq T = \bigoplus_{h \in H}{S_h}$. Por lo tanto
+$H \subsetneq H \cup \{j_0\}$.
+Se verá ahora que $H' := H \cup \{j_0\}$ está en $\Omega$,
+contradiciendo el hecho de que $H$ es maximal en $\Omega$.
+Para que $H'$ esté en $\Omega$, debe ocurrir que
+$N \oplus \left(\bigoplus_{h \in H}{S_h}\right) \oplus {S_{j_0}}$
+sea efectivamente una suma directa.
+Entonces, basta ver que $(N + T) \cap S_{j_0} = 0$.
+Como $S_{j_0}$ es simple, $(N + T) \cap S_{j_0}$ sólo
+puede tomar los valores $S_{j_0}$ o $0$. Pero no puede ser que dicha
+intersección sea $S_{j_0}$, pues
+esto implicaría que $S_{j_0} \subseteq N + T$, lo cual es absurdo,
+porque ya se sabía que $S_{j_0}$ no está contenido en $N + T$.
+
+<em>Observación.</em> Notar que tomando el submódulo trivial
+$N = 0$, la misma construcción da lugar a un complemento directo
+$T = \bigoplus_{h \in H}{S_h}$ tal que $M = T$. Esto
+quiere decir que si $M$ se escribe como la suma de submódulos simples
+$S_j$, entonces se escribe también como la suma directa de submódulos
+simples $S_h$. En otras palabras, esto prueba que ($2 \Rightarrow 1$).
+
+Notar además que el conjunto $H$ coincide con el conjunto
+$J$, de tal forma que los submódulos simples involucrados en cada una
+de las sumas son los mismos. Dicho de otra manera:
+$M = \sum_{j \in J}{S_j} \implies M = \bigoplus_{j \in J}{S_j}$.
+
+<h2>($3 \Rightarrow 2$)</h2>
+
+Sea $S = \sum_{\{S_i \subseteq M \ |\ S_i\ \mathrm{simple}\}}{S_i}$. Es decir,
+$S$ es la suma de todos los submódulos simples de $M$. Se verá que
+$S = M$.
+
+Suponer que no lo fuera.
+Entonces $S$ tiene un complemento directo
+no vacío
+$T \subseteq M$, i.e. $S \oplus T = M$
+con $T \neq \emptyset$.
+Por lo tanto, existe un elemento $x \in T$ tal que
+el submódulo generado
+$\langle x \rangle$ no está contenido en $S$ y
+no es simple.
+
+Por el Lema de Zorn, $\langle x \rangle$
+tiene un submódulo propio maximal,
+$N \subsetneq \langle x \rangle$. Como
+$N$ es maximal, $\langle x \rangle / N$ es simple.
+
+Usando nuevamente la hipótesis, $N$ tiene un complemento
+$N'$ tal que $N \oplus N' = M$. Por lo tanto
+$(N \oplus N') \cap \langle x \rangle =
+N \oplus (N' \cap \langle x \rangle) =
+\langle x \rangle$.
+
+``Despejando'' se tiene que
+$N' \cap \langle x \rangle \simeq \langle x \rangle / N$.
+Por lo tanto
+$N' \cap \langle x \rangle$
+es un submódulo simple de $T \subseteq M$.
+Esto es absurdo porque todos los submódulos simples
+de $M$ están contenidos en $S$, y
+$S \cap T = \emptyset$ porque están en suma
+directa.
+

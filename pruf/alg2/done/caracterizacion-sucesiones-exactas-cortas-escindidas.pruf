@@ -1,0 +1,121 @@
+[title Caracterización de las sucesiones exactas cortas escindidas]
+[category Álgebra 2]
+[tags módulo,sucesión exacta corta,escindida,sección,retracción,isomorfismo,suma directa,núcleo,imagen,proyección,inyección]
+
+Sean $M$, $N$, $P$ $A$-módulos, y sea 
+la siguiente sucesión exacta corta:
+
+$0 \longrightarrow M \overset{f}{\longrightarrow} N \overset{g}{\longrightarrow} P \longrightarrow 0$
+
+Entonces son equivalentes:
+
+<ol>
+<li> $f$ es una sección.
+<li> $g$ es una retracción.
+<li> La sucesión exacta corta dada es equivalente a esta otra:
+
+$0 \longrightarrow M \overset{\iota_M}{\longrightarrow} M \oplus P \overset{\pi_P}{\longrightarrow} P \longrightarrow 0$
+</ol>
+
+Si se cumple alguna de (y por lo tanto todas) las condiciones
+anteriores, se dice que la sucesión exacta corta es <em>escindida</em>
+(o que ``se parte'').
+
+<strong>Demostración.</strong>
+
+<strong>($1 \Rightarrow 3$)</strong>
+
+Suponer que existe una retracción
+$r : N \to M$ tal que $r \cdot f = id_M$.
+Por la caracterización de lo que significa que dos sucesiones
+exactas cortas <a href="/sucesiones-exactas-cortas-equivalentes">sean equivalentes</a>,
+basta ver que existe un morfismo
+$h : N \to M \oplus P$ que hace conmutar el siguiente diagrama:
+
+%%{
+\xymatrix{
+  0 \ar[r] &
+  M \ar[r]_{f} \ar@{=}[d] &
+  N \ar[r]^{g} \ar@/_1pc/@{..>}[l]_{r} \ar@{..>}[d]^{\exists h} &
+  P \ar[r] \ar@{=}[d] &
+  0 \\
+  0 \ar[r] &
+  M \ar[r]_{\iota_M} &
+  M \oplus P \ar[r]^{\pi_P} &
+  P \ar[r] \ar@/^1pc/@{..>}[l]^{\iota_P} &
+  0
+}
+%%}
+
+Más concretamente, lo que se quiere ver es que hay un morfismo $h$ tal
+que:
+<ul>
+<li> $h \cdot f = \iota_M$
+<li> $\pi_P \cdot h = g$
+</ul>
+Se verá que tomando $h := \iota_M \cdot r + \iota_P \cdot g$ se cumple lo requerido.
+
+Por un lado, $h\cdot f = \iota_M \cdot r \cdot f + \iota_P \cdot g \cdot f$.
+Pero $g \cdot f = 0$ pues la sucesión es exacta y
+${\mathop{\rm{im}}}(f) = \ker(g)$. Además, $r \cdot f$ es la
+identidad de $M$, de modo que $h \cdot f = \iota_M$.
+
+Por otra parte, $\pi_P \cdot h = \pi_P \cdot \iota_M \cdot r + \pi_P \cdot \iota_P \cdot g$.
+Se tiene entonces que $\pi_P \cdot \iota_M = 0$
+y además que $\pi_P \cdot \iota_P$ es la identidad de $P$,
+por lo cual $\pi_P \cdot h = g$.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+<strong>($3 \Rightarrow 1$)</strong>
+
+Suponiendo que existe un morfismo $h : N \to M \oplus P$ que
+hace conmutar el diagrama,
+se define $r := \pi_M \cdot h$.
+Entonces $r \cdot f = \pi_M \cdot h \cdot f$. Como 
+el diagrama conmuta, se tiene que $h \cdot f = \iota_M$
+y por lo tanto $r \cdot f = \pi_M \cdot \iota_M = id_M$.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+<strong>($2 \Rightarrow 3$)</strong>
+
+Suponer que existe una sección $s : P \to N$ tal que
+$g \cdot s = id_P$. Basta ver que existe un morfismo $\tilde{h}$ que hace
+conmutar el siguiente diagrama:
+
+%%{
+\xymatrix{
+  0 \ar[r] &
+  M \ar[r]^{f} \ar@{=}[d] &
+  N \ar[r]_{g} \ar@{<..}[d]^{\exists \tilde{h}} &
+  P \ar[r] \ar@{=}[d] \ar@/_1pc/@{..>}[l]_{s} &
+  0 \\
+  0 \ar[r] &
+  M \ar[r]^{\iota_M} &
+  M \oplus P \ar[r]_{\pi_P} \ar@/^1pc/@{..>}[l]^{\pi_M} &
+  P \ar[r] &
+  0
+}
+%%}
+
+De manera similar a la anterior, eligiendo
+$\tilde{h} := f \cdot \pi_M + s \cdot \pi_P$ se
+tiene que:
+<ul>
+<li> $g \cdot \tilde{h} = \pi_P$
+<li> $\tilde{h} \cdot \iota_M = f$
+</ul>
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+<strong>($3 \Rightarrow 2$)</strong>
+
+Suponiendo que existe un morfismo $h : N \to M \oplus P$ que
+hace conmutar el diagrama, se sabe que
+<a href="/sucesiones-exactas-cortas-equivalentes">debe ser un isomorfismo</a>.
+Tomando entonces $s := h^{-1} \cdot \iota_P$,
+se tiene que $g \cdot s = g \cdot h^{-1} \cdot \iota_P$. Como 
+el diagrama conmuta, $g \cdot h^{-1} = \pi_P$
+y por lo tanto $g \cdot s = \pi_P \cdot \iota_P = id_P$.
+

@@ -1,0 +1,65 @@
+[title Módulo proyectivo sii sumandos directos proyectivos]
+[category Álgebra 2]
+[tags módulo,proyectivo,suma directa]
+
+Sea $P = \bigoplus_{i \in I}{P_i}$ un $A$-módulo.
+Entonces $P$ es proyectivo si y sólo si todo $P_i$
+es proyectivo.
+
+<strong>Demostración.</strong>
+
+En ambos casos la demostración se basa en el hecho de que para
+cada $i$ se dispone de un morfismo proyección $\pi_i : P \to P_i$ y
+de un morfismo inclusión $\iota_i : P_i \to P$, usando que:
+<ul>
+<li> $\pi_i \cdot \iota_i = id_{P_i}$
+<li> $\sum_{i \in I}{\iota_i \cdot \pi_i} = id_{P}$
+</ul>
+
+($\Rightarrow$) Considerar el siguiente diagrama:
+
+%%{
+\xymatrix{
+  P \ar@/^.5pc/[r]^{\pi_i} \ar@{-->}[d]_{\alpha} & P_i \ar@/^.5pc/@{-->}[l]_{\iota_i} \ar@{-->}[ld]^{\exists \psi} \ar[rd]^{\varphi} \\
+M \ar[rr]_{f}    &     & N \ar[r] & 0
+}
+%%}
+
+Lo que se quiere ver es que dados $A$-módulos $M$ y $N$,
+un epimorfismo $f : M \to N$ y un morfismo $\varphi : P_i \to N$,
+todos arbitrarios, existe un morfismo $\psi : P_i \to M$
+que hace conmutar el diagrama.
+
+Como $P$ es proyectivo, existe un morfismo $\alpha : P \to M$ tal que
+$f \cdot \alpha = \varphi \cdot \pi_i$.
+Se puede ver que tomando $\psi := \alpha \cdot \iota_i$
+se cumple lo requerido:
+
+$f \cdot \psi = f \cdot \alpha \cdot \iota_i = \varphi \cdot \pi_i \cdot \iota_i = \varphi$
+
+($\Leftarrow$) Considerar el siguiente diagrama:
+
+%%{
+\xymatrix{
+  P_i \ar@/^.5pc/[r]^{\iota_i} \ar@{-->}[d]_{\alpha_i} & P \ar@/^.5pc/@{-->}[l]_{\pi_i} \ar@{-->}[ld]^{\exists \psi} \ar[rd]^{\varphi} \\
+M \ar[rr]_{f}    &     & N \ar[r] & 0
+}
+%%}
+
+En este caso, lo que se quiere ver es que dados $A$-módulos $M$ y $N$,
+un epimorfismo $f : M \to N$ y un morfismo $\varphi : P \to N$,
+todos arbitrarios, existe un morfismo $\psi : P \to M$
+que hace conmutar el diagrama.
+
+Como cada $P_i$ es proyectivo, para cada $i \in I$
+existe un morfismo $\alpha_i : P_i \to M$ tal que
+$f \cdot \alpha_i = \varphi \cdot \iota_i$.
+Se puede ver que tomando $\psi := \sum_{i \in I} \alpha_i \cdot \pi_i$
+se cumple lo requerido:
+
+$f \cdot \psi
+= f \cdot (\sum_{i \in I}{\alpha_i \cdot \pi_i})
+= \sum_{i \in I}{f \cdot \alpha_i \cdot \pi_i}
+= \sum_{i \in I}{\varphi \cdot \iota_i \cdot \pi_i}
+= \varphi \cdot (\sum_{i \in I}{\iota_i \cdot \pi_i})
+= \varphi$

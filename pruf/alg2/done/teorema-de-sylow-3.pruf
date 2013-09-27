@@ -1,0 +1,90 @@
+[title Teorema de Sylow 3]
+[category Álgebra 2]
+[tags teorema,sylow,grupo,subgrupo,primo]
+
+Sea $G$ un grupo de orden $p^r\,m$ con $p$ un primo que no divide a
+$m$. Sea $n_p$ la cantidad de $p$-subgrupos de Sylow de $G$. Entonces
+$n_p$ divide a $m$ y $n_p \equiv 1 \mod p$.
+
+<strong>Demostración.</strong>
+
+Sea $Syl_p(G)$ el conjunto de todos los $p$-subgrupos de Sylow de $G$.
+Por el <a href="/teorema-de-sylow-1">primer teorema de Sylow</a>
+se sabe que dicho conjunto es no vacío, de modo que $G$ tiene al menos
+un $p$-subgrupo de Sylow $S_0$.
+Por el <a href="/teorema-de-sylow-2">segundo teorema de Sylow</a>
+se sabe que los demás $p$-subgrupos de Sylow de $G$ son todos
+conjugados de $S_0$. Además, como conjugar es una biyección,
+todos los subgrupos conjugados de $S_0$ son de orden $p^r$
+y por lo tanto son $p$-subgrupos de Sylow de $G$. Resumiendo, se tiene
+que los $p$-subgrupos de Sylow de $G$ son exactamente todos los
+subgrupos conjugados de $S_0$, es decir:
+
+$Syl_p(G) = \{ g\,S_0\,g^{-1}\ |\ g \in G\}$
+
+<ul>
+<li> <strong>$m$ divide a $n_p$</strong>
+
+Considerar a $G$ actuando por conjugación sobre $Syl_p(G)$.
+Por el comentario anterior, la acción es transitiva y hay
+una única órbita. Es decir, $Syl_p(G) = \mathcal{O}_G(S_0)$
+donde $S_0$ puede ser cualquier $S_0 \in Syl_p(G)$.
+Por la relación entre
+<a href="/orbita-estabilizador">órbitas y estabilizadores</a>,
+se tiene entonces que:
+
+$n_p = \#Syl_p(G) = \#\mathcal{O}_G(S_0) = |G:\varepsilon_G(S_0)|$
+
+donde $\varepsilon_G(S_0)$ es el estabilizador de $S_0$
+por la acción de $G$. Usando el
+<a href="/teorema-de-lagrange">teorema de Lagrange</a>:
+
+$n_p = |G:\varepsilon_G(S_0)| = |G| / |\varepsilon_G(S_0)| = p^r\,m / |\varepsilon_G(S_0)|$
+
+Notar que $\varepsilon_G(S_0)$ es
+un subgrupo de $G$, y que además $S_0 \subseteq \varepsilon_G(S_0)$,
+pues $s\,S_0\,s^{-1} = S_0$ para todo $s \in S_0$.
+Entonces $|S_0| = p^r$ divide a $\varepsilon_G(S_0)$, de
+modo que $|\varepsilon_G(S_0)| = p^r\,\tilde{m}$, donde $\tilde{m}$ divide a $m$.
+Por lo tanto:
+
+$n_p = p^r\,m / |\varepsilon_G(S_0)| = m / \tilde{m}$
+
+Así se concluye que $m = n_p\,\tilde{m}$, con lo cual
+$n_p$ divide a $m$.
+
+<li> <strong>$n_p \equiv 1 \mod p$</strong>
+
+Por otra parte, considerar a $S_0$ actuando por multiplicación a
+izquierda sobre $X := Syl_p(G)$. Por el <a href="/ecuacion-de-clases">teorema
+de ecuación de clases</a> se tiene que:
+
+$\#X = \#( ^{S_0}{X}) + \sum_{i=0}^{N}{|S_0:H_i|}$
+
+Afirmación: hay un único punto fijado por la acción de
+$S_0$, que es precisamente $S_0$. Por empezar, $S_0$ está
+fijado por la acción de $S_0$ pues $g\,S_0 = S_0$ para todo
+$g \in S_0$. Por otro lado, dado un $S \in X$ fijado por
+la acción de $S_0$, se quiere ver que $S = S_0$.
+Por ser un punto fijo, se tiene que $g\,S = S$ para todo
+$g \in S_0$. En particular,
+$g\,S \subseteq S$ con lo cual $g = g\,1 \in S$.
+Entonces se tiene que $g \in S$ para todo $g \in S_0$,
+es decir $S \subseteq S_0$.
+Como además tienen el mismo cardinal, $|S| = p^r = |S_0|$,
+se concluye que $S = S_0$.
+
+Por otra parte, los términos de la suma son de la forma
+$|S_0:H_i| = |S_0| / |H_i| = p^r / |H_i|$. El teorema de
+ecuación de clases asegura además que dichos términos
+no son $1$, pues las órbitas puntuales quedan agrupadas
+en el conjunto de puntos fijos, de modo que cada uno de ellos
+es una potencia positiva de $p$.
+En particular, los términos de la suma son todos múltiplos
+de $p$, y por lo tanto la suma también lo es.
+Es decir: $\sum_{i=0}^{N}{|S_0:H_i|} = p\,\alpha$.
+
+Resumiendo, se tiene que
+$n_p = \#Syl_p(G) = \#X = 1 + p\,\alpha$
+con lo cual $n_p \equiv 1 \mod p$.
+</ul>

@@ -1,0 +1,24 @@
+[title Módulos Noetherianos en sucesiones exactas cortas]
+[category Álgebra 2]
+[tags sucesión exacta corta,módulo,noetheriano]
+
+Sea
+
+$0 \longrightarrow M \overset{f}{\longrightarrow} N \overset{g}{\longrightarrow} P \longrightarrow 0$
+
+una sucesión exacta corta de $A$-módulos.
+Entonces $N$ es Noetheriano si y sólo si $M$ y $P$ son Noetherianos.
+
+<strong>Demostración.</strong>
+Se desprende directamente de los dos hechos siguientes:
+<ul>
+<li>
+En una situación como la de arriba,
+<a href="/sucesion-exacta-corta-inclusion-proyeccion">vale en general que</a>
+$M$ es isomorfo a un submódulo $K \subseteq N$ y
+$P$ es isomorfo a un cociente $N / K$.
+<li> Dado un módulo $N$ y un morfismo $f : N \to N'$,
+se cumple que $N$ es Noetheriano
+<a href="/noetheriano-sii-nucleo-imagen-noetherianos">si y sólo si</a>
+el núcleo y la imagen de $f$ son Noetherianos.
+</ul>

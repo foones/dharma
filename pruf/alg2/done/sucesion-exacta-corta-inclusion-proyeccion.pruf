@@ -1,0 +1,41 @@
+[title Escritura de una sucesión exacta corta como una inclusión seguida de una proyección]
+[category Álgebra 2]
+[tags sucesión exacta corta,núcleo,imagen,cociente,inclusión,proyección]
+
+Sea
+
+$0 \longrightarrow M \overset{f}{\longrightarrow} N \overset{g}{\longrightarrow} P \longrightarrow 0$
+
+una sucesión exacta corta de $A$-módulos.
+Sea $K = {\mathop{\rm{im}}}(f) = \ker(g) \subseteq N$.
+
+Entonces:
+<ol>
+<li> $M \simeq K$
+<li> $P \simeq N / K$.
+<li> La siguiente es una sucesión exacta corta:
+
+$0 \longrightarrow K
+\overset{\iota_K}{\longrightarrow} N \overset{\pi_K}{\longrightarrow}
+N / K \longrightarrow 0$
+
+donde $\iota_K : K \to N$ es la inclusión
+y $\pi_K : N \to N / K$ la proyección al cociente.
+</ol>
+
+<strong>Demostración.</strong>
+
+<ol>
+<li> Por teoremas de isomorfismo, se tiene que
+$M / \ker(f) \simeq {\mathop{\rm{im}}}(f)$. Es
+decir, $M \simeq K$, pues $f$ es un monomorfismo.
+
+<li> Por teoremas de isomorfismo,
+se tiene que $N / \ker(g) \simeq {\mathop{\rm{im}}}(g)$.
+Es decir $N / K \simeq P$, pues $g$ es un epimorfismo.
+
+<li> La inclusión $\iota_K$ es un monomorfismo.
+La proyección al cociente $\pi_K$ es un epimorfismo.
+La imagen de $\iota_K$ es $K$, que es precisamente
+el núcleo de $\pi_K$.
+</ol>

@@ -1,0 +1,57 @@
+[title Determinante en un dominio íntegro]
+[category Álgebra 2]
+[tags anillo,matriz,determinante,independencia lineal,generador,adjunta]
+
+Sea $A$ un dominio íntegro y sea $a \in M_n(A)$. Sea $v_j \in A^n$ la
+$j$-ésima columna de $a$. Entonces:
+<ol>
+<li> $\{v_1, \hdots, v_n\}$ es linealmente independiente si y sólo si
+$\det(A) \neq 0$.
+<li> $\{v_1, \hdots, v_n\}$ es un sistema de generadores si y sólo si
+$\det(A) \in A^{\times}$.
+</ol>
+
+<strong>Demostración.</strong>
+<ol>
+<li> Usando notación de producto de matrices,
+decir que las columnas de una matriz $a$ son linealmente independientes
+es equivalente a decir que para todo $x \neq 0 \in A^n$, se tiene
+$a\,x \neq 0$.
+(Para esto, interpretar a $x$ como una tira de coeficientes, y
+a $a\,x$ como la combinación lineal de las columnas de $a$ con dichos
+coeficientes).
+
+Considerar la matriz adjunta, $b := \mathop{\rm{adj}}(a)$.
+Se tiene que $a\,b = b\,a = \det(a)\,Id$.
+Entonces, dado $x \neq 0 \in A^n$, son equivalentes:
+  <ul>
+  <li> $\det(a) \neq 0$
+  <li> $\det(a)\,x \neq 0$ usando que $A$ es un dominio íntegro
+  <li> $b\,a\,x \neq 0$ usando que $b\,a = \det(a)\,Id$
+  <li> $a\,x \neq 0$
+  </ul>
+
+<li> Nuevamente, usando notación de producto de matrices,
+decir que las columnas de una matriz $a$ son un sistema de
+generadores para $A^n$ es decir que para todo $y \in A^n$ existe
+un $x \in A^n$ tal que $a\,x = y$.
+
+Considerando la matriz adjunta $b := \mathop{\rm{adj}}(a)$,
+y dado $y \in A^n$, se tiene la siguiente cadena de implicaciones:
+  <ul>
+  <li> $\det(a) \in A^{\times}$
+  <li> $\det(a)^{-1} \cdot a\,b = Id$
+  <li> $\det(a)^{-1} \cdot a\,b\,y = y$
+  <li> $a\,x = y$ para $x := \det(a)^{-1} \cdot \,b\,y$
+  </ul>
+
+Y en el sentido opuesto:
+  <ul>
+  <li> para todo $y \in A^n$ existe $x \in A^n$ tal que $a\,x = y$
+  <li> $a\,c = Id$, tomando $c \in M_n(A)$ de tal modo
+       que su $i$-ésima columna sea $x_i$, una solución de $a\,x_i = e_i$
+  <li> $\det(a)\,\det(c) = \det(a\,c) = \det(Id) = 1$
+  <li> $\det(a) \in A^{\times}$
+  </ul>
+
+</ol>

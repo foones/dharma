@@ -1,0 +1,96 @@
+[title Teorema de Sylow 2]
+[category Álgebra 2]
+[tags teorema,sylow,grupo,subgrupo,conjugado]
+
+Sea $G$ un grupo y $p$ un primo.
+
+Dado $H \subseteq G$ un subgrupo, $H$ se dice un
+<em>$p$-subgrupo de Sylow</em> de $G$ sii es un $p$-subgrupo maximal,
+es decir, un $p$-subgrupo que no está incluido en ningún
+otro $p$-subgrupo (excepto trivialmente en sí mismo).
+
+Entonces, todos los $p$-subgrupos de
+Sylow son conjugados entre sí, es decir, dados $S_1, S_2 \subseteq G$
+dos $p$-subgrupos maximales, existe un $g \in G$ tal que
+$S_1 = g\,S_2\,g^{-1}$.
+
+<strong>Demostración.</strong>
+
+Por el <a href="/teorema-de-sylow-1">primer teorema de Sylow</a>,
+$G$ tiene un subgrupo $S_0$ de orden $p^r$.
+Considerar el conjunto $X$ de todas las coclases a izquierda
+de $S_0$, es decir:
+$X := (G/S_0)^{\texttt{izq}} = \{g\,S_0\ |\ g \in G\}$.
+
+Notar que se usa la notación $(G/S_0)^{\texttt{izq}}$
+para enfatizar que el conjunto de coclases no
+necesariamente es un cociente (i.e. puede no tener estructura
+de grupo) porque $S_0$ no necesariamente
+es normal en $G$.
+
+El grupo $G$ actúa por multiplicación a izquierda sobre $X$. 
+Sea ahora $S \subseteq G$ un $p$-subgrupo de Sylow.
+También $S$ actúa por multiplicación a izquierda sobre $X$.
+Con esta acción, y usando el
+<a href="/ecuacion-de-clases">teorema de ecuación de clases</a>,
+se tiene entonces que:
+
+$\#X = \#({ }^S X) + \sum_{i=1}^{N}{|S:H_i|}$
+
+donde los términos $|S:H_i| > 1$ pues corresponden a órbitas
+no puntuales. Las órbitas puntuales quedan consideradas dentro del
+conjunto ${ }^S X$ de puntos de $X$ fijados por la acción de $S$.
+
+Por el comentario precedente, $|S:H_i| > 1$. Pero además $S$ es un
+$p$-grupo, de modo que $|S:H_i| = |S| / |H_i|$ debe ser de la forma
+$p^k$ para algún $k > 0$. En particular, esto quiere decir que
+$p$ divide a todos los términos $|S:H_i|$, para cada $1 \leq i \leq N$,
+y entonces divide también a la suma.
+
+Por otra parte, $\#X$ es la cantidad de coclases a izquierda de
+$G$, es decir $\#X = |G:S_0| = |G| / |S_0| = p^r\,m / p^r = m$,
+que no es divisible por $p$.
+Resumiendo, se sabe que:
+
+$\underbrace{\#X}_{p\ \textrm{no\ lo\ divide}} =
+\#({ }^S X) +
+\underbrace{\sum_{i=1}^{N}{|S:H_i|}}_{p\ lo\ \textrm{divide}}$
+
+De este modo, no puede ocurrir que $p$ divida a $\#({ }^S X)$.
+En particular, $\#({ }^S X) > 0$, es decir,
+hay al menos un punto de $X$ fijado por la acción de $S$.
+Dicho de otro modo, hay al menos un subgrupo
+$T = g\,S_0\,g^{-1}$ tal que para todo $s \in S$ se tiene que
+$s\,T = T$, o sea, $s \in T$. Es decir, $S \subseteq T = g\,S_0\,g^{-1}$.
+
+Finalmente, como $S$ es un $p$-subgrupo maximal
+y está incluido en $g\,S_0\,g^{-1}$, que es un $p$-subgrupo,
+debe ser $S = g\,S_0\,g^{-1}$.
+
+Así, todos los $p$-subgrupos de Sylow de $G$ son conjugados
+de $S_0$. Como la relación de ser conjugado es de equivalencia,
+todos los $p$-subgrupos de Sylow de $G$ son conjugados entre
+sí.
+
+<h2>Corolario</h2>
+
+Los $p$-subgrupos de Sylow de $G$ son exactamente los subgrupos
+de $G$ de orden $p^r$. Es decir:
+dado $S \subseteq G$, se tiene que
+$S$ es un $p$-subgrupo maximal sii $|S| = p^r$.
+
+<strong>Demostración.</strong>
+
+($\Leftarrow$)
+Los subgrupos de orden $p^r$ son $p$-subgrupos de
+Sylow, pues $G$ no puede tener subgrupos de orden $p^k$ con
+$k > r$, por el teorema de
+<a href="/teorema-de-lagrange">Lagrange</a>.
+
+($\Rightarrow$)
+Por otro lado, $G$ tiene al menos un $p$-subgrupo de Sylow $S_0$,
+pues por el <a href="/teorema-de-sylow-1">primer teorema de Sylow</a>
+tiene al menos un subgrupo de orden $p^r$.
+Entonces, todo $p$-subgrupo de Sylow $S \subseteq G$ es conjugado
+de $S_0$, con lo cual $|S| = |S_0| = p^r$.
+

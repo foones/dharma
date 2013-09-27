@@ -1,0 +1,33 @@
+
+[title Anillo de división sii sus ideales son triviales]
+[category Álgebra 2]
+[tags anillo,división,ideal,trivial]
+
+Sea $A$ un anillo. $A$ es de división si y sólo si sus únicos
+ideales a izquierda son $\{0\}$ y $A$.
+
+<strong>Demostración.</strong>
+
+$(\Rightarrow)$ Sea $I$ un ideal a izquierda de $A$ distinto de $\{0\}$.
+Se verá que $I = A$. Sea $x \in I$ distinto de $0$. Por ser $A$ de
+división, tiene un inverso multiplicativo $x^{-1} \in A$. El producto $x^{-1}\,x$
+está en $I$, porque es un ideal a izquierda. Pero entonces
+$1_A \in I$, con lo cual $A = I$.
+
+$(\Leftarrow)$ Sea $x \in A$, $x \neq 0$. Se verá que $x$ tiene
+inverso multiplicativo. Considerar el ideal a izquierda generado por
+dicho elemento, $I = \langle x \rangle$. Por hipótesis, $I$ debe ser o
+bien $\{0\}$ o bien $A$. No puede ser $\{0\}$, pues $x \in I$, de modo que
+$I = A$. Entonces $1_A \in I$, es decir, existe $a \in A$ tal que
+$a\,x = 1_A$. Por lo tanto, $x$ tiene inverso a izquierda.
+
+Falta ver que $x$ tiene también inverso a derecha. Notar que $a$ no
+puede ser $0$, por lo cual también tiene un inverso a izquierda
+$b \in A$ tal que $b\,a = 1_A$. Entonces:
+<ul>
+<li> $a\,x = 1_A$
+<li> $b\,a\,x = b$ (multiplicando a izquierda por $b$)
+<li> $x = b$ (usando que $b\,a = 1_A$)
+</ul>
+Con lo que se concluye que $x\,a = b\,a = 1_A$. Es decir, $a$ también
+es un inverso <em>a derecha</em> de $x$.

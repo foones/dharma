@@ -1,0 +1,38 @@
+[title Cociente cuerpo sii ideal maximal]
+[category Álgebra 2]
+[tags anillo,cociente,cuerpo,ideal,maximal]
+
+Sean $A$ un anillo conmutativo y $I$ un ideal (bilátero) de $A$.
+Entonces $A / I$ es un cuerpo si y sólo si $I$ es maximal.
+
+<strong>Demostración.</strong>
+
+$(\Rightarrow)$ Sea $x \not\in I$. Se verá que
+el ideal $\langle I, x \rangle$, generado por
+$I \cup \{x\}$, es todo el anillo.
+Esto alcanzará para ver que $I$ es maximal, pues si
+$I$ está incluido propiamente en otro ideal $J$,
+entonces $J$ tiene un elemento $x \not\in I$, y
+contiene a $\langle I, x \rangle = A$.
+
+Como $x \not\in I$, pasando al cociente, se tiene
+$\bar{x} \neq \bar{0} \in A / I$.
+Por lo tanto, $\bar{x}$ tiene un inverso $\bar{y} \in A / I$, con
+$\bar{y}\,\bar{x} = \bar{1}$.
+Mirada en $A$, dicha igualdad afirma:
+$y\,x - 1_A \in I$ o, lo que es lo mismo,
+$1_A \in I + y\,x$.
+Entonces $1_A \in \langle I, x \rangle$ y
+se concluye $\langle I, x \rangle = A$.
+
+$(\Leftarrow)$ Sea $\bar{x} \in A / I$ con $\bar{x} \neq \bar{0}$.
+Entonces $x \not\in I$. Considerar el ideal $\langle I, x \rangle$.
+Este incluye propiamente al ideal $I$, pues $I$ no contiene a $x$.
+Como $I$ es maximal, se sigue que $\langle I, x \rangle$ es todo el anillo $A$.
+
+Por lo tanto, $1_A$ está en $\langle I, x \rangle$, o sea,
+$1_A \in I + y\,x$ para algún $y \in A$. Pasando al cociente, se
+tiene que $\bar{1} = \bar{y}\,\bar{x}$, es decir, $\bar{x}$ tiene
+inverso a izquierda. Como $A$ es conmutativo, $A / I$ también es
+conmutativo y se concluye que es un cuerpo.
+

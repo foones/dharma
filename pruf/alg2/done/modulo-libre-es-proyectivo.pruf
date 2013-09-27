@@ -1,0 +1,30 @@
+[title Todo módulo libre es proyectivo]
+[category Álgebra 2]
+[tags módulo,libre,proyectivo,base]
+
+Sea $P$ un $A$-módulo libre. Entonces $P$ es proyectivo.
+
+<strong>Demostración.</strong>
+Considerar la siguiente situación, para $A$-módulos
+arbitrarios $M$, $N$, un epimorfismo $f : M \to N$ y
+un morfismo $\varphi : P \to N$ también arbitrarios:
+
+%%{
+\xymatrix{
+              & P \ar@{-->}[ld]_{\exists \psi} \ar[rd]^{\varphi} & \\
+M \ar[rr]^{f} &   & N \ar[r] & 0
+}
+%%}
+
+Lo que se quiere ver es que existe un morfismo $\psi : P \to M$ que
+completa el diagrama.
+Como $P$ es libre, considerar una base $\{x_i\}_{i \in I}$.
+
+Para cada $i \in I$, como $f$ es un epimorfismo, se tiene que
+$\varphi(x_i) \in {\mathop{\rm{im}}}(f)$, y por lo tanto
+$\varphi(x_i) = f(y_i)$ para ciertos $y_i \in M$.
+Como los $x_i$ forman una base de $P$, la aplicación
+$\psi(x_i) := y_i$ determina un morfismo.
+
+Además, $\psi$ así definido hace conmutar el diagrama, ya que
+$f(\psi(x_i)) = f(y_i) = \varphi(x_i)$.

@@ -1,0 +1,47 @@
+
+au BufEnter *.pruf
+   \ set filetype=tex|
+   \ set tw=70|
+   \ nmap <F5> :!pruf v %<Return>|
+   \ imap ,<< \trianglelefteq |
+   \ imap ,< \subseteq |
+   \ imap ,> \supseteq |
+   \ imap << \langle |
+   \ imap >> <Space>\rangle|
+   \ imap ,u \cup |
+   \ imap ,n \cap |
+   \ imap ,\ \setminus |
+   \ imap ,- ^{-1}|
+   \ imap ,0 \emptyset|
+   \ imap ,a \mathfrak{a}|
+   \ imap ,B \mathcal{B}|
+   \ imap ,C \mathbb{C}|
+   \ imap ,D <strong>Demostración.</strong> |
+   \ imap ,I \mathcal{I}|
+   \ imap ,J \mathcal{J}|
+   \ imap ,N \mathbb{N}|
+   \ imap ,P \mathcal{P}|
+   \ imap ,Q \mathbb{Q}|
+   \ imap ,R \mathbb{R}|
+   \ imap ,S \mathcal{S}|
+   \ imap ,U \mathcal{U}|
+   \ imap ,Z \mathbb{Z}|
+   \ imap ;Z \mathcal{Z}|
+   \ imap ,m \mathfrak{m}|
+   \ imap ,p \mathfrak{p}|
+   \ imap -> \to|
+   \ imap ->> \mapsto|
+   \ imap --> \longrightarrow|
+   \ imap => \implies |
+   \ imap => \Rightarrow|
+   \ imap <= \leq|
+   \ imap >= \geq|
+   \ imap ~= \simeq |
+   \ imap ¿ \simeq |
+   \ imap ,+ \oplus|
+   \ imap <Bar><Bar> <Esc>Bi\mathop{\rm{<Esc>Ea}}|
+   \ imap \im {\mathop{\rm{im}}}|
+   \ imap \Im {\mathop{\rm{Im}}}|
+   \ imap === \equiv|
+   \ imap ,,, ,,,
+

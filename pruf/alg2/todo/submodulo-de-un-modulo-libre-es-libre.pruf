@@ -1,0 +1,17 @@
+[title submodulo-de-un-modulo-libre-finito-es-libre]
+[category Álgebra 2]
+[tags módulo,libre,submódulo,rango]
+
+Sea $M$ un $A$-módulo libre de rango $n$ (finito)
+y $S \subseteq M$ un submódulo no nulo.
+Entonces $S$ es libre y de rango menor que $n$.
+
+<em>Nota:</em> La afirmación también vale en el caso infinito,
+pero requiere adaptar la demostración.
+
+<strong>Demostración.</strong>
+
+Suponer que $M = A^n$. El resultado se traslada por isomorfismo
+a módulos libres en general.
+
+

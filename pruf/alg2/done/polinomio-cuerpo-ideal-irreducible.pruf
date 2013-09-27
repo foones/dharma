@@ -1,0 +1,41 @@
+[title Cociente del anillo de polinomios sobre un cuerpo por un ideal principal irreducible]
+[category Álgebra 2]
+[tags anillo,polinomio,cuerpo,cociente,ideal,principal,irreducible,primo,maximal]
+
+Sea $K$ un cuerpo y sea $f \in K[X]$ un polinomio con coeficientes en
+$K$. Entonces $K[X] / \langle f \rangle$ es un cuerpo si y sólo si $f$
+es irreducible en $K[X]$.
+
+<strong>Demostración.</strong>
+
+El anillo de polinomios con coeficientes en un cuerpo $K[X]$
+<a href="/polinomio-cuerpo-euclideo">es un dominio euclídeo</a>, tomando como norma el grado $\deg{p}$
+de un polinomio $p \in K[X]$.
+
+Por ser un dominio euclídeo, $K[X]$
+<a href="/dominio-euclideo-es-de-ideales-principales">es un dominio de ideales
+principales</a>, donde vale que <a href="/ideal-primo-es-maximal-dip">todo ideal
+primo es maximal</a>.
+
+Además, por ser un dominio de ideales principales, $K[X]$
+<a href="/dip-es-dfu">es un dominio de factorización única</a>, donde vale que
+<a href="/dfu-irreducible-implica-primo">todo elemento irreducible es
+primo</a>.
+
+Por lo tanto, en la siguiente cadena todas las afirmaciones son equivalentes:
+
+<ul>
+<li> El cociente $K[X] / \langle f \rangle$ es un cuerpo.
+<li> El ideal $\langle f \rangle$ es maximal en $K[X]$,
+     pues en general <a href="/cociente-cuerpo-sii-ideal-maximal">el cociente es
+     un cuerpo sii el ideal es maximal</a>.
+<li> $\langle f \rangle$ es primo,
+     pues en general <a href="/ideal-maximal-es-primo">todo ideal maximal es primo</a>
+     y en un DIP todo ideal primo es maximal.
+<li> $f$ es un elemento primo, que es equivalente a que
+     $\langle f \rangle$ sea un ideal primo.
+<li> $f$ es un elemento irreducible, pues en un dominio en general
+     <a href="/primo-implica-irreducible">todo elemento primo es irreducible</a>,
+     y en un DFU todo elemento irreducible es primo.
+</ul>
+

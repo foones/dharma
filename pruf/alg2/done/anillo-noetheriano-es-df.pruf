@@ -1,0 +1,70 @@
+[title Anillo Noetheriano es dominio de factorización]
+[category Álgebra 2]
+[tags anillo,noetheriano,dominio de factorización]
+
+Sea $A$ un dominio íntegro Noetheriano. Entonces $A$ es un
+dominio de factorización.
+
+<strong>Demostración.</strong> Se dice que un elemento $a \in A$ <em>se
+factoriza</em> si
+se escribe de la forma $a = u\,p_1\,\hdots\,p_n$, donde $u \in
+\mathcal{U}(A)$ es una unidad del anillo, y los $p_i$ son elementos
+irreducibles. Observar que $A$ es un dominio de factorización si
+y sólo si todo elemento de $A$ se factoriza.
+
+Suponer que $A$ no fuera un dominio de factorización. Entonces
+existe un elemento $a \in A$ no nulo que no se factoriza, es decir, un
+elemento que no se escribe como producto de una unidad por
+elementos irreducibles.
+
+El lema siguiente asegura que dado un elemento $x \in A$ que
+no se factoriza existe otro elemento $y \in A$ tal que $y$ no se
+factoriza y además $\langle x \rangle \subsetneq \langle y \rangle$.
+Aplicando el lema, se construye la cadena creciente de ideales
+$\langle a \rangle \subsetneq 
+ \langle a_1 \rangle \subsetneq 
+ \langle a_2 \rangle \subsetneq ...$,
+que no se estaciona, contradiciendo el hecho de que $A$ es
+Noetheriano.
+
+<strong>Lema.</strong> Sea $x \in A$ un elemento no nulo que no se factoriza.
+Entonces existe un elemento $y \in A$ tal que $y$ no se factoriza
+y además $\langle x \rangle \subsetneq \langle y \rangle$.
+
+<strong>Demostración.</strong>
+Dado que $x \in A$ no se factoriza, se tiene que $x$ no es una unidad
+y no es un elemento irreducible.
+
+Recordar que un elemento es irreducible si no es una unidad y,
+cada vez que se tiene $x = a\,b$, se tiene también que $a \in
+\mathcal{U}(A) \lor b \in \mathcal{U}(A)$.
+Por lo tanto deben existir $a, b \in A$ tales que $x = a\,b$ donde
+$a \not\in \mathcal{U}(A)$ y $b \not\in \mathcal{U}(A)$.
+
+Suponer que tanto $a$ como $b$ se factorizaran.
+En tal caso, se escribirían de la forma:
+<ul>
+<li> $a = u\,p_1\,\hdots\,p_n$
+<li> $b = v\,q_1\,\hdots\,q_m$
+</ul>
+para ciertos naturales $n, m \in \mathbb{N}$,
+unidades $u, v \in \mathcal{U}(A)$
+y elementos irreducibles $p_i, q_j$.
+Si así fuera, se tendría que $x = u\,v\,p_1\,\hdots\,p_n\,q_1\,\hdots\,q_m$
+contradiciendo el hecho de que $x$ no se factoriza.
+Por lo tanto se da el caso que o bien $a$ no se factoriza
+o bien $b$ no se factoriza.
+
+Como el anillo es conmutativo, suponer sin pérdida de generalidad
+que $b$ no se factoriza, y tomar $y = b$.
+Entonces $\langle y \rangle \supseteq \langle x \rangle$, pues
+$y$ divide a $x$. Además, la inclusión es estricta.
+Si no fuera estricta, se tendría que los dos ideales son iguales,
+y en particular $y \in \langle x \rangle$, es decir $y = c\,x = c\,a\,b =
+c\,a\,y$. Despejando, se tiene $c\,a\,y - y = 0$, con lo cual
+$(c\,a - 1)\,y = 0$. Como $A$ es un dominio íntegro y el elemento
+$y$ no es nulo, se concluye $c\,a = 1$. De este modo, $a$ es
+una unidad del anillo. Pero ya se sabía $a \not\in \mathcal{U}(A)$,
+llegando así a un absurdo. Así, la inclusión debe ser
+estricta, lo que completa la prueba.
+

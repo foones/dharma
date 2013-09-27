@@ -1,0 +1,70 @@
+[title Módulo libre sii isomorfo a potencia del anillo]
+[category Álgebra 2]
+[tags módulo,libre,base]
+
+Sean $M$ un $A$-módulo libre, y $\mathcal{B} = \{x_i\ |\ i \in I\} \subseteq M$
+una base de $M$. Sean $N$ otro $A$-módulo y $\{y_i\ |\ i \in I\} \subseteq N$
+elementos cualesquiera de $N$. Entonces existe un único
+morfismo $f : M \to N$ tal que $f(x_i) = y_i$ para todo $i \in I$.
+
+<strong>Demostración.</strong> Cada elemento $x \in M$ se escribe de
+manera única como $x = \sum_{i \in I}{\alpha_i\,x_i}$ para ciertos
+$\alpha_i \in A$, donde sólo finitos son no nulos. Se define entonces:
+
+$f(x) = f(\sum_{i \in I}{\alpha_i\,x_i}) := \sum_{i\in I}{\alpha_i\,y_i}$
+
+Esto define un morfismo de módulos. Además, es la única manera
+de definirlo, porque para que sea un morfismo debe distribuir
+sobre la suma y ``sacar'' escalares para afuera.
+
+<h2>Corolario</h2>
+
+$M$ es un $A$-módulo libre si y sólo si $M \simeq A^{(I)}$
+para algún conjunto $I$.
+
+<strong>Demostración.</strong>
+
+($\Rightarrow$) Sea $\mathcal{B} = \{x_i\ |\ i \in I\}$ una base de $M$,
+y sea $E = \{e_i\ |\ i \in I\}$ la base canónica de $A^(I)$.
+Usando el resultado ya demostrado,
+considerar el único morfismo $f : M \to A^{(I)}$
+determinado por $f(x_i) = e_i$.
+
+Es un epimorfismo, porque $\mathrm{im}(f)$ contiene a todos
+los $e_i \in E$, que forman un sistema de generadores de $A^{(I)}$.
+Es un monomorfismo, porque si $f(x)(i) = 0$ para todo $i \in I$,
+entonces los coeficientes de $x$ en la base $\mathcal{B}$ son
+todos nulos, y entonces $x = 0$. Por lo tanto $M \simeq A^{(I)}$.
+
+($\Leftarrow$) Suponer que $M \simeq A^{(I)}$, y sea $E = {e_i\ |\ i \in
+I}$ la base canónica de $A^(I)$. Como son isomorfos, existe un
+isomorfismo de $A$-módulos $\varphi : A^{(I) \to M}$.
+Sean $x_i \in M$ las imágenes de los $e_i \in E$,
+es decir, $x_i = \varphi(e_i)$.
+Se verá que $\mathcal{B} = \{x_i\ |\ i \in I\}$ es una base de $M$.
+
+Sea un elemento $m \in M$ cualquiera. Se escribe como
+$m = \varphi(a)$ para algún $a \in A^(I)$, pues $\varphi$
+es un epimorfismo. Además,
+$a$ se escribe como combinación lineal de los elementos
+de la base: $a = \sum_{i \in I}{\alpha_i\,e_i}$.
+Aplicando $\varphi$ y usando que es un morfismo,
+se tiene:
+$m
+= \varphi(a)
+= \varphi(\sum_{i \in I}{\alpha_i\,e_i})
+= \sum_{i \in I}{\alpha_i\,\varphi(e_i)}
+= \sum_{i \in I}{\alpha_i\,x_i}$.
+Con lo cual $\mathcal{B}$ es un sistema de generadores
+de $M$.
+
+Para ver que $\mathcal{B}$ es linealmente independiente,
+considerar una combinación
+lineal que se anule: $\sum_{i\in I}{\alpha_i\,x_i} = 0$.
+Aplicando $\varphi^{-1}$ y usando que es un morfismo,
+se tiene:
+$\sum_{i\in I}{\alpha_i\,e_i} = 0$,
+con lo cual $\alpha_i = 0$ para todo $i \in I$,
+porque los elementos $e_i$ de la base canónica son
+linealmente independientes.
+

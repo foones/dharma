@@ -1,0 +1,115 @@
+[title Anillo semisimple sii todo módulo cíclico proyectivo]
+[category Álgebra 2]
+[tags anillo,módulo,semisimple,cíclico,proyectivo]
+
+Sea $A$ un anillo. Entonces
+$A$ es semisimple si y sólo si
+todo $A$-módulo cíclico es proyectivo.
+
+<strong>Demostración.</strong>
+
+($\Rightarrow$)
+
+Suponer que $A$ es semisimple. Se quiere
+ver que todo $A$-módulo cíclico es proyectivo.
+Por empezar, como $A$ es semisimple,
+<a href="/anillos-semisimples-propiedades">se sabe que</a>
+$A = \bigoplus_{i = 1}^{n}{\langle s_i \rangle}$ donde
+cada ideal $\langle s_i \rangle$ es simple y además:
+<ul>
+<li> $1 = s_1 + \hdots + s_n$
+<li> $s_i^2 = s_i$
+<li> $s_i\,s_j = 0$ si $i \neq j$
+</ul>
+
+Sea $P = \langle x_0 \rangle$ un $A$-módulo cíclico.
+Considerar los submódulos $\langle s_i \, x_0 \rangle \subseteq P$.
+Observar que cada uno de ellos está contenido en $P$ y por lo tanto
+la suma también, i.e. $\sum_{i = 1}^n{\langle s_i \rangle} \subseteq P$.
+Recíprocamente, observar que $x_0 = s_1\,x_0 + \hdots + s_n\,x_0$,
+por lo cual $P$ está contenido en la suma.
+
+Además, cada submódulo $S_i := \langle s_i \, x_0 \rangle$ es simple.
+Para ello basta ver que
+<a href="/modulos-simples-son-ciclicos">todo elemento no nulo de $S_i$ genera a $S_i$</a>.
+Sea entonces un elemento no nulo de $S_i$. Es un múltiplo de
+$s_i\,x_0$ y por lo tanto de la forma $\alpha \, s_i \, x_0$,
+donde $\alpha\,s_i \neq 0$.
+Como el ideal $\langle s_i \rangle$ es simple,
+y $\alpha \, s_i$ es un elemento no nulo de dicho ideal,
+se tiene que $\langle s_i \rangle = \langle \alpha\,s_i \rangle$.
+En particular, $s_i = \beta\,\alpha\,s_i$ para cierto elemento
+$\beta \in A$. Por lo tanto
+$\langle s_i\,x_0 \rangle = \langle \alpha\,s_i\,x_0 \rangle$,
+de modo que $S_i$ es simple.
+
+Resumiendo, se tiene que $P = \sum_{i=1}^{n}{S_i}$, es decir,
+es suma de módulos simples. Por
+<a href="/caracterizacion-modulos-semisimples">caracterización de
+módulos semisimples</a>, esto implica que
+$P$ es la suma <em>directa</em> de los $S_i$,
+es decir, $P = \bigoplus_{i=1}^{n}{S_i}$.
+
+Se quiere ver que $P$ es proyectivo.
+<a href="/modulo-proyectivo-sii-sumandos-directos-proyectivos">Basta ver que</a> cada uno de
+los $S_i$ es proyectivo.
+
+Para finalizar la demostración de la implicación en este sentido,
+basta ver que si $S_i$ es simple, entonces es proyectivo.
+Para ello se usa fuertemente el hecho de que el anillo $A$
+es semisimple. Observar que en general, un módulo simple no
+tiene por qué ser proyectivo.
+
+Sea entonces $S_i = \langle s_i\,x_0 \rangle$ no nulo
+(los $S_i$ nulos son obviamente proyectivos).
+Primero, observar que $S_i$ es sin torsión, pues
+como $S_i$ es simple, dado cualquier elemento $\alpha \in A$
+no nulo, el elemento $\alpha\,s_i\,x_0$ genera
+todo $S_i$ (y por lo tanto $\alpha\,s_i\,x_0 \neq 0$).
+
+Para ver que $S_i$ es proyectivo, se construirá una
+<a href="/modulo-proyectivo-sii-base-proyectiva">base proyectiva</a>.
+La base proyectiva estará conformada por el único elemento
+$s_i\,x_0$. Lo que se quiere entonces es un morfismo
+$c : S_i \to A$ tal que $x = c(x)\,s_i\,x_0$
+para todo elemento $x \in S_i$.
+
+Para ello basta observar que todo $x \in S_i$ se escribe
+de manera única como $\alpha\,s_i\,x_0$ para cierto elemento
+$\alpha \in A$. Si hubiera dos escrituras,
+$\alpha\,s_i\,x_0 = \beta\,s_i\,x0$, restando se tiene
+que $(\alpha - \beta)\,s_i\,x_0 = 0$ y como $S_i$ es sin
+torsión se concluye $\alpha = \beta$.
+
+Definiendo la aplicación $c : S_i \to A$ que dado
+un elemento $\alpha\,s_i\,x_0$
+devuelve $\alpha$, por ser $\alpha$ único
+resulta que $c$ es un morfismo y define una base
+proyectiva.
+
+($\Leftarrow$)
+Suponer que todo $A$-módulo cíclico es proyectivo.
+
+Por <a href="/caracterizacion-modulos-semisimples">caracterización de
+módulos semisimples</a>, para ver que $A$ es semisimple basta ver que
+todo submódulo es un sumando directo del anillo,
+i.e. para todo ideal a izquierda $I \subseteq A$ existe otro ideal
+$J \subseteq A$ tal que $A = I \oplus J$.
+
+Considerar el cociente $A / I$. Es un $A$-módulo cíclico,
+pues $A / I = \langle \bar{1} \rangle$. Por lo tanto es proyectivo.
+Considerar la sucesión exacta corta:
+
+$0
+\longrightarrow I
+\longrightarrow A
+\longrightarrow A / I
+\longrightarrow 0$
+
+Como $A / I$ es proyectivo,
+<a href="/modulo-proyectivo-sii-sucesiones-exactas-cortas-escindidas">es escindida</a>
+y entonces $A \simeq I \oplus A / I$. Como $I$ es el núcleo
+de la proyección $A \to A / I$, se tiene en realidad que $A = I \oplus J$
+(para algún $J \simeq A / I$). En particular, $I$ es un sumando
+directo de $A$, lo que completa la prueba.
+

@@ -1,0 +1,54 @@
+[title Módulo sobre anillo de división es libre]
+[category Álgebra 2]
+[tags módulo,anillo,división,libre,base,espacio vectorial]
+
+Sea $M$ un $A$-módulo. Si $A$ es un anillo de división,
+entonces $M$ es libre.
+
+<strong>Demostración.</strong> Considerar la familia de todos
+los subconjuntos de $M$ que sean linealmente independientes:
+$\Omega := \{B \subseteq M\ |\ B $ es l.i.$\}$. Así,
+$(\Omega, \subseteq)$ es un conjunto parcialmente ordenado.
+En primer lugar, se verá que tiene un elemento maximal usando el Lema
+de Zorn.
+
+Dada una cadena creciente $B_1 \subseteq B_2 \subseteq ...$
+de elementos de $\Omega$, la unión $B := \cup_{i \in \mathbb{N}}{B_i}$
+es una cota superior de todos los $B_i$. Además, $B \in \Omega$,
+es decir, $B$ es linealmente independiente: considerar una
+combinación lineal con dominio finito que se anula; es de la forma
+$\sum_{j \in J}{\alpha_j\,b_j} = 0$
+donde $J$ es un conjunto finito, los $\alpha_j$ son elementos
+del anillo $A$, y los $b_j$ son elementos de $B$.
+Cada uno de los $b_j$ está en algún conjunto de la cadena,
+$B_{r_j}$. Pero como la cadena de los $B_i$ es creciente,
+se tiene que $b_j \in B_{\max_{k \in J}{r_k}}$ para todo $j \in J$.
+Por lo tanto, la combinación lineal que se anula se puede
+pensar en dicho conjunto $B_{\max_{k \in J}{r_k}} \in \Omega$,
+que es linealmente independiente. De este modo, todos los
+$\alpha_j$ deben ser nulos, de lo que se deduce que $B$ es linealmente
+independiente.
+
+Entonces, por el Lema de Zorn, $\Omega$ tiene un elemento maximal
+$\mathcal{B}$. Para ver que es una base, sólo resta ver que
+$\langle \mathcal{B} \rangle = M$. Suponer que existiera $x \in M$
+tal que $x \not\in \langle \mathcal{B} \rangle$.
+Entonces $\mathcal{B} \cup \{x\}$ debe ser un conjunto linealmente
+dependiente, ya que contiene a $\mathcal{B}$, que es maximal.
+Considerar una combinación lineal que se anule con coeficientes no
+todos nulos; es de la forma $\alpha\,x + \sum_{y \in \mathcal{B}}{\beta_y\,y} = 0$.
+Observar que $\alpha$ no puede ser $0$, pues de lo contrario se
+tiene una combinación lineal de elementos no todos nulos de
+$\mathcal{B}$ y que se anula, lo cual no puede ser porque
+$\mathcal{B}$ es linealmente independiente. Como $\alpha \neq 0$ 
+y $A$ es un anillo de división, esto permite despejar $x$,
+de la siguiente manera:
+$x = \sum_{y \in \mathcal{B}}{-\beta_y/\alpha\,y}$,
+obteniendo que $x$ se escribe como combinación lineal de los
+elementos de $\mathcal{B}$. Esto es absurdo porque se suponía
+$x \not\in \langle B \rangle$.
+
+<h2>Consecuencia</h2>
+Esta proposición implica que todo espacio vectorial tiene una base, ya
+que un espacio vectorial es un $K$-módulo, donde $K$ es un
+cuerpo (y en particular un anillo de división).

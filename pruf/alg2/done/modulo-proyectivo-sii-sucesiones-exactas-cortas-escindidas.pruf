@@ -1,0 +1,53 @@
+[title Módulo proyectivo sii sucesiones exactas cortas escindidas]
+[category Álgebra 2]
+[tags módulo,proyectivo,sucesión exacta corta,escindida]
+
+Sea $P$ un $A$-módulo. Entonces $P$ es proyectivo si y sólo
+si toda sucesión exacta corta de la forma:
+
+$0 \longrightarrow M \overset{f}{\longrightarrow} N
+\overset{g}{\longrightarrow} P \longrightarrow 0$
+
+``se parte'' (es escindida).
+
+<strong>Demostración.</strong> 
+
+($\Rightarrow$) Se tiene la siguiente situación:
+
+%%{
+\xymatrix{
+              & P \ar@{-->}[ld]_{\exists s} \ar[rd]^{id_P} \\
+N \ar[rr]^{g} &   & P \ar[r] & 0
+}
+%%}
+
+como $P$ es proyectivo, existe un morfismo $s$ que hace
+conmutar el diagrama, i.e. $g \cdot s = id_P$. Por lo
+tanto $g$ es una retracción,
+<a href="/caracterizacion-sucesiones-exactas-cortas-escindidas">con lo cual</a>
+la sucesión exacta corta es escindida.
+
+($\Leftarrow$) Para ver que $P$ es proyectivo, se verá
+que <a href="/modulo-proyectivo-sii-sumando-directo-de-un-libre">es isomorfo a un sumando directo de un módulo libre</a>.
+Para ello, considerar un epimorfismo $g : A^{(I)} \to P$
+y la siguiente sucesión exacta corta:
+
+$0 \longrightarrow \ker(g) \overset{\iota}{\longrightarrow} A^{(I)} \overset{g}{\longrightarrow} P \longrightarrow 0$
+
+donde $\iota : \ker(g) \to A^{(I)}$ es la inclusión. Como
+la sucesión exacta corta es escindida, 
+<a href="/caracterizacion-sucesiones-exactas-cortas-escindidas">es equivalente a esta otra</a>:
+
+$0 \longrightarrow \ker(g) \overset{\iota}{\longrightarrow} \ker(g) \oplus P \overset{\pi}{\longrightarrow} P \longrightarrow 0$
+
+con lo cual $P$ es sumando directo de $\ker(g) \oplus P \simeq
+A^{(I)}$, que es libre.
+
+<strong>Corolario.</strong> Si $P$ es proyectivo y $f : M \to P$
+un epimorfismo, entonces $f$ es una retracción.
+Para ver esto considerar la sucesión exacta corta:
+
+$0 \longrightarrow \ker(f) \overset{\iota}{\longrightarrow} M \overset{f}{\longrightarrow} P \longrightarrow 0$
+
+y observar que es escindida.
+

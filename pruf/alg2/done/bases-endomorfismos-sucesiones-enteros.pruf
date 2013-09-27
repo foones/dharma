@@ -1,0 +1,64 @@
+[title Bases del anillo de endomorfismos entre sucesiones de enteros con dominio finito]
+[category Álgebra 2]
+[tags base,anillo,endomorfismo,sucesión,entero]
+
+<h2>Parte 1</h2>
+
+Sea $M$ un $A$-módulo libre que tiene una base de cardinal $n$ y otra
+de cardinal $n + 1$. Entonces, $M$ tiene una base de cardinal $m$ para
+todo $m \geq n$.
+
+<strong>Demostración.</strong>
+<a href="/modulo-libre-potencia-anillo">Se sabe</a> que
+$M$ tiene una base de cardinal $n$ si y sólo si $M \simeq A^n$.
+
+Se verá que $A \simeq A^m$ para todo $m \geq n$ por inducción en $m$.
+Si $m = n$, se tiene $M \simeq A^{n}$ por hipótesis.
+Si $m = n + k + 1$ para algún $k \in \mathbb{N}_0$,
+se tiene que $M \simeq A^{m-1} = A^{n+k}$ por hipótesis
+inductiva. Entonces $M \simeq A^{n+k} \simeq A^n \oplus A^k
+\simeq A^{n+1} \oplus A^k \simeq A^{n+k+1} = A^m$.
+
+<h2>Parte 2</h2>
+
+Sea $A =
+\mathop{\rm{End}}(\mathbb{Z}^{(\mathbb{N})},\mathbb{Z}^{(\mathbb{N})})$
+con la estructura de anillo dada por la composición. Entonces $A$
+tiene bases finitas de cualquier cardinal.
+
+<strong>Demostración.</strong> 
+Considerar las sucesiones $e_{i} \in \mathbb{Z}^{(\mathbb{N})}$
+para $i \in \mathbb{N}$ tales que $(e_i)_j = \delta_{ij}$.
+El conjunto $\{e_i\ | \ i \in \mathbb{N}\}$ es la base canónica de
+$\mathbb{Z}^{(\mathbb{N})}$.
+
+Por la Parte 1, basta ver que $A$ tiene una base de cardinal $1$ y
+otra de cardinal $2$. Como base de cardinal $1$, basta tomar el
+conjunto $\{id\}$. Como base de cardinal $2$, considerar el conjunto
+formado por los siguientes morfismos $f_0, f_1 \in A$:
+<ul>
+<li> $f_0(a_0, a_1, \hdots, a_{2k}, a_{2k+1}, \hdots) = (a_0, a_2, \hdots, a_{2k}, \hdots)$
+<li> $f_1(a_0, a_1, \hdots, a_{2k}, a_{2k+1}, \hdots) = (a_1, a_3, \hdots, a_{2k+1}, \hdots)$
+</ul>
+Más precisamente:
+<ul>
+<li> $f_0(e_i) = \begin{cases}e_k&i = 2k\\ 0&i = 2k + 1\end{cases}$
+<li> $f_1(e_i) = \begin{cases}e_k&i = 2k + 1\\ 0&i = 2k\end{cases}$
+</ul>
+
+El conjunto $\{f_0, f_1\}$ genera todo el anillo $A$ pues
+$id = f_0 + f_1 \in \langle f_0, f_1 \rangle$.
+Para ver que es linealmente independiente, considerar una combinación
+lineal que se anula: $\alpha\,f_0 + \beta\,f_1 = 0$. Se verá que
+$\alpha = \beta = 0 \in A$.
+
+Dado $i \in \mathbb{N}$ arbitrario, se
+tiene que $(\alpha\,f_0 + \beta\,f_1)(e_{2i}) =
+\alpha\,f_0(e_{2i}) + \beta\,f_1(e_{2i}) = \alpha(e_i)$.
+Como $\alpha\,f_0 + \beta\,f_1$ es el morfismo nulo,
+se concluye que $\alpha(e_i) = 0$ para todo $i \in \mathbb{N}$.
+Así, como $\alpha$ es un morfismo de anillos y se anula en una base de
+$\mathbb{Z}^{(\mathbb{N})}$, se tiene que $\alpha$ debe ser el morfismo
+nulo.
+Análogamente, evaluando el morfismo $\alpha\,f_0 + \beta\,f_1$
+en la sucesión $e_{2i+1}$ se obtiene que $\beta = 0$.

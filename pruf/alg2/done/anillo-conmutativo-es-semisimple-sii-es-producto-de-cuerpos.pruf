@@ -1,0 +1,127 @@
+[title Anillo conmutativo es semisimple sii es producto finito de cuerpos]
+[category Álgebra 2]
+[tags anillo,semisimple,suma directa,simple,ideal,producto,finito,cuerpo]
+
+Sea $A$ un anillo conmutativo. Entonces $A$ es semisimple si y sólo
+si $A$ es isomorfo como anillo
+a un producto finito de cuerpos.
+Es decir, $A \simeq k_1 \times k_2 \times \hdots \times k_n$
+donde cada $k_i$ es un cuerpo.
+La estructura de anillo del producto está dada por la suma y el producto
+coordenada a coordenada.
+
+<strong>Demostración.</strong> 
+
+($\Leftarrow$) Sea $A$ isomorfo a un producto finito de cuerpos
+$k_1 \times \hdots \times k_n$. Cada cuerpo $k_i$ se
+corresponde, vía isomorfismo, a un ideal de $A$. Además, dichos
+ideales son simples, pues los únicos ideales de un cuerpo
+<a href="/anillo-division-ideales-triviales">son los
+triviales</a>. Entonces $A$ es suma de ideales simples, y
+<a href="/caracterizacion-modulos-semisimples">por lo tanto</a>
+semisimple.
+
+($\Rightarrow$)
+Por ser $A$ semisimple y finitamente generado
+<a href="/modulos-semisimples-finitamente-generados">se tiene que</a>
+$A = \bigoplus_{i=1}^{n}{S_i}$, donde cada $S_i \subseteq A$ es un ideal 
+simple. Además, cada ideal $S_i$ está generado por un elemento
+$e_i$ tal que <a href="/anillos-semisimples-propiedades">se cumple</a>:
+<ul>
+<li> $1 = e_1 + \hdots + e_n$
+<li> $e_i\,e_j = 0$ si $i \neq j$
+<li> $e_i^2 = e_i$
+</ul>
+
+Para cada $i$, considerar el morfismo de $A$-módulos:
+$\varphi_i : A \to S_i$ determinado por $1 \mapsto e_i$.
+Es un epimorfismo, pues la imagen incluye a $e_i$ que genera
+a $S_i$. Pasando al cociente, se obtiene el isomorfismo:
+$\bar{\varphi}_i : A / \ker{\varphi_i} \to S_i$.
+Como $\varphi$ es un morfismo de $A$ en un $A$-módulo simple,
+se tiene que <a href="/nucleo-morfismo-modulo-simple-maximal">el
+núcleo $\ker\varphi$ es un ideal maximal</a>. De este modo,
+$k_i := A / \ker{\varphi_i}$ es un cuerpo.
+
+Resumiendo, se tiene entonces que $A = \bigoplus_{i=1}^{n}{S_i}$
+donde cada $S_i$ es isomorfo a un cuerpo $k_i$. Se verá ahora
+que $A \simeq k_1 \times \hdots k_n$. Para ello, sea
+$f_i := \bar{\varphi}^{-1} : S_i \to k_i$ y considerar la
+aplicación
+$f : A \to \prod_{i=1}^{n}{k_i}$
+determinada por
+$e_i \mapsto (0, \hdots, f_i(e_i), \hdots, 0)$ donde $f_i(e_i)$ figura
+en la posición $i$. Queda unívocamente determinada
+porque los $e_i$ forman una base de $A$ y porque cada $f_i$ es
+un isomorfismo.
+Notar que dados $s_i \in S_i$, se tiene que
+$f(s_1 + \hdots + s_n) =
+(f_1(s_1), \hdots, f_n(s_n))$.
+
+Sean $x, y \in A$ elementos del anillo. Se escriben de la siguiente
+manera:
+<ul>
+<li> $x = \sum_{i=1}^{n}{s_i}$
+<li> $y = \sum_{i=1}^{n}{t_i}$
+</ul>
+para ciertos $s_i, t_i \in S_i$.
+A continuación se verá que $f$ es un isomorfismo de
+anillos.
+
+<ul>
+<li> Se verifica la aditividad de $f$ por la siguiente cadena de
+     igualdades:
+  <ul>
+  <li> $f(x + y)$
+  <li> $f(\sum_{i=1}^{n}{s_i} + \sum_{i=1}^{n}{t_i})$
+  <li> $f(\sum_{i=1}^{n}{s_i + t_i})$
+  <li> $(f_1(s_1 + t_1), \hdots,
+		  f_n(s_n + t_n))$
+  <li> $(f_1(s_1) + f_1(t_1), \hdots,
+         f_n(s_n) + f_n(t_n))$
+  <li> $(f_1(s_1), \hdots, f_n(s_n))
+      + (f_1(t_1), \hdots, f_n(t_n))$
+  <li> $f(\sum_{i=1}^{n}{s_i}) + f(\sum_{i=1}^{n}{t_i})$
+  <li> $f(x) + f(y)$
+  </ul>
+
+<li> Como $s_i, t_i \in S_i = \langle e_i \rangle$,
+cada $s_i$ se escribe como $\alpha_i\,e_i$ y
+cada $t_j$ se escribe como $\beta_j\,e_j$, para ciertos
+$\alpha_i, \beta_j \in A$.
+Se verifica entonces la multiplicatividad de $f$ pues:
+  <ul>
+  <li> $f(x\,y)$
+  <li> $f((\sum_{i=1}^{n}{s_i})\,(\sum_{j=1}^{n}{t_j}))$
+  <li> $f(\sum_{i=1}^{n}\sum_{j=1}^{n}{s_i\,t_j})$
+  <li> $f(\sum_{i=1}^{n}\sum_{j=1}^{n}{\alpha_i\,\beta_j\,e_i\,e_j})$
+       usando que el anillo $A$ es conmutativo
+  <li> $f(\sum_{i=1}^{n}{\alpha_i\,\beta_i\,e_i^2})$
+  <li> $(f_1(\alpha_1\,\beta_1\,e_1^2), \hdots, f_n(\alpha_n\,\beta_n\,e_n^2))$
+  <li> $(f_1(\alpha_1\,e_1), \hdots, f_n(\alpha_n\,e_n)) \cdot (f_1(\beta_1\,e_1), \hdots, f_n(\beta_n\,e_n))$
+  <li> $f(\sum_{i=1}^{n}{\alpha_i\,e_i}) \cdot f(\sum_{i=1}^{n}{\beta_i\,e_i})$
+  <li> $f(\sum_{i=1}^{n}{s_i}) \cdot f(\sum_{i=1}^{n}{t_i})$
+  <li> $f(x) \cdot f(y)$
+  </ul>
+
+<li> Para ver que $f(1) = 1$, observar primero que $\varphi_i(1) = e_i$,
+     por lo tanto $\bar{\varphi_i}(\bar{1}) = e_i$,
+     y entonces $f_i(e_i) = \bar{\varphi_i}^{-1}(e_i) = \bar{1} \in k_i$.
+     De este modo, se tiene que
+     $f(1) = f(e_1 + \hdots + e_n) = (f_1(e_1), \hdots, f_n(e_n))
+     = (\bar{1}, \hdots, \bar{1})$ que es precisamente
+     el $1$ del anillo $\prod_{i=1}^{n}{k_i}$.
+
+<li> $f$ es un epimorfismo. Dados $y_i \in k_i$ arbitrarios,
+     existen elementos $x_i \in S_i$
+     tales que $f_i(x_i) = y_i$
+     pues los $f_i$ son epimorfismos. De este modo
+     $f(x_1 + \hdots + x_n) = (f_1(x_1), \hdots, f_n(x_n)) = (y_1, \hdots, y_n)$
+
+<li> $f$ es un monomorfismo, pues si $f(x_1 + \hdots + x_n) = (0, \hdots, 0)$
+     entonces $f_i(x_i) = 0$ para cada $i$. Como los $f_i$ son
+     monomorfismos, se concluye entonces que todos los $x_i$ son nulos
+     y por lo tanto que $x_1 + \hdots + x_n = 0$.
+
+
+</ul>

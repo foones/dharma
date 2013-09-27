@@ -1,0 +1,84 @@
+[title Módulo proyectivo sii base proyectiva]
+[category Álgebra 2]
+[tags módulo,proyectivo,base,dual]
+
+Sea $P$ un $A$-módulo. Entonces $P$ es proyectivo si y sólo
+si admite una base proyectiva (o ``base dual'').
+Una base proyectiva consta de:
+<ul>
+<li> un conjunto de elementos $\{x_i \in P\ |\ i \in I\}$
+<li> un conjunto de morfismos $\{\varphi_i \in P^*\ |\ i \in I\}$,
+donde $P^* = \mathop{\rm{Hom}}(P, A)$
+</ul>
+tales que para todo $x \in P$:
+<ul>
+<li> $\varphi_i(x)$ es $0$ salvo para finitos valores de $i \in I$
+<li> $x = \sum_{i \in I}{\varphi_i(x)\,x_i}$
+</ul>
+
+<strong>Demostración.</strong>
+
+($\Rightarrow$) Sea $P$ proyectivo. Considerar el módulo
+libre $A^{(I)}$, su base canónica $\{e_i\ |\ i \in I\}$,
+y un epimorfismo $f : A^{(I)} \to P$.
+Por ser $P$ proyectivo
+<a href="/modulo-proyectivo-sii-sucesiones-exactas-cortas-escindidas">se tiene que</a>
+$f$ es una retracción. Sea entonces $s : P \to A^{(I)}$ tal que
+$f \cdot s = id_P$.
+
+Entonces, cada elemento $x \in P$ se escribe como $x = f(s(x))$.
+Además, $s(x) \in A^{(I)}$ se escribe de manera única
+como $\sum_{i \in I}{\alpha_i\,e_i}$ para ciertos
+$\alpha_i \in A$.
+Por lo tanto $x = f(s(x)) = \sum_{i \in I}{\alpha_i\,f(e_i)}$.
+
+Tomando como elementos de la base proyectiva $x_i := f(e_i)$ y como
+morfismo $\varphi_i : P \to A$ el que asocia cada $x \in P$
+a su correspondiente $\alpha_i$, se verifica que es una base
+proyectiva.
+
+Para ello, observar que en la escritura de
+$s(x) = \sum_{i \in I}{\alpha_i\,e_i}$
+hay sólo finitos valores de $i \in I$ para los que $\alpha_i \neq 0$,
+ya que $s(x)$ es un elemento de $A^{(I)}$.
+
+Por otro lado, como la escritura de $s(x)$ como combinación
+lineal de los $e_i$ es única, se tiene que para cada $i \in I$
+la aplicación $\varphi_i$ es un morfismo. Más precisamente,
+si
+$x = \sum_{\alpha_i \, x_i}$ y
+$y = \sum_{\beta_i \, y_i}$,
+entonces
+$x + y = \sum_{(\alpha_i + \beta_i) \, x_i}$,
+con lo cual
+$\varphi_i(x) + \varphi_i(y) = \varphi_i(x + y)$.
+Análogamente, $\varphi_i(\lambda\,x) = \lambda\,\varphi_i(x)$.
+
+($\Leftarrow$) Sea $P$ un $A$-módulo que admite una base proyectiva.
+Para ver que $P$ es proyectivo se verá que en una situación como
+la siguiente:
+
+%%{
+\xymatrix{
+              & P \ar@{-->}[ld]_{\exists \psi} \ar[rd]^{\alpha} \\
+M \ar[rr]^{f} &   & N \ar[r] & 0
+}
+%%}
+
+donde $f : M \to N$ es un epimorfismo y $\alpha : P \to N$ un
+morfismo arbitrario, existe siempre un morfismo $\psi : P \to M$
+que hace conmutar el diagrama.
+
+Las imágenes de los elementos de la base
+proyectiva son de la forma $\alpha(x_i) \in N$ y,
+como $f$ es un epimorfismo, se tiene que $\alpha(x_i) = f(y_i)$
+para ciertos $y_i \in M$.
+Si se considera entonces una aplicación $\psi : P \to M$ tal que
+$\psi(x_i) = y_i$, esto determina un único morfismo:
+$\psi(x)
+= \psi(\sum_{i \in I}{\varphi_i(x)\,x_i})
+= \sum_{i \in I}{\varphi_i(x)\,\psi(x_i)}
+= \sum_{i \in I}{\varphi_i(x)\,y_i}$.
+Además, $f \cdot \psi = \alpha$, pues
+$f(\psi(x_i)) = f(y_i) = \alpha(x_i)$, y por lo tanto,
+con $\psi$ así definido, el diagrama conmuta.

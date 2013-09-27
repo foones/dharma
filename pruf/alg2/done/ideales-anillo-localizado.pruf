@@ -1,0 +1,391 @@
+[title Ideales del anillo localizado]
+[category Álgebra 2]
+[tags anillo,ideal,localización,contracción,extensión,primo,maximal]
+
+Sea $A$ un anillo conmutativo, $S$ un conjunto multiplicativamente
+cerrado, $B := S^{-1}A$ el anillo localizado
+y $f : A \to B$ el morfismo canónico,
+determinado por $a \mapsto a/1$.
+Para cada ideal $\mathcal{I} \subseteq A$ se denota
+$\mathcal{I}^e := \langle f(\mathcal{I}) \rangle$ 
+(i.e. el ideal generado por $f(\mathcal{I})$ en $B$),
+y lo llamaremos el <em>ideal extendido de $\mathcal{I}$</em>.
+Para cada ideal $\mathcal{J} \subseteq B$
+denotamos $\mathcal{J}^c := f^{-1}(\mathcal{J})$, y lo llamaremos
+<em>el ideal contraído</em> de $\mathcal{J}$.
+
+<h2>Parte 1</h2>
+Si $\mathcal{I} \subseteq A$ es un ideal, entonces
+$\mathcal{I} \subseteq (\mathcal{I}^e)^c$.
+
+<strong>Demostración.</strong> Sea $i \in \mathcal{I}$. Entonces:
+<ul>
+<li> $f(i) = i/1 \in f(\mathcal{I})$
+<li> $f(i) \in \langle f(\mathcal{I}) \rangle$
+<li> $f(i) \in \mathcal{I}^e$ por definición de ideal extendido
+<li> $i \in f^{-1}(\mathcal{I}^e)$
+<li> $i \in (\mathcal{I}^e)^c$ por definición de ideal contraído
+</ul>
+Con lo cual todo $i \in \mathcal{I}$ está en $(\mathcal{I}^e)^c$.
+
+<strong>Observación.</strong>
+
+Si $\mathcal{I} \cap S \neq \emptyset$, entonces
+$\mathcal{I}^e = B$ y $(\mathcal{I}^e)^c = A$.
+
+Para ver esto, considerar $s \in \mathcal{I} \cap S$.
+Por un lado, $f(s) \in f(\mathcal{I})$.
+Además, $f(s) = s/1$ es un elemento inversible en $B = S^{-1}A$,
+con inverso $1/s$.
+De este modo, $1 = f(s) f(s)^{-1} \in \langle f(\mathcal{I}) \rangle =
+\mathcal{I}^e$, con lo cual se tiene que $\mathcal{I}^e$ es todo el anillo $B$,
+y consiguientemente $(\mathcal{I}^e)^c = f^{-1}(B) = A$.
+
+<h2>Parte 2</h2>
+
+Si $\mathfrak{p} \subseteq A$ es un ideal primo que no interseca a
+$S$, entonces $(\mathfrak{p}^e)^c = \mathfrak{p}$.
+
+<strong>Demostración.</strong> La Parte 1 garantiza la inclusión $(\supseteq)$.
+Para la otra inclusión, $(\subseteq)$, sea $a \in (\mathfrak{p}^e)^c =
+f^{-1}(\langle f(\mathfrak{p}) \rangle)$. Se verá que $a \in \mathfrak{p}$.
+
+Dicho elemento cumple $f(a) \in \langle f(\mathfrak{p}) \rangle$ y por
+lo tanto, $f(a)$ debe ser de la forma $\sum_{i=1}^n b_i\,f(p_i)$ para
+ciertos $n \in \mathbb{N}$, $b_i \in B$, $p_i \in \mathfrak{p}$.
+Se tiene entonces:
+
+<ul>
+<li> $f(a) = \sum_{i=1}^n b_i\,f(p_i)$ 
+<li> $a/1 = \sum_{i=1}^n b_i\,(p_i/1)$ por definición de $f$
+<li> $a/1 = \sum_{i=1}^n (x_i/s_i)\,(p_i/1)$
+     considerando que cada $b_i \in B = S^{-1}A$ debe ser de la forma
+     $x_i/s_i$ para algunos $x_i \in A$ y $s_i \in S$.
+<li> $a/1 = \sum_{i=1}^n (x_i\,p_i)/s_i$ tomando el
+     producto en el anillo localizado $B = S^{-1}A$
+<li> $a/1 = \left(\sum_{i=1}^n x_i\,p_i\,\prod_{j=1,j\neq i}^n{s_j}\right) / \left(\prod_{i=1}^n s_i \right)$
+     sumando en el anillo localizado (tomando el producto de los $s_i$
+     como denominador común)
+<li> $\tilde{s}(a\,\left(\prod_{i=1}^n s_i \right) -
+      \left(\sum_{i=1}^n x_i\,p_i\,\prod_{j=1,j\neq i}^n{s_j}\right)) = 0$
+     para algún $\tilde{s} \in S$,
+     por definición de la relación de equivalencia con la que se
+     define el anillo localizado
+<li> Despejando, $a\,\left(\prod_{i=1}^n s_i \right)\,\tilde{s} =
+      \tilde{s}\,\left(\sum_{i=1}^n x_i\,p_i\,\prod_{j=1,j\neq i}^n{s_j}\right))$.
+     Notar que el lado derecho está en $\mathfrak{p}$ porque
+     es una combinación lineal de elementos $p_i \in \mathfrak{p}$.
+<li> De este modo se tiene que
+     $a\,\left(\prod_{i=1}^n s_i\right)\,\tilde{s}$ está en
+     $\mathfrak{p}$.
+</ul>
+
+Por ser $\mathfrak{p}$ primo, se tiene que $a \in \mathfrak{p}$
+o bien $s'' = \left(\prod_{i=1}^n s_i\right)\,\tilde{s} \in \mathfrak{p}$.
+Pero esto último no puede ser, porque $s'' \in S$, que por hipótesis
+tiene intersección vacía con $\mathfrak{p}$.
+De modo que $a \in \mathfrak{p}$, que es lo que se quería probar.
+
+<h2>Parte 3</h2>
+
+Dado un ideal $\mathcal{J} \subseteq B$ cualquiera, se tiene
+$\mathcal{J} = (\mathcal{J}^c)^e$.
+
+<strong>Demostración.</strong>
+
+Para la inclusión $(\subseteq)$, sea $j \in \mathcal{J} \subseteq B$. Entonces
+$j = a/s$ para algunos $a \in A$, $s \in S$.
+Tomando $f(s) \in B$, se puede considerar el elemento $f(s)\,j$,
+que está en $\mathcal{J}$ pues este es un ideal.
+Notar entonces que usando la definición de producto en el
+anillo localizado se tiene la cadena de igualdades:
+$f(s)\,j = (s/1)\,(a/s) = a/1 = f(a) \in \mathcal{J}$, y de aquí se deduce que
+$a \in f^{-1}(\mathcal{J}) = \mathcal{J}^c$.
+Basta ver ahora que $j \in \langle f(a) \rangle \subseteq
+\langle f(\mathcal{J}^c) \rangle = (\mathcal{J}^c)^e$. Esto es cierto pues
+$j = a/s = (a/1)\,(1/s) = f(a)\,(1/s) \in \langle f(a) \rangle$.
+
+Para la otra inclusión, $(\supseteq)$, sea $j \in (\mathcal{J}^c)^e =
+\langle f(\mathcal{J}^c) \rangle = \langle f(f^{-1}(\mathcal{J})) \rangle$.
+Como en general vale la inclusión $f(f^{-1}(\mathcal{J})) \subseteq
+\mathcal{J}$, se tiene en este caso que
+$j \in \langle f(f^{-1}(\mathcal{J})) \rangle
+\subseteq \langle \mathcal{J} \rangle = \mathcal{J}$.
+
+<h2>Parte 4</h2>
+
+Todo ideal $\mathcal{J}$ de $B$ puede generarse con elementos
+de la forma $a / 1$.
+
+<strong>Demostración.</strong> 
+Esto es consecuencia de la Parte 3,
+pues $\mathcal{J} = \langle f(\mathcal{J}^c) \rangle$
+donde $\mathcal{J}^c \subseteq A$, de modo que $\mathcal{J}$
+está generado por el conjunto $\{ a/1 \ |\ a \in \mathcal{J}^c \}$.
+
+<h2>Parte 5</h2>
+
+Están en correspondencia biunívoca:
+<ul>
+<li> Los ideales primos $\mathcal{I} \subseteq A$ que tienen intersección vacía con $S$.
+<li> Los ideales primos $\mathcal{J} \subseteq B$.
+</ul>
+
+<strong>Demostración.</strong>
+
+Sean:
+<ul>
+<li> $\mathcal{P}_A = \{ \mathcal{I} \subseteq A \ |\  \mathcal{I}\text{ ideal primo},
+                    \mathcal{I} \cap S = \emptyset \}$
+<li> $\mathcal{P}_B = \{ \mathcal{J} \subseteq B \ |\  \mathcal{J}\text{ ideal primo} \}$
+</ul>
+
+Tomar como biyección la función $\bullet^e : \mathcal{P}_A \to
+\mathcal{P}_B$
+que extiende un ideal de $A$ a uno de $B$,
+determinada por $\mathcal{I} \mapsto \mathcal{I}^e$.
+Como su inversa, tomar la función
+$\bullet^c : \mathcal{P}_B \to \mathcal{P}_A$
+que contrae un ideal de $B$ en uno de $A$,
+determinada por $\mathcal{J} \mapsto \mathcal{J}^c$.
+
+En el caso de que estén bien definidas,
+son efectivamente inversas porque, por la Parte 3,
+se tiene que $(\mathcal{J}^c)^e = \mathcal{J}$ para
+todo ideal $\mathcal{J} \subseteq B$, y por la Parte 2 se
+tiene que $(\mathcal{I}^e)^c = \mathcal{I}$ para todo ideal
+primo $\mathcal{I} \subseteq A$ que no interseca a $S$.
+
+Sólo resta ver que están bien definidas, es
+decir que los ideales en la imagen de $\bullet^e$
+son primos, y que los ideales en la imagen de $\bullet^c$
+son primos que no intersecan a $S$.
+
+<strong>Buena definición de $\bullet^e$.</strong>
+
+Sea $\mathcal{I} \subseteq A$ un ideal primo que no interseca
+a $S$. Entonces $\mathcal{I}^e$ es un ideal de $B$. Se verá
+que es primo. Sea $u\,v \in \mathcal{I}^e$. Se tiene entonces
+que $u\,v$ debe ser de la forma $\sum_{i=1}^n{b_i\,f(y_i)}$,
+para ciertos $n \in \mathbb{N}$, $b_i \in B$, $y_i \in \mathcal{I}$.
+
+Los $b_i$ son de la forma $x_i/s_i$ con $x_i \in A$ y $s_i \in S$.
+Usando la definición de $f$, y operando en el anillo localizado
+se tiene que:
+$u\,v = \sum_{i=1}^n{(x_i\,y_i) / s_i} =
+\left(\sum_{i=1}^n{ x_i\,y_i\,\prod_{j=1,j\neq i}^n{s_j} }\right) /
+\left(\prod_{i=1}^n{s_i}\right)$.
+
+Por otra parte, por ser $u$ y $v$ elementos de $B$, se escriben:
+$u = a_u/s_u$ y $v = a_v/s_v$ de tal forma que
+$a_u, a_v \in A$ y $s_u, s_v \in S$.
+En conclusión, se sabe que:
+$(a_u\,a_v) / (s_u\,s_v) =
+\left(\sum_{i=1}^n{ x_i\,y_i\,\prod_{j=1,j\neq i}^n{s_j} }\right) / \left(\prod_{i=1}^n{s_i}\right)$.
+Por la definición de igualdad en el anillo localizado, se tiene en
+consecuencia que debe existir un elemento $\tilde{s} \in S$ tal que:
+
+$a_u\,a_v \, \tilde{s}\, \left(\prod_{i=1}^n{s_i}\right)  =
+s_u\,s_v \, \tilde{s}\, \left(\sum_{i=1}^n{ x_i\,y_i\,\prod_{j=1,j\neq i}^n{s_j} }\right) $.
+
+Observar además que $y_i \in \mathcal{I}$, de modo que el lado
+derecho está en $\mathcal{I}$, por ser una combinación lineal de los
+$y_i$.
+Se sigue que el lado izquierdo, $a_u\,a_v\,s''$ está en el ideal
+$\mathcal{I}$, donde $s''$ es el producto de los elementos del
+conjunto multiplicativamente cerrado $S$.
+De esta manera, como $\mathcal{I}$ es primo, se tiene que
+$a_u \in \mathcal{I}$, o bien $a_v \in \mathcal{I}$, o bien $s'' \in \mathcal{I}$.
+El tercer caso no puede darse, ya que $I$ tiene intersección
+vacía con $S$. Así, $a_u \in \mathcal{I} \lor a_v \in \mathcal{I}$.
+
+Si se diera el caso $a_u \in \mathcal{I}$, se tendría que:
+<ul>
+<li> $a_u/1 \in f(\mathcal{I})$
+<li> $u = a_u / s_u \in \langle f(\mathcal{I}) \rangle$
+<li> $u \in I^e$
+</ul>
+Análogamente, si se da el caso $a_v \in \mathcal{I}$, se obtiene $v
+\in I^e$.
+Esto completa la prueba de que si $u\,v \in I^e$ entonces
+$u \in I^e \lor v \in I^e$, es decir, que el ideal extendido
+$I^e$ es primo.
+
+<strong>Buena definición de $\bullet^c$.</strong>
+
+Sea $\mathcal{J} \subseteq B$ un ideal primo. Se verá que
+$\mathcal{J}^c \subseteq A$ es un ideal primo que no interseca a $S$.
+Sea $u\,v \in \mathcal{J}^c = f^{-1}(\mathcal{J})$. Entonces
+$f(u\,v) \in \mathcal{J}$. Por ser $f$ morfismo de anillos,
+$f(u)\,f(v) \in \mathcal{J}$, y por ser $\mathcal{J}$ primo se
+tiene entonces que o bien $f(u) \in \mathcal{J}$ o bien $f(v) \in
+\mathcal{J}$. De aquí se concluye que o bien $u \in \mathcal{J}^c$
+o bien $v \in \mathcal{J}^c$.
+
+Resta ver que $\mathcal{J}^c$ no interseca a $S$. Suponer que
+existiera un $s \in \mathcal{J}^c \cap S$. Por estar en
+$\mathcal{J}^c = f^{-1}(\mathcal{J})$, se sabe que
+$f(s) = s/1 \in \mathcal{J}$. Pero además $s/1$ tiene inverso
+$1/s \in B$ porque $s \in S$. Por lo tanto $1 = (1/s)\,(s/1) \in
+\mathcal{J}$, por lo cual $\mathcal{J}$ debe ser todo el anillo
+$B$, lo cual contradice el hecho de que $\mathcal{J}$ era un
+ideal primo.
+
+<h2>Parte 6</h2>
+
+Sea $\mathcal{I}_S$ el conjunto de ideales de $A$ que no intersecan a
+$S$. Entonces:
+<ol>
+<li> Todo elemento $\mathcal{I} \in \mathcal{I}_S$ está contenido en un elemento
+     maximal de $\mathcal{I}_S$.
+<li> Todo elemento maximal de $\mathcal{I}_S$ es primo.
+</ol>
+
+En particular, dado $\mathcal{I} \subseteq A$ un ideal que no interseca a $S$,
+se puede concluir que está contenido en un ideal primo $\mathcal{P}
+\subseteq A$ que no interseca a $S$.
+
+<strong>Demostración.</strong>
+
+El ítem 1. se prueba mediante el lema de Zorn. Considerar el
+conjunto $Z \subseteq \mathcal{I}_S$ de aquellos ideales
+que contienen a $\mathcal{I}$. Entonces toda cadena
+de inclusiones tiene una cota superior, que es la unión de
+todos los elementos de la cadena. De este modo, por el lema
+de Zorn se concluye que $Z$ tiene un elemento maximal.
+Dicho elemento maximal también es maximal de $\mathcal{I}_S$,
+e incluye a $\mathcal{I}$.
+
+Para el ítem 2., sea $\mathcal{I}$ un ideal maximal de
+$\mathcal{I}_S$. Se verá que es primo. Para ello, considerar un
+producto $x\,y \in \mathcal{I}$ y suponer que ni $x$ ni $y$
+están en $I$.
+En ese caso, $\langle I, x \rangle$ contiene a $\mathcal{I}$, que es
+un elemento maximal de $\mathcal{I}_S$. Por lo tanto,
+$\langle I, x \rangle$ no puede estar en $\mathcal{I}_S$
+y debe contener un elemento $s_1 \in S$ que se escribe
+de la forma: $s_1 = i_1 + a_1\,x$ para ciertos $i_1 \in \mathcal{I}$,
+$a_1 \in A$. Análogamente, existe un $s_2 \in S$ que se escribe
+de la forma $s_2 = i_2 + a_2\,y$ para ciertos $i_2 \in \mathcal{I}$,
+$a_2 \in A$.
+
+Multiplicando, se tiene que:
+$s_1\,s_2 = (i_1 + a_1\,x)\,(i_2 + a_2\,y) = i_1\,(i_2 + a_2\,y) +
+a_1\,x\,i_2 + a_2\,x\,y$. Todos estos términos están en $\mathcal{I}$
+porque $x\,y \in \mathcal{I}$, lo que permite concluir que $s_1\,s_2 \in
+\mathcal{I}$.
+Esto implica que $\mathcal{I}$ tiene intersección no vacía con $S$, lo
+cual es absurdo ya que $\mathcal{I} \in \mathcal{I}_S$. De este modo, debe ocurrir necesariamente
+$x \in \mathcal{I} \lor y \in \mathcal{I}$.
+
+<h2>Parte 7</h2>
+
+Están en correspondencia biunívoca:
+<ul>
+<li> Los ideales $\mathcal{I} \subseteq A$ que tienen
+     intersección vacía con $S$ y no están contenidos
+     propiamente en ideales que tengan intersección vacía
+     con $S$.
+<li> Los ideales maximales $\mathcal{J} \subseteq B$.
+</ul>
+
+<strong>Demostración.</strong>
+
+De manera análoga a la Parte 5, se considera la biyección
+$\bullet^e$ con su inversa $\bullet^c$, y basta ver que están
+bien definidas para los conjuntos:
+
+<ul>
+<li> $\mathcal{M}_A = \{ \mathcal{I} \subseteq A \ |\
+                          \mathcal{I} \text{ ideal}
+                          ,\ \mathcal{I}\,\cap\,S = \emptyset
+                          ,\ \forall I' \text{ ideal de } A.\ I \subsetneq I'
+                           \implies I'\,\cap\, S \neq \emptyset \}$
+<li> $\mathcal{M}_B = \{ \mathcal{J} \subseteq B \ |\ \mathcal{J}\text{ ideal maximal} \}$
+</ul>
+
+Por empezar, observar que $\bullet^c$ y $\bullet^e$ son
+monótonas:
+<ul>
+<li> Dados dos ideales $\mathcal{I}, \mathcal{I}'$ de
+$A$ tales que $\mathcal{I} \subseteq \mathcal{I}'$,
+se tiene que $\mathcal{I}^e \subseteq \mathcal{I}'^e$.
+<li> Dados dos ideales $\mathcal{J}, \mathcal{J}'$ de
+$B$ tales que $\mathcal{J} \subseteq \mathcal{J}'$,
+se tiene que $\mathcal{J}^c \subseteq \mathcal{J}'^c$.
+</ul>
+
+<strong>Buena definición de $\bullet^e$.</strong>
+
+Dado un ideal $\mathcal{I} \in \mathcal{M}_A$, se quiere
+ver que $\mathcal{I}^e$ está en $\mathcal{M}_B$. 
+Suponer que $\mathcal{I}^e$ no fuera maximal. Entonces
+se tendría que $\mathcal{I}^e \subsetneq \mathcal{J} = (\mathcal{J}^c)^e \subsetneq B$
+para algún ideal $\mathcal{J}$ de $B$.
+
+Debe ocurrir $\mathcal{I} \subsetneq \mathcal{J}^c$ pues
+si fuera el caso $\mathcal{I} \supseteq \mathcal{J}^c$
+aplicando $\bullet^e$ se tendría que $\mathcal{I}^e \supseteq
+\mathcal{J}$, violando la inclusión ya conocida.
+Análogamente, debe ocurrir $\mathcal{J}^c \subsetneq A$,
+pues si no $\mathcal{J} \supseteq B$.
+Además, $\mathcal{J}^c$ tiene intersección vacía con $S$, ya que
+de lo contrario $\mathcal{J}$ contendría un elemento de la forma
+$s/1$ con $s \in S$, y por lo tanto al $1$, con lo que sería todo
+el anillo $B$.
+
+Se concluye entonces que $\mathcal{I} \subsetneq \mathcal{J}^c
+\subsetneq A$, lo cual es absurdo, porque $\mathcal{I}$ no puede
+estar contenido propiamente en un ideal que tenga intersección
+vacía con $S$. Entonces $\mathcal{I}^e$ es maximal.
+
+<strong>Buena definición de $\bullet^c$.</strong>
+
+Dado un ideal $\mathcal{J} \in \mathcal{M}_B$, se quiere ver
+que $\mathcal{J}^c$ está en $\mathcal{M}_A$.
+El ideal $\mathcal{J}$ es primo, de modo que por la Parte 5 se sabe ya
+que $\mathcal{J}^c$ es primo y que tiene intersección vacía con $S$.
+Basta ver que $\mathcal{J}^c$ es maximal dentro de los que no
+intersecan a $S$. Para ello, suponer que $\mathcal{J}^c$ no fuera maximal.
+Entonces se tendría que
+$\mathcal{J}^c \subsetneq \mathcal{I} \subsetneq A$, para
+algún ideal $\mathcal{I}$ de $A$ que tenga intersección
+vacía con $S$.
+
+Por la Parte 6, se tiene que $\mathcal{I}$ está incluido en
+un ideal primo $\mathcal{P} \subseteq A$ que no interseca a $S$.
+En particular, por ser $\mathcal{P}$ un ideal primo que no
+interseca a $S$, por la Parte 2 se sabe ya que $(\mathcal{P}^e)^c =
+\mathcal{P}$. De este modo, lo que se tiene es que:
+$\mathcal{J}^c \subsetneq \mathcal{P} \subsetneq A$.
+Extendiendo mediante $\bullet^e$ se obtiene:
+$\mathcal{J} \subseteq \mathcal{P}^e \subseteq B$.
+Además, ambas inclusiones
+deben ser estrictas. De lo contrario, si $\mathcal{J} \supseteq
+\mathcal{P}^e$, contrayendo mediante $\bullet^c$ se tendría
+que $\mathcal{J}^c \supseteq \mathcal{P}$, lo que contradice las
+desigualdades ya conocidas. Análogamente, no puede pasar que
+$\mathcal{P}^e \supseteq B$. Por lo tanto, $\mathcal{P}^e$
+es un ideal situado entre $\mathcal{J}$ y $B$. Esto es
+absurdo porque $\mathcal{J}$ era maximal por hipótesis,
+con lo que $\mathcal{J}^c$ debe ser maximal dentro de
+los ideales que no intersecan a $S$, y en consecuencia
+$\mathcal{J}^c \in \mathcal{M}_A$.
+
+<h2>Parte 8</h2>
+
+Sea $S = A \setminus \mathfrak{p}$ para cierto ideal primo
+$\mathfrak{p} \subseteq A$. Entonces el único ideal maximal
+de $B$ es $\mathfrak{p}^e$.
+
+<strong>Demostración.</strong>
+Sea $\mathcal{J}$ un ideal maximal de $B$. Por la Parte 7, esto es
+decir que $\mathcal{J}^c \subseteq A$ es un ideal maximal dentro de
+los que no intersecan a $S$. En particular,
+$\mathcal{J}^c \cap (A \setminus \mathfrak{p}) = \emptyset$,
+y por lo tanto $\mathcal{J}^c \subseteq \mathfrak{p}$.
+Además, $\mathfrak{p}$ no interseca a $S$ por definición,
+y como $\mathcal{J}^c$ es maximal dentro de los que no intersecan
+a $S$, se tiene entonces $\mathcal{J}^c = \mathfrak{p}$.
+Aplicando $\bullet^e$, se concluye $\mathcal{J} = \mathfrak{p}^e$.
+

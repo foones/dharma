@@ -1,0 +1,60 @@
+[title Módulo es Noetheriano sii núcleo e imagen son Noetherianos]
+[category Álgebra 2]
+[tags módulo,noetheriano,núcleo,imagen,morfismo]
+
+Sean $M, N$ $A$-módulos y sea $f : M \to N$ un morfismo. Entonces son equivalentes:
+<ol>
+<li> $M$ es Noetheriano.
+<li> $\ker f$ y ${\mathop{\rm im}} f$ son Noetherianos.
+</ol>
+
+<strong>Demostración.</strong>
+
+$(\Rightarrow)$ Un módulo es Noetheriano sii
+<a href="/noetheriano-sii-submodulos-finitamente-generados">todos sus
+submódulos son finitamente generados</a>. En particular, si $M$ es
+Noetheriano, y $N \subseteq M$ es un submódulo, $N$ es Noetheriano.
+Usando este hecho, se concluye que el núcleo debe
+ser Noetheriano, ya que $\ker f$ es un submódulo de $M$.
+
+Por otra parte, sea un submódulo $S \subseteq {\mathop{\rm im}} f$,
+y considerar su preimagen $T := f^{-1}(S)$. Dicho $T$ es un submódulo
+de $M$ y por lo tanto finitamente generado. Aplicando $f$ se tiene que
+$f(T) = f(f^{-1}(S))$. En general
+vale la inclusión $f(f^{-1}(S)) \subseteq S$. En este caso además se
+cumple que
+$S \subseteq f(f^{-1}(S))$ porque $S \subseteq {\mathop{\rm im}} f$.
+De este modo, $f(T) = f(f^{-1}(S)) = S$. Además, como $T$ es finitamente
+generado, tiene algún sistema de generadores $\mathcal{G}$ finito. Entonces $f(\mathcal{G})$
+es finito y es un sistema de generadores de $S$. Así, se concluye
+que todo submódulo $S$ de ${\mathop{\rm im}} f$ es
+finitamente generado, y que ${\mathop{\rm im}} f$ es Noetheriano.
+
+$(\Leftarrow)$ Sea un submódulo $S \subseteq M$.
+Se tiene que $f(S)$ es finitamente generado, ya que
+$f(S)$ es un submódulo de ${\mathop{\rm im}} f$, que es Noetheriano
+por hipótesis.
+Considerar entonces un sistema de generadores
+finito para $f(S)$, de tal modo que $f(S) = \langle f(s_1), \hdots, f(s_n) \rangle$
+con $s_i \in S$ para todo $i \in \{1, \hdots, n\}$.
+
+Sea ahora $x \in S$. Por lo anterior, se sabe que $f(x)$ se escribe
+como combinación lineal de los $f(s_i)$, o sea que es de la forma:
+$f(x) = \sum_{i=0}^n{a_i\,f(s_i)}$ para ciertos $a_i \in A$.
+Usando que $f$ es un morfismo
+de módulos, se reagrupa:
+$f(x - \sum_{i=0}^n{a_i\,s_i}) = 0$, concluyendo que el argumento está
+en el núcleo de $f$, es decir:
+$x - \sum_{i=0}^n{a_i\,s_i} \in \ker{f}$.
+
+A su vez, el núcleo es finitamente generado, $\ker{f} = \langle t_1,
+\hdots, t_m \rangle$, y por lo tanto
+$x - \sum_{i=0}^n{a_i\,s_i} = \sum_{j=0}^m{b_j\,t_j}$, para ciertos
+$b_j \in A$. Despejando, se concluye que todo $x \in S$ se escribe
+como $x = \sum_{i=0}^n{a_i\,s_i} + \sum_{j=0}^m{b_j\,t_j}$, con lo
+cual $x \in \langle s_1, \hdots, s_n, t_1, \hdots, t_m \rangle$.
+De este modo, $\langle s_1, \hdots, s_n, t_1, \hdots, t_m \rangle$
+es un sistema de generadores finito para $S$,
+y entonces $S$ es finitamente generado. Se tiene así que $M$ es
+Noetheriano.
+

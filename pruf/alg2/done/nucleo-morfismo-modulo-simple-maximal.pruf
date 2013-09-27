@@ -1,0 +1,35 @@
+[title Núcleo de morfismo sobre módulo simple es maximal]
+[category Álgebra 2]
+[tags núcleo,epimorfismo,módulo,anillo,simple,maximal,cuerpo]
+
+Sea $M$ un $A$-módulo simple y $\varphi : A \to M$ un
+morfismo de $A$-módulos.
+Entonces $\mathfrak{m} = \ker\varphi$ es un ideal maximal de $A$.
+
+En particular, si $\varphi$ es un epimorfismo,
+$M$ es isomorfo como $A$-módulo a un cuerpo $A / \mathfrak{m}$.
+
+<strong>Demostración.</strong>
+Para ver que $\mathfrak{m}$ es maximal, se verá que
+$\mathfrak{m} + \langle x\rangle = A$ para todo elemento
+del anillo $x \not\in \mathfrak{m}$.
+
+Sea entonces un elemento $x \in A$ tal que $x \not\in \mathfrak{m} =
+\ker\varphi$. Entonces $\varphi(x) \neq 0$, por lo que
+$\langle \varphi(x) \rangle \subseteq M$ es un submódulo no nulo. Como $M$ es simple,
+$\langle \varphi(x) \rangle = M$.
+
+En particular, $\varphi(1) \in \langle \varphi(x) \rangle$, con lo
+cual $\varphi(1) = \lambda\,\varphi(x)$ para
+cierto $\lambda \in A$.
+Escribiendo entonces $1 = (1 - \lambda\,x) + \lambda\,x$,
+se tiene que:
+<ul>
+<li> $1 - \lambda\,x \in \mathfrak{m}$, ya que
+     $\varphi(1 - \lambda\,x) = \varphi(1) - \lambda\,\varphi(x) = 0$
+<li> $\lambda\,x \in \langle x \rangle$
+</ul>
+De este modo, $1 \in \mathfrak{m} + \langle x \rangle$, y por lo tanto
+$A = \mathfrak{m} + \langle x \rangle$, con lo cual $\mathfrak{m}$
+es maximal.
+

@@ -1,0 +1,134 @@
+[title Módulo proyectivo sii sumando directo de un libre]
+[category Álgebra 2]
+[tags módulo,proyectivo,suma directa,libre]
+
+Sea $P$ un $A$-módulo. Entonces $P$ es proyectivo si y sólo
+es isomorfo a un sumando directo de un módulo libre.
+Es decir, es proyectivo si y sólo si existe un $A$-módulo
+$L$ libre de la forma
+$L = \tilde{P} \oplus \tilde{Q}$ con $P \simeq \tilde{P}$.
+
+<strong>Demostración.</strong>
+
+($\Leftarrow$)
+Para simplificar la notación, considerar primero el caso
+$L = P \oplus Q$; i.e., $P$ es un sumando directo de un libre,
+sin isomorfismos de por medio.
+Se cuenta con un epimorfismo proyección ($\pi : P \oplus Q \to P$)
+y con un monomorfismo inclusión ($\iota : P \to P \oplus Q$).
+
+Se quiere ver que $P$ es proyectivo. Para ello, lo que se
+debe ver es que cada vez que se tiene una situación como
+la siguiente, para $A$-módulos $M$, $N$ cualesquiera,
+un epimorfismo $f : M \to N$ cualquiera, y un
+morfismo $\varphi : P \to N$ cualquiera,
+existe un morfismo $\psi : P \to M$ que hace conmutar
+el diagrama:
+
+%%{
+\xymatrix{
+ & & P \ar@{-->}[lld]_{\exists \psi} \ar[d]^{\varphi} \\
+M \ar[rr]_{f} &  & N \ar[r] & 0
+}
+%%}
+
+Agregando el módulo $L = P \oplus Q$ al diagrama,
+se tiene:
+
+%%{
+\xymatrix{
+  P \oplus Q \ar[rr]_{\pi} & & P \ar@{-->}@/_1pc/[ll]_{\iota} \ar[d]^{\varphi} \\
+  M \ar[rr]_{f} &  & N \ar[r] & 0
+}
+%%}
+
+Mirando sólo la situación relativa a $P \oplus Q$:
+
+%%{
+\xymatrix{
+  P \oplus Q \ar@{-->}[d]^{\exists \alpha} \ar[rrd]^{\varphi \cdot \pi} \\
+  M \ar[rr]_{f} &  & N \ar[r] & 0
+}
+%%}
+
+Como <a href="/modulo-libre-es-proyectivo">todo módulo libre es proyectivo</a>
+y $P \oplus Q$ es libre, existe entonces un morfismo
+$\alpha : P \oplus Q \to M$ que hace conmutar el diagrama.
+Resumiendo, se tiene entonces:
+
+%%{
+\xymatrix{
+  P \oplus Q \ar@{-->}[d]_{\alpha} \ar[rr]_{\pi} & & P \ar@{-->}@/_1pc/[ll]_{\iota} \ar[d]^{\varphi} \\
+  M \ar[rr]_{f} &  & N \ar[r] & 0
+}
+%%}
+
+Finalmente, el morfismo $\psi : P \to M$ requerido se construye
+tomando $\psi := \alpha \cdot \iota$:
+
+%%{
+\xymatrix{
+  & & P \ar@{-->}[lld]_{\psi = \alpha \cdot \iota} \ar[d]^{\varphi} \\
+  M \ar[rr]_{f} &  & N \ar[r] & 0
+}
+%%}
+
+En efecto, así definido, $\psi$ hace conmutar el diagrama pues
+$f(\alpha(\iota(x))) = f(\alpha(x \oplus 0)) = \varphi(\pi(x \oplus
+0)) = \varphi(x)$.
+
+Por último, notar que si $P$ es isomorfo a un sumando directo
+$\tilde{P}$ de un $A$-módulo libre $L = \tilde{P} \oplus \tilde{Q}$,
+por el argumento de arriba se tiene que $\tilde{P}$ es proyectivo,
+y por lo tanto $P$ también lo es (pues la propiedad de ser proyectivo
+se preserva vía isomorfismos).
+
+($\Rightarrow$)
+Sea $P$ un módulo proyectivo. Se quiere ver que $P$ es isomorfo
+a un sumando directo de un módulo libre. Considerar algún conjunto
+de índices $I$ tal que existe un epimorfismo
+$f : A^{(I)} \twoheadrightarrow P$ que va desde algún módulo libre
+$A^{(I)}$ al módulo proyectivo $P$.
+(Observar que siempre es posible construir un epimorfismo de esta
+forma; tomar por ejemplo el morfismo $A^{(P)} \to P$ determinado por
+$e_p \mapsto p$).
+
+Se tiene entonces la siguiente situación:
+
+%%{
+\xymatrix{
+ & P \ar@{-->}[ld]_{\exists \psi} \ar[rd]^{id_P} \\
+A^{(I)} \ar[rr]^{f} &  & P \ar[r] & 0
+}
+%%}
+
+Como $P$ es proyectivo, existe un morfismo $\psi : P \to A^{(I)}$ que
+hace conmutar el diagrama, i.e. $f \cdot \psi = id_P$.
+
+<em>Afirmación.</em> $A^{(I)} = {\mathop{\rm{im}}}(\psi) \oplus \ker(f)$.
+
+<ul>
+<li> La suma es directa porque si $x \in {\mathop{\rm{im}}}(\psi) \cap \ker(f)$,
+por estar en la imagen de $\psi$ se tiene que
+$x = \psi(y)$ para algún $y \in P$. Como además $f$ es un
+epimorfismo y el diagrama conmuta, $x = \psi(f(x))$.
+Pero $x \in \ker(f)$, por lo que $x = \psi(0) = 0$.
+
+<li> Por otro lado, dado un elemento $x \in A^{(I)}$,
+considerar $x - \psi(f(x))$. Aplicando $f$, se tiene
+que $f(x - \psi(f(x))) = f(x) - f(\psi(f(x))) = f(x) - f(x) = 0$,
+ya que $f \cdot \psi = id_P$. Por lo tanto
+$x - \psi(f(x)) \in \ker(f)$. Así, todo elemento
+$x \in A^{(I)}$ se escribe de la forma
+$x = \underbrace{x - \psi(f(x))}_{\in \ker(f)} +
+\underbrace{\psi(f(x))}_{\in {\mathop{\rm{im}}}(\psi)}$.
+De este modo, $A^{(I)} = {\mathop{\rm{im}}}(\psi) + \ker(f)$.
+</ul>
+
+Entonces se tiene efectivamente que $A^{(I)} = {\mathop{\rm{im}}}(\psi) \oplus \ker(f)$.
+Para terminar, se verá que $P \simeq {\mathop{\rm{im}}}(\psi)$,
+concluyendo así que $P$ es isomorfo a un sumando directo de un libre.
+Notar para ello que $\psi : P \to {\mathop{\rm{im}}}(\psi)$ es un
+epimorfismo, y además es un monomorfismo, pues si $\psi(x) = 0$
+entonces $f(\psi(x)) = x = 0$.
+

@@ -1,0 +1,28 @@
+[title Anillo Noetheriano sii módulos finitamente generados Noetherianos]
+[category Álgebra 2]
+[tags anillo,noetheriano,módulo,finitamente generado]
+
+Sea $A$ un anillo. Entonces $A$ es Noetheriano si y sólo si todo
+$A$-módulo finitamente generado es Noetheriano.
+
+<strong>Demostración.</strong>
+
+$(\Rightarrow)$ Sea $M$ un módulo finitamente generado. Sea
+$\{x_1, \hdots, x_n\}$ un sistema de generadores de $M$,
+y sea $\{e_1, \hdots, e_n\}$ la base canónica de $A^n$.
+Considerar el morfismo $\varphi : A^n \to M$ determinado
+unívocamente por las imágenes de cada elemento de la base:
+$e_i \mapsto x_i$. Es un epimorfismo, porque $\mathop{\rm{im}}(\varphi)$
+incluye un sistema de generadores de $M$.
+
+El anillo $A$ es Noetheriano por hipótesis. Entonces
+$A^n = \bigoplus_{i=1}^{n}{A}$
+<a href="/noetheriano-sii-suma-directa-noetheriano">también es Noetheriano</a>.
+Además, $\varphi$ es un morfismo de $A^n$ cuya imagen es $M$.
+<a href="/done/noetheriano-sii-nucleo-imagen-noetherianos">Por lo tanto</a>,
+$M$ es Noetheriano.
+
+$(\Leftarrow)$ El anillo $A$ es en particular un $A$-módulo. Además,
+$A$ es finitamente generado, pues $\langle 1 \rangle$ es un sistema de
+generadores. Entonces $A$ es Noetheriano.
+

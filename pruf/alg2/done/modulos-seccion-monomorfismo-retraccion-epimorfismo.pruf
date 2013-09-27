@@ -1,0 +1,80 @@
+[title Secciones/monomorfismos y retracciones/epimorfismos en módulos]
+[category Álgebra 2]
+[tags módulo,sección,retracción,monomorfismo,epimorfismo]
+
+Sean $f : M \to N$ un morfismo de $A$-módulos.
+Entonces:
+<ol>
+<li> $f$ es sección sii
+     $f$ es monomorfismo e ${\mathop{\rm{im}}}(f)$ es un sumando directo de $N$
+<li> $f$ es retracción sii
+     $f$ es epimorfismo y $\ker(f)$ es un sumando directo de $M$
+</ol>
+
+<strong>Demostración.</strong>
+
+Las demostraciones de 1. y 2. son duales:
+
+<ol>
+<li>
+
+($\Rightarrow$)
+Sea $s : M \to N$ una sección.
+Por empezar, toda sección es un monomorfismo:
+sea $r : N \to M$ una inversa a izquierda, $r \cdot s = id_M$.
+Dado $x \in M$, si se tiene que $s(x) = 0$ entonces $x = r(s(x)) = r(0) = 0$.
+
+Además,
+<a href="/descomposicion-modulo-nucleo-seccion-imagen-retraccion">en esta situación</a>,
+$N = \ker(r) \oplus {\mathop{\rm{im}}}(s)$.
+
+($\Leftarrow$)
+Recíprocamente, sea $s : M \to N$ un monomorfismo tal que
+$N = {\mathop{\rm{im}}}(s) \oplus N'$.
+Observar que restringiendo el codominio de la aplicación
+$s$ se tiene una nueva aplicación $\tilde{s} : M \to {\mathop{\rm{im}}}(s)$
+que sigue siendo un monomorfismo y además es un epimorfismo.
+Como, entonces, es un isomorfismo, tiene una inversa
+$\tilde{s}^{-1} : {\mathop{\rm{im}}}(s) \to M$.
+
+Considerar la proyección $\pi : N \to {\mathop{\rm{im}}}(s)$.
+Se afirma entonces que $r := \tilde{s}^{-1} \cdot \pi$ es la inversa a
+izquierda buscada. Esto es porque
+$s(x) = \tilde{s}(x) \in {\mathop{\rm{im}}}(s)$, con lo cual
+$r(s(x)) = \tilde{s}^{-1}(\pi(s(x))) = \tilde{s}^{-1}(s(x)) = x$. 
+
+<li>
+
+($\Rightarrow$)
+Sea $r : M \to N$ una retracción.
+Por empezar, toda retracción es un epimorfismo:
+sea $s : N \to M$ una inversa a derecha, $r \cdot s = id_N$.
+Dado $x \in N$, se tiene que $x = r(s(x))$ y por lo tanto
+$x \in {\mathop{\rm{im}}}(r)$.
+
+Además, como en el caso anterior,
+<a href="/descomposicion-modulo-nucleo-seccion-imagen-retraccion">en esta situación</a>,
+$M = \ker(r) \oplus {\mathop{\rm{im}}}(s)$.
+
+($\Leftarrow$)
+Sea ahora $r : M \to N$ un epimorfismo y suponer que
+$M = \ker(r) \oplus M'$.
+Restringiendo el dominio de la aplicación $r$,
+se obtiene $\tilde{r} : M' \to N$, que
+sigue siendo un epimorfismo.
+Además, $M' \cap \ker(r) = \{0\}$, y por lo tanto se tiene también que
+$\tilde{r}$ es un monomorfismo. Como es un isomorfismo,
+tiene una inversa $\tilde{r}^{-1} : N \to M'$.
+
+Considerar la inclusión $\iota : M' \to M$. Tomando
+$s := \iota \cdot \tilde{r}^{-1}$, se afirma que
+esta es la inversa a derecha buscada. Esto es porque
+dado $x \in N$, se tiene que
+$r \cdot s(x) = r(\iota(\tilde{r}^{-1}(x)))$.
+Como $\iota(\tilde{r}^{-1}(x))$ está en $M'$,
+$r$ coincide con $\tilde{r}$ en dicho punto,
+de modo que
+$r(\iota(\tilde{r}^{-1}(x))) = \tilde{r}(\tilde{r}^{-1}(x)) = x$,
+que es lo buscado.
+</ol>
+

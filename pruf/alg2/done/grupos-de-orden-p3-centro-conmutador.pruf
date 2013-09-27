@@ -1,0 +1,39 @@
+[title Grupos de orden cubo de un primo]
+[category Álgebra 2]
+[tags grupo,orden,cubo,primo]
+
+Sea $p$ un primo y $G$ un grupo no abeliano de orden $p^3$.
+Entonces su centro $\mathcal{Z}(G)$ es igual al conmutador $[G;G]$.
+
+<strong>Demostración.</strong>
+Por ser $G$ un $p$-grupo <a href="/p-grupo-tiene-centro-no-trivial">tiene centro no trivial</a>.
+Además $\mathcal{Z}(G)$ no es todo el grupo $G$, pues $G$ no es
+abeliano. Entonces, los posibles órdenes de $\mathcal{Z}(G)$
+son $\{p, p^2\}$.
+
+Se afirma que $\mathcal{Z}(G)$ debe ser de orden $p$.
+Si $\mathcal{Z}(G)$ fuera de orden $p^2$, el cociente $G/\mathcal{Z}(G)$
+estaría definido, ya que $\mathcal{Z}(G)$ es siempre un subgrupo
+normal, y tendría orden $p$, de modo que $G/\mathcal{Z}(G) \simeq
+\mathbb{Z}_p$. Este cociente es cíclico, de modo que $G$
+<a href="/grupo-abeliano-si-cociente-centro-ciclico">es abeliano</a>,
+lo cual es una contradicción, que viene de suponer que
+$|\mathcal{Z}(G)| \neq p$, y por lo tanto $|\mathcal{Z}(G)| \neq p$.
+
+Considerando nuevamente el cociente, $G/\mathcal{Z}(G)$, se
+tiene que es de orden $p^2$, y consiguientemente pueden darse
+dos casos:
+<ul>
+<li> $G / \mathcal{Z}(G) \simeq \mathbb{Z}_{p^2}$
+<li> $G / \mathcal{Z}(G) \simeq \mathbb{Z}_p \times \mathbb{Z}_p$
+</ul>
+En cualquier caso, el cociente es abeliano, de modo que el conmutador
+<a href="/cociente-abeliano-conmutador">está incluido</a>
+en el grupo por el cual se está cocientando, i.e.
+$[G;G] \subseteq \mathcal{Z}(G)$.
+
+Finalmente, notar que $[G;G]$ es un subgrupo de $G$. No es el subgrupo
+trivial, pues esto implicaría que $G$ es abeliano. De modo que es un
+subgrupo de orden al menos $p$, incluido en $\mathcal{Z}(G)$, que es
+de orden $p$. De este hecho se deduce que $\mathcal{Z}(G) = [G;G]$.
+

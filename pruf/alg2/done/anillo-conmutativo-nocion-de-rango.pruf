@@ -1,0 +1,37 @@
+[title Anillo conmutativo tiene noción de rango]
+[category Álgebra 2]
+[tags anillo,conmutativo,rango,morfismo]
+
+Sean $A, B$ dos anillos, tales que $B$ tiene noción de rango. Si
+existe un morfismo de anillos $f : A \to B$, entonces $A$ tiene noción
+de rango. 
+
+<strong>Demostración.</strong>
+Se usará el hecho de que un anillo $A$ tiene noción de rango si y sólo si cada vez que
+se tienen matrices $M_1 \in A^{n \times m}$ y $M_2 \in A^{m \times n}$
+tales que $M_1\,M_2 = Id_n$ y $M_2\,M_1 = Id_m$, se tiene también que
+$n = m$. (<a href="/nocion-de-rango">Demostración</a> en la Parte 3).
+
+Se quiere ver que $A$ tiene noción de rango. Sean entonces
+$M_1 \in A^{n \times m}$ y $M_2 \in A^{m \times n}$ tales que
+$M_1\,M_2 = Id_n \in M_n(A)$ y $M_2\,M_1 = Id_m \in M_m(A)$.
+
+Aplicando $f$ a cada entrada de las matrices, se tiene que:
+$f(M_1\,M_2) = f(M_1)\,f(M_2) = f(Id_n) = Id_n \in M_n(B)$.
+De modo similar,
+$f(M_2\,M_1) = f(M_2)\,f(M_1) = f(Id_m) = Id_m \in M_m(B)$.
+Por lo tanto $f(M_1) \in B^{n\times m}$ y $f(M_2) \in B^{m \times n}$
+son matrices que cumplen con lo enunciado. Como $B$ tiene noción de
+rango, resulta $n = m$. Con esto se concluye que $A$ también tiene
+noción de rango.
+
+<strong>Corolario.</strong> Si un anillo $A$ tiene un morfismo en un
+anillo de división, entonces $A$ tiene noción de rango.
+
+<strong>Corolario.</strong> En particular, todo anillo conmutativo $A$
+tiene noción de rango. Para ello, considerar $\mathfrak{m}$ un ideal
+maximal de $A$. Así, la proyección al cociente $\pi : A \to A /
+\mathfrak{m}$ es un morfismo de $A$ en un cuerpo.
+
+<strong>Corolario.</strong> Si $\mathbb{Z}^n = \mathbb{Z}^m$, entonces
+$n = m$.

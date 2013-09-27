@@ -1,0 +1,25 @@
+[title Módulo se descompone como núcleo de una sección más imagen de una retracción]
+[category Álgebra 2]
+[tags módulo,núcleo,sección,imagen,retracción,suma directa]
+
+Sean $M$ y $N$ dos $A$-módulos y
+$r : M \to N$, $s : N \to M$ tales que $r\,s = id_N$.
+Entonces $M = \ker(r) \oplus {\mathop{\rm{im}}}(s)$.
+
+<strong>Demostración.</strong>
+
+<ul>
+<li> Para ver que la suma es directa, sea $x \in \ker(r) \cap
+{\mathop{\rm{im}}}(s)$. Entonces existe $y \in N$ tal que
+$x = s(y)$. Por lo tanto $r(x) = r(s(y)) = 0$.
+Pero $r \cdot s = id_N$, de modo que $y = 0$,
+y entonces $x = s(0) = 0$.
+<li> Para ver que la suma da todo $M$, considerar un elemento
+cualquiera $x \in M$.
+Observar que $x - s(r(x)) \in \ker(r)$ pues, usando que
+$r\cdot s = id_N$, se tiene que:
+$r(x - s(r(x))) = r(x) - r(s(r(x))) = r(x) - r(x) = 0$.
+Entonces $x$ se escribe como $\underbrace{x - s(r(x))}_{\in \ker(r)} +
+\underbrace{s(r(x))}_{\in {\mathop{\rm{im}}}(s)}$.
+</ul>
+

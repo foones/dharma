@@ -1,0 +1,49 @@
+[title Monomorfismo sobre módulo Artiniano es isomorfismo]
+[category Álgebra 2]
+[tags endomorfismo,módulo,artiniano,epimorfismo,monomorfismo,isomorfismo]
+
+Sea $M$ un $A$-módulo Artiniano y $f \in {\rm{\mathop{End}}}_A(M)$ un
+endomorfismo. Si $f$ es un monomorfismo, entonces es un isomorfismo.
+
+<strong>Demostración.</strong> Basta ver que $f$ es un epimorfismo.
+Suponer que no lo fuera. Se verá que para todo $n \in \mathbb{N}$
+existen elementos $x_n \in M$ tales que
+$x_n \in {\rm{\mathop{Im}}}(f^{n-1}))$
+pero $x_n \not\in {\rm{\mathop{Im}}}(f^{n})$.
+
+Por inducción en $n$. Si $n = 1$, como $f$ no es un epimorfismo,
+existe un $x_1 \not\in {\rm{\mathop{Im}}}(f)$.
+
+Para el caso $n + 1$, considerar por hipótesis inductiva un elemento
+$x_n$ que cumpla con las propiedades requeridas.
+Tomar $x_{n+1} = f(x_n)$. Por hipótesis inductiva,
+$x_n \in {\rm{\mathop{Im}}}(f^{n-1})$, es decir, existe un $y \in M$ tal
+que $x_n = f^{n-1}(y)$.
+Por lo tanto $x_{n+1} = f(x_n) = f(f^{n-1}(y)) = f^n(y)$, de modo que
+$x_{n+1} \in {\rm{\mathop{Im}}}(f^n)$.
+
+Por otra parte,
+$x_{n+1}$ no puede ser de la forma $f^{n+1}(y)$, para ningún
+posible valor de $y \in M$, ya que
+en ese caso se tendría que $f^{n+1}(y) = f(x)$ y, como
+$f$ es un monomorfismo, se tendría que $f^{n}(y) = x$.
+Esto no puede ocurrir pues, por la segunda propiedad de la
+hipótesis inductiva, $x_n \not\in {\rm{\mathop{Im}}}(f^n)$.
+Así, se concluye que $x_{n+1} \not\in {\rm{\mathop{Im}}}(f^{n+1})$.
+
+En general se verifica la inclusión ${\rm{\mathop{Im}}}(f^n) \supseteq
+{\rm{\mathop{Im}}}(f^{n+1})$.
+Además, por lo ya probado, se tienen elementos $x_n$ con $n \in \mathbb{N}$
+tales que $x_n \in {\rm{\mathop{Im}}}(f^{n-1})$ pero $x_n \not\in
+{\rm{\mathop{Im}}}(f^n)$. Es decir, para todo $n \in \mathbb{N}$ se tiene que
+${\rm{\mathop{Im}}}(f^n) \supsetneq {\rm{\mathop{Im}}}(f^{n + 1})$.
+Entonces, la siguiente:
+${\rm{\mathop{Im}}}(f) \supsetneq {\rm{\mathop{Im}}}(f^2) \supsetneq
+{\rm{\mathop{Im}}}(f^3) \supsetneq \hdots$
+es una cadena decreciente de submódulos de $M$ que no se estaciona.
+Esto es absurdo, pues contradice el hecho de que $M$ es Artiniano,
+de modo que $f$ es un epimorfismo.
+
+De manera dual, si $M$ es un $A$-módulo Noetheriano y $f$
+un epimorfismo, entonces <a href="/epimorfismo-noetheriano">es un isomorfismo</a>.
+

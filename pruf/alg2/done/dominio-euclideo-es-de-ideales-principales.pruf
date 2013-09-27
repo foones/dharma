@@ -1,0 +1,21 @@
+[title Dominio euclídeo es de ideales principales]
+[category Álgebra 2]
+[tags anillo,dominio,euclídeo,ideal,principal]
+
+Sea $A$ un anillo conmutativo. Si $A$ es un dominio euclídeo, entonces
+$A$ es de ideales principales.
+
+<strong>Demostración.</strong> Sea
+$\varphi : A \setminus \{0\} \to \mathbb{N}_0$
+una norma asociada a $A$ como dominio euclídeo. Sea $I$
+un ideal de $A$. Por buen ordenamiento de $\mathbb{N}_0$, existe algún
+elemento $a \in I$ tal que $\varphi$ alcanza su mínimo valor en $a$,
+es decir: $\varphi(a) \leq \varphi(b)$ para todo $b \in I$. Se verá
+que todos los elementos de $I$ deben ser múltiplos de $a$, concluyendo
+que $I = \langle a \rangle$ es principal.
+
+Sea $b \in I$. Por ser $A$ un dominio euclídeo, aplicando el algoritmo
+de división se tiene que existen $q, r \in A$ tales que $b = q\,a + r$,
+con $r = 0$ o bien $\varphi(r) < \varphi(a)$. No puede darse este
+último caso pues $\varphi$ alcanzaba su mínimo en $a$, con lo cual
+$r = 0$ y $b$ es múltiplo de $a$.
