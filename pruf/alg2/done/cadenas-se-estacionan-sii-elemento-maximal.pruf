@@ -1,0 +1,34 @@
+[title Cadenas se estacionan sii elemento maximal]
+[category Álgebra 2]
+[tags cadena,poset,maximal]
+
+Sea $(A, <)$ un conjunto parcialmente ordenado. Entonces son
+equivalentes:
+<ol>
+<li> Toda cadena creciente $a_1 \leq a_2 \leq \hdots$ se estaciona.
+     Es decir, existe $n_0 \in \mathbb{N}$ tal que $a_n = a_{n_0}$
+     para todo $n \geq n_0$.
+<li> Todo subconjunto no vacío de $A$ tiene un elemento maximal.
+     Es decir, para todo $\emptyset \neq  A' \subseteq A$ existe $a \in A'$ tal que
+     para todo $b \in A'$ tal que $a \leq b$ se tiene $a = b$.
+</ol>
+
+<strong>Demostración.</strong>
+
+$(1) \Rightarrow (2)$. Sea $A'$ un subconjunto no vacío de $A$
+y suponer que no tuviera elemento maximal.
+Sea $a_1 \in A'$. Como $a_1$ no es maximal, existe $a_2 \in A'$
+tal que $a_1 < a_2$.
+Inductivamente, suponer armada una cadena
+$a_1 < a_2 < \hdots < a_i$ de elementos de $A'$. Como $a_i$ no
+es maximal se puede tomar $a_{i+1} \in A'$ tal que $a_i < a_{i+1}$.
+De este modo se construye una cadena creciente que no se estaciona,
+contradiciendo $(1)$.
+
+$(2) \Rightarrow (1)$. Sea $a_1 \leq a_2 \leq \hdots$ una cadena creciente.
+Considerar $A' = \{a_i\ |\ i \in \mathbb{N}\}$ el conjunto de
+elementos de la cadena. Por $(2)$, debe tener un elemento maximal
+$a_{n_0}$. Por ser todos los $a_i$ elementos de la cadena, se tiene que
+$a_{n_0} \leq a_{n}$ para todo $n \geq n_0$. Pero $a_{n_0}$ es
+maximal, y por lo tanto $a_{n_0} = a_n$ para todo $n \geq n_0$.
+Es decir, la cadena se estabiliza.

@@ -1,0 +1,29 @@
+[title Grupos simples de orden 60]
+[category Álgebra 2]
+[tags inconcluso]
+
+<h2>Parte 1</h2>
+
+Sea $G$ un subgrupo simple de $S_n$ con $|G| > 2$. Entonces $G$ está contenido en $A_n$.
+
+<strong>Demostración.</strong> Considerar la función signo de la
+permutación: $\mathrm{sg} : G \to G_2 = \{\pm 1\}$. Por ser
+<a href="/signo-de-una-permutacion">un morfismo</a>,
+su núcleo,
+$\ker(\mathrm{sg})$, es un subgrupo normal de $G$. Dado que
+$G$ es simple, $\ker(\mathrm{sg})$ sólo puede ser un subgrupo trivial
+de $G$.
+
+Si $\ker(\mathrm{sg}) = {id}$, hay una única permutación de
+signo par en $G$. Por hipótesis, $G$ tiene al menos tres
+elementos. Considerar dos permutaciones $\sigma, \tau \in G$
+distintas, y distintas de la identidad. Ambas deben tener signo impar:
+$\mathrm{sg}(\sigma) = \mathrm{sg}(\tau) = -1$. Por
+multiplicatividad del signo, se tiene que
+$\mathrm{sg}(\sigma^2) = \mathrm{sg}(\sigma\,\tau) = 1$.
+Pero además $\sigma^2 \neq \sigma\,\tau$, de modo que son dos
+permutaciones distintas y con signo par, lo cual es absurdo.
+
+La única posibilidad es que $\ker(\mathrm{sg}) = G$, lo cual es
+decir que $\mathrm{sg}(\sigma) = 1$ para toda permutación
+$\sigma \in G$, y por lo tanto $G \leq A_n$.

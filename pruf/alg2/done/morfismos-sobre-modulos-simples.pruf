@@ -1,0 +1,33 @@
+[title Morfismos sobre módulos simples]
+[category Álgebra 2]
+[tags módulo,morfismo,simple,monomorfismo,epimorfismo,isomorfismo,endomorfismo,anillo de división]
+
+Sea $f : M \to N$ un morfismo de $A$-módulos. Entonces:
+
+<ol>
+<li> Si $M$ es simple, entonces $f = 0$ o $f$ es un monomorfismo.
+<li> Si $N$ es simple, entonces $f = 0$ o $f$ es un epimorfismo.
+<li> Si $M$ y $N$ son simples entonces $f = 0$ es un isomorfismo.
+</ol>
+
+<strong>Demostración.</strong>
+<ol>
+<li> El núcleo $\ker f$ es un submódulo de $M$, por lo tanto, como $M$
+     es simple, o bien $\ker f = M$, en cuyo caso $f = 0$, o bien
+     $\ker f = \{0\}$, en cuyo caso $f$ es un monomorfismo.
+
+<li> La imagen ${\mathop{\rm Im}} f$ es un submódulo de $N$, por lo tanto, como $N$
+     es simple, o bien ${\mathop{\rm Im}} f = \{0\}$, en cuyo caso $f = 0$, o bien
+     ${\mathop{\rm Im}} f = N$, en cuyo caso $f$ es un epimorfismo.
+
+<li> Por los dos ítems anteriores, si $f$ no es $0$, entonces $f$ debe
+     ser simultáneamente un monomorfismo y un epimorfismo, de modo que
+     debe ser un isomorfismo.
+</ol>
+
+<strong>Corolario.</strong> Si $M$ es un $A$-módulo simple, entonces
+el anillo ${\mathop{\rm End}}_A(M)$ de endomorfismos de $M$  es un anillo de división.
+(Esto es porque, al ser $M$ simple, todos los
+morfismos $f : M \to M$ son isomorfismos, y por lo tanto inversibles
+con respecto a la composición).
+

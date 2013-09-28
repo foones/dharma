@@ -1,0 +1,22 @@
+[title Relación entre órbitas y estabilizadores]
+[category Álgebra 2]
+[tags acción,órbita,estabilizador,grupo]
+
+Sea $G$ un grupo actuando sobre un conjunto $X$. Entonces, dado $x \in
+X$, $\#\mathcal{O}_G(x) = [G:\varepsilon_G(x)]$.
+
+<strong>Demostración.</strong> Hay una biyección entre el conjunto de
+coclases a izquierda $\{g\,\varepsilon_G(x)\ |\ g \in G\}$ y la órbita
+$\mathcal{O}_G(x)$ de un elemento $x \in X$. La función biyectiva está
+dada por: $\varphi : g\,\varepsilon_G(x) \mapsto g\cdot x$
+
+Está bien definida porque si se toman dos clases iguales,
+$g_1\,\varepsilon_G(x) = g_2\,\varepsilon_G(x)$, se tiene
+$g_1^{-1}\,g_2 \in \varepsilon_G(x)$ y por lo tanto:
+$\varphi(g_1\,\varepsilon_G(x)) = g_1 \cdot x = g_1 \cdot (g_1^{-1}\,g_2) \cdot x = g_2 \cdot x = \varphi(g_2\,\varepsilon_G(x))$.
+
+Es una biyección porque la inversa puede definirse mediante:
+$\varphi^{-1} : g\cdot x \mapsto g\,\varepsilon_G(x)$.
+Nuevamente, está bien definida porque si $g_1 \cdot x = g_2 \cdot x$,
+entonces $(g_1^{-1}\,g_2) \cdot x = x$, con lo cual
+$g_1^{-1}\,g_2 \in \varepsilon_G(x)$.

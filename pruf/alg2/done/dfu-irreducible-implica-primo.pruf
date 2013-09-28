@@ -1,0 +1,124 @@
+[title DFU sii DF e irreducible implica primo]
+[category Álgebra 2]
+[tags dominio,factorizacion,unica,irreducible,primo]
+
+Sea $A$ un anillo conmutativo. Son equivalentes:
+<ul>
+<li> $A$ es un dominio de factorización única.
+<li> $A$ es un dominio de factorización, y todo elemento irreducible
+      es primo.
+</ul>
+
+<em>Definiciones.</em>
+
+Se repasan las definiciones por autocontención:
+
+<ul>
+<li>
+$A$ es un DF sii todo elemento de $A$ se puede escribir como producto
+de elementos irreducibles.
+
+<li>
+$A$ es un DFU sii dada una familia $\mathbb{P} \subseteq A$ de representantes
+de los elementos irreducibles de $A$, con respecto a la relación de equivalencia
+de ser asociados ($\sim$), todo elemento de $A$ se escribe de manera única, salvo
+reordenamiento, como un producto $u\,\prod_{i=1}^n p_i$,
+donde $u \in \mathcal{U}(A)$ es una unidad del anillo
+y cada factor es un representante de irreducible,
+$p_i \in \mathbb{P}$.
+
+La relación de equivalencia $\sim$ relaciona a dos elementos
+irreducibles $p \sim q$ como asociados sii existe una
+unidad del anillo $u \in \mathcal{U}(A)$ tal que $p = uq$.
+
+Más precisamente, $\mathbb{P}$ es una familia de representantes sii:
+<ul>
+<li> Los elementos de $\mathbb{P}$ son irreducibles.
+<li> Los elementos de $\mathbb{P}$ no son asociados entre sí:
+
+     $\forall p_1, p_2 \in \mathbb{P}.\ p_1 \neq p_2 \implies p_1 \not\sim p_2$
+<li> Todos los irreducibles de $A$ tienen un asociado en $\mathbb{P}$:
+
+     $\forall p_1 \in A.\ p_1 \text{ irreducible} \implies
+            \exists p_2 \in \mathbb{P}.\ p_1 \sim p_2$
+</ul>
+
+Notar que todo DFU es un DF.
+</ul>
+
+<strong>Demostración.</strong>
+
+($\Rightarrow$) Sea $A$ un DFU. Basta ver que
+todo elemento irreducible es primo en $A$.
+Sea $a \in A$ irreducible y suponer $a \mid x\,y$.
+Considerar entonces las factorizaciones de $x$ e $y$:
+<ul>
+<li> $x = u\,\prod_{i=1}^n p_i$
+<li> $y = v\,\prod_{j=1}^m q_j$
+</ul>
+donde $u,v \in \mathcal{U}(A)$ y $p_i, q_j \in \mathbb{P}$. El producto
+$x\,y$ es de la forma $u\,v\,(\prod_{i=1}^n p_i)\,(\prod_{j=1}^m q_j)$.
+
+Por otra parte, como $a$ es irreducible, es de la forma
+$a = u_1\,r$ donde $u_1 \in \mathcal{U}(A)$ es una unidad y
+$r \in \mathbb{P}$ es su representante.
+Por hipótesis, $a$ divide a $x\,y$, que por lo tanto se factoriza
+de manera única como: $x\,y = \tilde{u}\,r\,\prod_{k=1}^l r_k$,
+con $\tilde{u} \in \mathcal{U}(A)$ una unidad, y
+$r_k \in \mathbb{P}$ representantes de irreducibles.
+
+Dado que la factorización de $x\,y$ es única, necesariamente
+coinciden los conjuntos de representantes que conforman las
+dos factorizaciones exhibidas:
+$\{p_1, \hdots, p_n, q_1, \hdots, q_m\} = \{r, r_1, \hdots, r_k\}$.
+De este modo, $r$ debe ser alguno de los elementos $p_i$ o alguno
+de los $q_j$, con lo cual o bien $r \mid x$ o bien $r \mid y$.
+Como $a = u_1\,r$, se concluye entonces que $a \mid x$ o bien $a \mid y$.
+
+($\Leftarrow$) Sea $A$ un DF tal que todo elemento irreducible
+es primo. Se verá que $A$ es un DFU. Considerar para ello una
+familia $\mathbb{P}$ de representantes de los elementos
+irreducibles de $A$.
+
+Sea $a \in A$. Por ser $A$ un DF, $a$ se escribe como producto
+de irreducibles: $\prod_{i=1}^n r_i$. Para cada uno de los
+irreducibles $r_i$ considerar su representante $p_i \in \mathbb{P}$
+y, ``sacando las unidades para afuera'', escribir
+$a = u\,\prod_{i=1}^n p_i$, donde $u \in \mathcal{U}(A)$
+es la unidad que resulta de este proceso.
+
+Considerar otra escritura del mismo elemento:
+$a = v\,\prod_{j=1}^m q_j$ con los $q_j \in \mathbb{P}$
+representantes de irreducibles y $v \in \mathcal{U}(A)$
+una unidad. Se verá que las dos escrituras coinciden por inducción
+en $n$.
+
+Si $n = 0$, entonces $a = u$ es una unidad. No puede ser
+que $m > 0$, pues el producto de elementos irreducibles
+nunca es una unidad. De modo que $n = m = 0$ y $a = u = v$.
+
+Si $n > 0$, considerar un factor irreducible $p_1$ en la
+primera de las escrituras. Dicho elemento $p_1$ divide a $a$,
+y entonces divide también a $v\,\prod_{j=1}^m q_j$.
+Notar que $m > 0$, pues de lo contrario $a$ sería una
+unidad, lo cual es imposible por un razonamiento similar
+al del caso base.
+
+En este punto se utiliza la hipótesis de que todos los
+elementos irreducibles son primos, de tal modo que
+$p_1$ debe dividir a alguno de los $q_j$.
+Dado que la escritura es única salvo reordenamiento,
+se puede suponer sin pérdida de generalidad que $p_1$
+divide a $q_1$. Además, como ambos son representantes de
+irreducibles, se tiene que $p_1 = q_1$.
+
+Usando que el anillo $A$ es íntegro, se puede ``tachar''
+el factor común a las dos escrituras del elemento $a$,
+llegando así a la igualdad:
+
+$u\,\prod_{i=2}^n p_i = v\,\prod_{j=2}^m q_j$.
+
+Por hipótesis inductiva, las dos escrituras de $a / p_1$
+coinciden, de modo que también coinciden las dos
+escrituras de $a$.
+

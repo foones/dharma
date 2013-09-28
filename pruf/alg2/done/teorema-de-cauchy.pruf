@@ -1,0 +1,180 @@
+[title Teorema de Cauchy para grupos]
+[category Álgebra 2]
+[tags grupo,primo,teorema,cauchy]
+
+Sean $G$ un grupo finito y $p \in \mathbb{N}$ un primo
+tal que $p$ divide al orden de $G$. Entonces $G$ tiene
+un subgrupo de orden $p$.
+
+(O, equivalentemente, $G$ tiene un elemento de orden $p$).
+
+<strong>Demostración.</strong>
+
+Considerar el conjunto de $p$-uplas de elementos de $G$
+cuyo producto es la identidad de $G$:
+$X = \{ (g_1, \hdots, g_p) \ |\ g_1\cdot\hdots\cdot g_p = 1_G \}$
+
+Considerar la operación que ``rota'' una $p$-upla hacia la
+izquierda:
+$\sigma : X \to X$ dada por $(g_1, g_2, \hdots, g_p) \mapsto (g_2, \hdots, g_p, g_1)$.
+Está bien definida porque si
+$g_1 \cdot g_2 \cdot \hdots \cdot g_p = 1$
+entonces
+$g_1$ es el inverso de $g_2 \cdot \hdots \cdot g_p$
+en $G$. Como el inverso es único a izquierda y a derecha,
+$g_2 \hdots \cdot g_p \cdot g_1 = 1$.
+
+Notar que $\sigma$ es una función biyectiva, porque la rotación
+en el sentido opuesto es su inversa. Por lo tanto $\sigma \in S(X)$.
+Observar además que $\sigma^p = id$.
+
+Se hace actuar al grupo $\mathbb{Z}_p$ sobre $X$ mediante
+la acción determinada por el morfismo $\mathbb{Z}_p \to S(X)$
+dado por $\bar{1} \mapsto \sigma$. Está bien definido por los
+comentarios precedentes.
+
+Por el
+<a href="/ecuacion-de-clases">teorema de ecuación de clases</a>
+se tiene que:
+
+$\# X = \#(^{\mathbb{Z}_p}X) + \sum_{i=1}^{N}{[\mathbb{Z}_p : H_i]}$
+
+donde $ ^{\mathbb{Z}_p}X$ son los puntos de $X$ invariantes
+por la acción de $\mathbb{Z}_p$,
+$N$ es algún número natural y los $H_i$ son subgrupos de $\mathbb{Z}_p$
+tales que $[\mathbb{Z}_p : H_i] > 1$.
+
+Por el <a href="/teorema-de-lagrange">teorema de Lagrange</a>,
+cada uno de los subgrupos $H_i \subseteq \mathbb{Z}_p$ debe
+tener orden $1$ o $p$. Pero no pueden tener orden $p$, pues
+si no $[\mathbb{Z}_p : H_i] = 1$. Entonces $[\mathbb{Z}_p : H_i] = p$
+para todo $i$, con lo cual la suma de dichos términos es un
+múltiplo de $p$.
+
+Por otro lado, $\# X$ también es múltiplo de $p$, de modo que
+la cantidad de puntos de $X$ invariantes por la acción de
+$\mathbb{Z}_p$, que según la notación del teorema de
+ecuación de clases se escribe $\#(^{\mathbb{Z}_p}X)$, debe
+ser también un múltiplo de $p$:
+
+$\underbrace{\# X}_{\textrm{m\'ultiplo\ de\ }p}
+=
+ \underbrace{\#(^{\mathbb{Z}_p}X)}_{\textrm{debe\ ser\ m\'ultiplo\ de\ }p} +
+ \underbrace{\sum_{i=1}^{N}{[\mathbb{Z}_p : H_i]}}_{\textrm{m\'ultiplo\ de\ }p}$
+
+Además, hay al menos un punto de $X$ invariante por $\sigma$, que
+es el $(1, 1, \hdots, 1) \in X$. Como la cantidad de puntos
+invariantes es un múltiplo de $p$, debe haber por lo menos 
+otro elemento $x \in X$, distinto de $(1, 1, \hdots, 1)$, tal que
+$\sigma^n(x) = x$ para todo $n \in \mathbb{Z}$.
+
+Dicho elemento $x$ debe ser igual a todas sus posibles rotaciones,
+de modo que debe ser de la forma $(g, g, \hdots, g)$ para algún
+$g \in G$. Además $g \neq 1$. Como $x \in X$, se concluye que
+$g \cdot g \cdot \hdots \cdot g = 1$, de modo que
+$g^p = 1$.
+
+Nuevamente por el teorema de Lagrange, el orden de $g$ sólo
+puede ser $1$ o $p$. No es de orden $1$ porque $g \neq 1$.
+Así, $g \in G$ es un elemento de orden $p$,
+y $\langle g \rangle$ es un subgrupo de $G$ de orden $p$.
+
+<strong>Demostración (alternativa).</strong>
+
+Por inducción en el orden de $G$, separando en casos.
+
+<ul>
+<li> Si $G$ es cíclico, existe un elemento $x \in G$ de orden $|G|$.
+     Como $p$ divide a $|G|$, considerar el elemento $y = x^{|G| / p}$.
+     Se tiene que $y^p = 1$. El orden de $y$ divide a $p$ y no es $1$
+     (pues $y \neq 1_G$), de modo que $y$ es un elemento
+     de orden $p$.
+
+<li> Si $G$ es Abeliano, considerar un elemento $x \in G$
+     tal que $1 < |\langle x \rangle| < |G|$.
+     Se puede elegir un elemento así porque se puede suponer
+     que $G$ no es cíclico (y por lo tanto tampoco es $G = \{1\}$).
+
+     Se sabe además que $|G| = |G:\langle x \rangle| \cdot |\langle x \rangle|$.
+
+     <ul>
+     <li> Si $p$ divide a $|\langle x \rangle|$, se tiene por hipótesis
+     inductiva
+     que existe un elemento $y \in \langle x \rangle \subseteq G$
+     de orden $p$.
+
+     <li> Si $p$ no divide a $|\langle x \rangle|$,
+     entonces $p$ divide
+     al orden del cociente $G / \langle x \rangle$,
+     que está bien definido porque $G$ es Abeliano y $\langle x \rangle \trianglelefteq G$.
+     Por hipótesis inductiva, existe un elemento
+     $\bar{y} \in G / \langle x \rangle$ de orden $p$.
+     Es decir que $\bar{y}^p = \bar{1}$ pero $\bar{y} \neq \bar{1}$.
+     Expresado en términos de los elementos de $G$,
+     se tiene que $y^p \in \langle x \rangle$
+             pero $y \not\in \langle x \rangle$.
+
+     Sea $m = |\langle x \rangle|$ el orden de $x$. Como $p$ no divide a $m$,
+     se tiene en particular que $p$ y $m$ son coprimos, con lo
+     cual $\langle x^p \rangle = \langle x \rangle$.
+     La inclusión $\subseteq$ es clara; la inclusión $\supseteq$ se
+     desprende del hecho de que $1 = \alpha\,p + \beta\,m$, de modo
+     que $x = (x^p)^\alpha$.
+     Entonces todo elemento de
+     $\langle x \rangle = \langle x^p \rangle$ se escribe como
+     $(x^p)^{\gamma} = (x^{\gamma})^p$ para algún $\gamma \in \mathbb{Z}$.
+
+     En este caso, $y^p \in \langle x \rangle$, de modo que
+     $y^p = x^k$ para algún $k \in \mathbb{Z}$ y, despejando,
+     se tiene $y^p\,x^{-k} = 1$. Como $x^{-k}$ es un elemento de
+     $\langle x \rangle$, se escribe $x^{-k} = z^p$ para cierto
+     $z \in \langle x \rangle$.
+
+     Así, dado el elemento $y\,z \in G$, y usando que $G$ es Abeliano,
+     se tiene que $(y\,z)^p = y^p\,z^p = y^p\,x^{-k} = 1$.
+     Además, $y\,z \neq 1$, porque si $y = z^{-1}$ se concluiría
+     que $y \in \langle x \rangle$, lo que no puede ocurrir.
+
+     Se tiene entonces que $y\,z$ es un elemento de orden $p$ en $G$.
+     </ul>
+
+<li> Si $G$ no es Abeliano, considerar $\mathcal{Z}(G)$ el centro de $G$.
+
+     <ul>
+     <li> Si $p$ divide a $\mathcal{Z}(G)$, .
+     se tiene que $\mathcal{Z}(G) \neq G$, porque $G$ no
+     es Abeliano. Se concluye por hipótesis inductiva que
+     hay un elemento de orden $p$ en $\mathcal{Z}(G) \subseteq G$.
+
+     <li> Si $p$ no divide a $\mathbb{Z}(G)$,
+     considerar a $G$ actuando sobre sí mismo por conjugación,
+     es decir, mediante la acción determinada por el morfismo
+     $\varphi : G \to S(G)$ dado por $g \mapsto (h \mapsto g\,h\,g^{-1})$.
+     Los puntos invariantes de $G$ por dicha acción son
+     $ ^GG = \{x \in G\ |\ g\,x\,g^{-1} = x\ \forall g \in G\}
+           = \{x \in G\ |\ g\,x = x\,g\ \forall g \in G\}
+           = \mathcal{Z}(G)$, es decir, el centro de $G$.
+
+     Por el
+     <a href="/ecuacion-de-clases">teorema de ecuación de clases</a>
+     se tiene que:
+
+     $|G| = |\mathcal{Z}(G)| + \sum_{i=1}^{N}{[G:H_i]}$
+
+     para ciertos $N \in \mathbb{N}$, y subgrupos $H_i \subseteq G$.
+     Como $p$ divide a $|G|$ pero no divide a $|\mathcal{Z}(G)|$,
+     no puede ser que $p$ divida a $[G:H_i]$ para todo $i$.
+     De modo que debe existir algún $i$ para el cual
+     $p$ no divide a $[G:H_i]$.
+
+     Entonces, como $|G| = [G:H_i] \cdot |H_i|$, se tiene que
+     $p$ divide al orden de $H_i \subseteq G$. Además, $H_i$ es
+     un subgrupo propio de $G$, porque el teorema de ecuación de
+     clases asegura que $[G:H_i] > 1$.
+
+     Por lo tanto, por hipótesis inductiva, existe un elemento
+     de orden $p$ en $H_i \subseteq G$.
+     </ul>
+
+</ul>
+

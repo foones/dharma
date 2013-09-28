@@ -1,0 +1,32 @@
+[title Anillo es de división sii todo módulo es libre]
+[category Álgebra 2]
+[tags anillo,cuerpo,anillo de división,módulo,libre]
+
+Sea $A$ un anillo. Entonces $A$ es de división si y sólo si todo
+$A$-módulo es libre.
+
+<strong>Demostración.</strong>
+
+$(\Rightarrow)$ Todo <a href="/modulo-sobre-anillo-de-division-es-libre">módulo sobre un
+anillo de división es libre</a>.
+
+$(\Leftarrow)$ Suponer que todo $A$-módulo es libre. Considerar
+$\mathfrak{m}$ un ideal maximal de $A$, el cual siempre existe por el
+Lema de Zorn. Entonces los ideales de $A / \mathfrak{m}$ son sólo
+los triviales. Mirado como $A$-módulo, esto es decir que $A /
+\mathfrak{m}$ es simple.
+
+Por hipótesis, $A / \mathfrak{m}$ es libre. Considerar entonces una base
+$\mathcal{B}$ de $A / \mathfrak{m}$. Dicha base debe estar formada por
+un único elemento, porque dado un elemento $b \in \mathcal{B}$ se
+tiene que $\langle b \rangle$ no es el ideal nulo. Además $A / \mathfrak{m}$
+es simple, de modo que dicho ideal $\langle b \rangle$ debe ser entonces
+todo el anillo $A / \mathfrak{m}$.
+
+Como $A / \mathfrak{m}$ tiene una base formada por un único elemento,
+se tiene entonces que $A / \mathfrak{m} \simeq A$ son isomorfos como
+$A$-módulos. Entonces $A$ es simple, pues $A / \mathfrak{m}$ también
+lo es. El anillo $A$ es simple, o sea, sus ideales son sólo los
+triviales, de modo que <a href="/anillo-division-ideales-triviales">$A$ es un anillo de
+división</a>.
+

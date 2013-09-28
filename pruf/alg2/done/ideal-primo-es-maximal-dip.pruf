@@ -1,0 +1,29 @@
+[title Ideal primo es maximal en un DIP]
+[category Álgebra 2]
+[tags anillo,dominio,ideal,principal,primo,maximal]
+
+Sea $A$ un dominio de ideales principales. Si $I$ es un ideal primo de
+$A$, entonces $I$ es maximal.
+
+<strong>Demostración.</strong> Sea $J$ un ideal de $A$ tal que
+$I \subsetneq J$. Se verá que $J = A$.
+
+Por ser $A$ un dominio de ideales principales,
+existen $i, j \in A$ tales que
+$I = \langle i \rangle$ y $J = \langle j \rangle$.
+Todos los elementos de $I$ están en $J$, y en particular
+$i = a\,j$ para algún $a \in A$.
+El ideal $I$ es primo o, lo que es lo mismo, el elemento $i$ es
+primo. Por lo tanto $i$ <a href="/primo-implica-irreducible">es
+irreducible</a> y $j$ es uno de sus divisores.
+
+Si $j \in \mathcal{U}(A)$ es una unidad del anillo, entonces
+$J$ contiene a $j^{-1}\,j = 1_A$, de donde $J = A$, que es lo que
+se quiere probar.
+
+Si $j$ no es una unidad del anillo $A$, debe ser un asociado de
+$i$, es decir, $j = u\,i$, para alguna unidad $u \in \mathcal{U}(A)$.
+Pero en tal caso el ideal $I$ contiene a $u\,i = j$ y por lo tanto
+$J \subseteq I$, lo cual contradice el hecho de que $I$ estaba
+incluido <em>propiamente</em> en $J$.
+

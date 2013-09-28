@@ -1,0 +1,62 @@
+[title Subgrupos normales según su índice]
+[category Álgebra 2]
+[tags índice,grupo,normal,simple,subgrupo,sylow]
+
+Sea $G$ un grupo de orden $n$.
+
+<h2>Parte 1</h2>
+Si $H \leq G$ es un subgrupo de índice $[G:H] = m$, entonces existe un
+subgrupo normal $K \trianglelefteq G$ tal que $K \leq H$ y $[G:K]$
+divide a $m!$.
+
+<strong>Demostración.</strong> Considerar el conjunto de coclases a
+derecha de $H$ en $G$, $\Omega = \{Ha\ |\ a \in G\}$, y la función
+$\varphi : G \to S(\Omega)$ dada por $x \mapsto (Ha \mapsto
+Hax^{-1})$.
+
+La función $\varphi$ está bien definida pues multiplicar a derecha por
+$x^{-1}$ es una biyección, de modo que $\varphi(x) \in S(\Omega)$.
+Además, $\varphi$ es un morfismo de grupos, ya que para toda coclase
+$Ha \in \Omega$, se cumple: $\varphi(xy)(Ha) = Ha(xy)^{-1} =
+Hay^{-1}x^{-1} = \varphi(x)(\varphi(y)(Ha)) =
+(\varphi(x)\,\cdot\,\varphi(y))(Ha)$.
+
+El núcleo $K = \ker(\varphi)$ cumple las condiciones requeridas. Por
+ser núcleo de un morfismo, es un subgrupo normal de $G$. Además, $K
+\leq H$ pues $x \in K \implies Hax^{-1} = Ha$ para todo $a \in G$; en
+particular, tomando $a = e$, se tiene $Hx^{-1} = H$ y $x \in H$.
+
+El cardinal de $\Omega$ es $[G:H] = m$, de modo que $|S(\Omega)| =
+m!$. Por otro lado, por los <a
+href="/teoremas-de-isomorfismo-de-grupos">teoremas de isomorfismo</a>,
+$G / \ker(\varphi) = \mathrm{im}(\varphi) \leq S(\Omega)$, de modo que
+$[G:K]$ divide a $|S(\Omega)| = m!$.
+
+<h2>Parte 2</h2>
+Si $G$ tiene un subgrupo propio $H < G$ de índice $[G:H] = m$ tal
+que $n \nmid m!$ entonces $G$ no es simple.
+
+<strong>Demostración.</strong> Usando la Parte 1, se tiene que existe
+un subgrupo normal $K \trianglelefteq G$, con $K \leq H$ y tal que
+$[G:K]$ divide a $m!$. Basta ver que $K$ no es un subgrupo trivial de
+$G$.
+
+Por un lado, $K$ no puede ser $G$, pues $K \leq H$ que es un subgrupo
+<em>propio</em> de $G$.
+
+Por otra parte, $K$ no puede ser $\{e\}$, pues en tal caso $[G:K] =
+|G| / 1 = n$ dividiría a $m!$, contradiciendo la hipótesis.
+
+<h2>Parte 3</h2>
+Si $n$ no es primo y para algún primo $p$ tal que $p \mid n$ se
+verifica $n \nmid n_p!$ (donde $n_p$ es la cantidad de $p$-subgrupos
+de Sylow de $G$), entonces $G$ no es simple.
+
+<strong>Demostración.</strong> Sea $H$ un $p$-subgrupo de Sylow. Si $H
+\trianglelefteq G$ es normal, es claro que $G$ no es simple. Si $H$ no
+es normal en $G$, el normalizador $N_G(H)$ es un subgrupo
+<em>propio</em> de $G$. Usando que <a
+href="/indice-normalizador-sylow">el índice del normalizador es
+precisamente la cantidad de subgrupos de Sylow</a> (es decir,
+$[G:N_G(H)] = n_p$) y que, por hipótesis, $n \nmid n_p!$, se puede
+concluir que $G$ no es simple aplicando lo ya demostrado en la Parte 2.

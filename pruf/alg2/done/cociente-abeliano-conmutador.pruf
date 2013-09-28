@@ -1,0 +1,28 @@
+[title Cociente abeliano implica conmutador incluido en el subgrupo]
+[category Álgebra 2]
+[tags grupo,cociente,abeliano,conmutador]
+
+Sea $G$ un grupo y $H \trianglelefteq G$ un subgrupo normal.
+Si $G/H$ es abeliano, entonces el conmutador $[G;G]$ está
+incluido en $H$.
+
+<strong>Demostración.</strong>
+Para ver que el conmutador $[G;G]$ está incluido en $H$, basta ver
+que sus generadores están incluidos en $H$. Los generadores de $[G;G]$
+son de la forma $g_1\,g_2\,g_1^{-1}\,g_2^{-1}$, para cada par
+de elementos $g_1,g_2 \in G$.
+
+Dados dos elementos cualesquiera $g_1, g_2 \in G$, se tiene que
+$g_1\,H \cdot g_2\,H = g_2\,H \cdot g_1\,H$, pues el cociente es
+abeliano. Dicho de otro modo, $g_1\,g_2\,H = g_2\,g_1\,H$.
+Multiplicando a izquierda por $g_1^{-1}\,g_2^{-1}$, se tiene:
+$g_1^{-1}\,g_2^{-1}\,g_1\,g_2\,H = H$.
+Se concluye entonces que
+$g_1^{-1}\,g_2^{-1}\,g_1\,g_2 \in H$, de manera que todos los
+generadores del conmutador están incluidos en $H$.
+
+<em>Nota:</em> Observar que, en un grupo, cada elemento de la forma
+$g_1^{-1}\,g_2^{-1}\,g_1\,g_2$ se puede pensar como 
+un elemento de la forma
+$h_1\,h_2\,h_1^{-1}\,h_2^{-1}$, tomando $h_1 = g_1^{-1}$ y $h_2 =
+g_2^{-1}$.

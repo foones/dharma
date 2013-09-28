@@ -1,0 +1,21 @@
+[title Elementos primos son irreducibles]
+[category Álgebra 2]
+[tags anillo,dominio,íntegro,primo,irreducible]
+
+Sea $A$ un dominio íntegro. Si un elemento $a \in A$ es primo,
+entonces es irreducible.
+
+<strong>Demostración.</strong>
+Sea $b$ un divisor de $a$, que verifica $a = b\,c$ para algún $c \in A$.
+Se verá que o bien $b \in \mathcal{U}(A)$ es una unidad del anillo,
+o bien $b$ es un asociado de $a$, es decir $b = u\,a$ para
+alguna unidad $u \in \mathcal{U}(A)$
+
+Se sabe que $a$ es primo, por cuanto $a\,|\,b$ o bien $a\,|\,c$.
+Si $a\,|\,b$, entonces se escribe $b = a\,x$, y se tiene
+que $a = b\,c = a\,x\,c$. Esto implica $x\,c = 1_A$, de modo que
+$c \in \mathcal{U}(A)$ es una unidad del anillo $A$, con lo cual
+$b$ es un asociado de $a$.
+
+De manera simétrica, si $a\,|\,c$ ocurre que $b \in \mathcal{U}(A)$,
+lo cual completa la demostración.

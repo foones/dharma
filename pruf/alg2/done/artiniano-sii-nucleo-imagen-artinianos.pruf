@@ -1,0 +1,77 @@
+[title Módulo es Artiniano sii núcleo e imagen son Artinianos]
+[category Álgebra 2]
+[tags módulo,artiniano,núcleo,imagen,morfismo,submódulo,cociente]
+
+Sea $A$ un anillo, $M$ un $A$-módulo y $f : M \to M'$ un morfismo de
+$A$-módulos. Entonces $M$ es Artiniano si y sólo si
+${\mathop{\rm Im}}(f)$ y $\ker(f)$ lo son.
+
+Equivalentemente, dado $N \subseteq M$ un submódulo,
+$M$ es Artiniano si y sólo si $N$ y $M / N$ lo son.
+
+<strong>Demostración.</strong>
+
+$(\Rightarrow)$ Sea $M$ Artiniano. Se verifica trivialmente que todo
+submódulo $N$ es Artiniano, ya que toda cadena descendente
+$M_1 \supseteq M_2 \supseteq \hdots$ de submódulos de $N$ también
+es una cadena descendente de submódulos de $M$, y por lo tanto se
+estaciona.
+
+Para ver que $M / N$ es Artiniano, sea $\pi : M \to M / N$ la
+proyección al cociente, y considerar una cadena descendente
+$S_1 \supseteq S_2 \hdots$ de submódulos de $M / N$.
+Tomando la proyección inversa de cada uno, se obtiene una cadena
+descendente $\pi^{-1}(S_1) \supseteq \pi^{-1}(S_2) \supseteq \hdots$
+de submódulos de $M$, ya que la proyección inversa preserva las
+inclusiones. Dicha cadena se estaciona porque $M$ es
+Artiniano, y por lo tanto también se estaciona la cadena de los $S_i$.
+
+$(\Leftarrow)$ Suponer que un submódulo $N$ y el cociente $M / N$ son
+Artinianos,
+y considerar una cadena decreciente de submódulos
+$M_1 \supseteq M_2 \supseteq \hdots$.
+La proyección al cociente preserva las inclusiones, de modo que
+$M_1 / N \supseteq M_2 / N \supseteq \hdots$ es una cadena
+decreciente de submódulos de $M / N$. Como el cociente es Artiniano,
+dicha cadena se estaciona, es decir, existe un $k_0 \in \mathbb{N}$ a
+partir del cual $M_k / N = M_{k_0} / N$ para todo $k \geq k_0$.
+
+Como se cumple que $M_k / N = M_{k_0} / N$,
+se puede aplicar el lema que sigue. De este modo la cadena
+decreciente $M_{k_0} \supseteq M_{k_0 + 1} \supseteq \hdots$
+de submódulos de $M$
+se traslada a otra cadena decreciente
+$M_{k_0} \cap N \supseteq M_{k_0 + 1} \cap N \supseteq \hdots$
+conformada por submódulos de $N$.
+Además, el lema siguiente asegura que si $M_i \supsetneq M_{i + 1}$
+entonces $M_i \cap N \supsetneq M_{i + 1} \cap N$.
+Por lo tanto, la cadena de submódulos de $M$ debe estacionarse,
+porque de lo contrario se obtendría una cadena de submódulos de
+$N$ que no se estaciona, contradiciendo el hecho de que $N$ es
+Artiniano.
+
+<strong>Lema.</strong> Sean $A, B \subseteq M$ submódulos tales que
+$A / N = B / N$.
+Se tiene entonces:
+<ul>
+<li> Si $A \supseteq B$ entonces $A \cap N \supseteq B \cap N$.
+<li> Si $A \supsetneq B$ entonces $A \cap N \supsetneq B \cap N$.
+</ul>
+
+<strong>Demostración.</strong> La inclusión
+$A \cap N \supseteq B \cap N$ es trivialmente verdadera
+asumiendo que $A \supseteq B$.
+
+Para la desigualdad, considerar un elemento $a \in A$ tal que
+$a \not\in B$. Pasando al cociente, se tiene que
+$\bar{a} \in A / N = B / N$. Como $\bar{a} \in B / N$, se tiene
+que $a = b + n$ para ciertos $b \in B$, $n \in N$.
+
+Por un lado se tiene que $b \in A$, pues $B$ está contenido en $A$,
+de modo que $n \in A$. Por otro lado, se tiene que $n \not\in B$, pues
+de lo contrario $b + n \in B$, contradiciendo el hecho de que $a
+\not\in B$.
+Así, se tiene un elemento $n \in N$ tal que $n \in A$ pero $n \not\in B$.
+Dicho de otro modo, $n \in A \cap N$ pero $n \not\in B \cap N$,
+probando que la inclusión $A \cap N \supsetneq B \cap N$ es estricta.
+

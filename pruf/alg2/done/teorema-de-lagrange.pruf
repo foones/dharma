@@ -1,0 +1,35 @@
+[title Teorema de Lagrange]
+[category Álgebra 2]
+[tags grupo,lagrange,teorema]
+
+Sea $G$ un grupo finito y $H \leq G$ un subgrupo. Entonces $|H|$
+divide a $|G|$.
+
+<strong>Demostración.</strong> Se usará el hecho de que el conjunto de
+coclases $\{xH\ |\ x \in G\}$ es una partición de $G$. Todo elemento
+$x \in G$ pertenece a alguna coclase. Además, dadas dos coclases $xH$
+e $yH$, estas son o bien la misma, o bien disjuntas. Más precisamente:
+
+$xH \neq yH \iff xH \cap yH = \emptyset$
+
+Para ver esto, notar que son equivalentes:
+<ul>
+  <li>$xH = yH$
+  <li>$y^{-1}xH = H$
+  <li>$y^{-1}x \in H$
+  <li>$x \in yH$
+  <li>$\exists h \in H. x = yh$
+  <li>$\exists h_1, h_2 \in H. xh_1 = yh_2$
+  <li>$xH \cap yH \neq \emptyset$
+</ul>
+Por lo tanto $G$ se escribe como unión disjunta de coclases; si $Z$ es un conjunto de representantes:
+
+$G = \coprod_{x \in Z} xH$
+
+Por otra parte, todas las coclases $xH$ tienen el mismo cardinal que
+$H$, pues multiplicar a izquierda por $x \in G$ es una biyección (cuya
+inversa es multiplicar a izquierda por $x^{-1}$). De modo que:
+
+$|G| = \sum_{x \in Z} \#(xH) = \sum_{x \in Z} |H| = |H| \cdot \#Z$
+
+Y por lo tanto $|H|$ divide a $|G|$.

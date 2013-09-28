@@ -1,0 +1,64 @@
+[title Equivalencia de sucesiones exactas cortas de módulos]
+[category Álgebra 2]
+[tags módulo,sucesión exacta corta,equivalente,isomorfismo,suma directa]
+
+Sean dos sucesiones exactas cortas de $A$-módulos:
+
+$0 \longrightarrow M \overset{f}{\longrightarrow} N \overset{g}{\longrightarrow} P \longrightarrow 0$
+
+$0 \longrightarrow M \overset{f'}{\longrightarrow} N' \overset{g'}{\longrightarrow} P \longrightarrow 0$
+
+tales que existe un morfismo $h : N \to N'$ que cumple:
+<ul>
+<li> $g' \circ h = g$
+<li> $f' = h \circ f$
+</ul>
+
+Entonces $h$ es un isomorfismo, i.e. $N \simeq N'$.
+
+Esta propiedad da lugar a una relación de equivalencia entre
+sucesiones exactas cortas.
+
+<strong>Demostración.</strong>
+Por ``<em>diagram chasing</em>'':
+
+<ul>
+<li> Monomorfismo:
+
+Sea un $x \in N$ y suponer que $h(x) = 0 \in N'$.
+Se quiere ver que entonces $x = 0$. Se cumple la siguiente
+cadena de implicaciones:
+<ul>
+<li> $g'(h(x)) = 0 \in P$ aplicando $g'$.
+<li> $g(x) = 0 \in P$ pues $g' \circ h = g$.
+<li> $x \in \ker(g)$.
+<li> $x \in {\mathop{\rm{im}}}(f)$ pues la sucesión
+     es exacta y ${\mathop{\rm{im}}}(f) = \ker(g)$.
+<li> $x = f(z) \in N$ para cierto $z \in M$.
+<li> $h(x) = h(f(z)) = 0 \in N'$ aplicando $h$.
+<li> $f'(z) = 0 \in N'$ pues $f' = h \circ f$.
+<li> $z = 0$ pues la sucesion es exacta y $f'$ es un monomorfismo.
+<li> $x = f(z) = 0$.
+</ul>
+
+<li> Epimorfismo:
+
+Sea un $x \in N'$. Se quiere ver que entonces existe un $\tilde{x} \in N$
+tal que $h(\tilde{x}) = x$. Se cumple la siguiente cadena de implicaciones:
+
+<ul>
+<li> $g'(x) \in P$ aplicando $g'$
+<li> $g'(x) = g(y) \in P$ para algún $y \in N$ pues la sucesión es
+exacta y $g$ es un epimorfismo.
+<li> $g'(h(y)) = g(y) \in P$ pues $g' \circ h = g$.
+<li> $g'(h(y)) = g'(x) \in P$ pues ambos son iguales a $g(y)$ y por lo tanto $g'(h(y) - x) = 0$.
+<li> $h(y) - x \in \ker(g')$
+<li> $h(y) - x \in {\mathop{\rm{im}}}(f')$ porque la sucesión es exacta e
+${\mathop{\rm{im}}}(f') = \ker(g')$.
+<li> $h(y) - x \in {\mathop{\rm{im}}}(h \circ f)$ pues $h \circ f = f'$.
+<li> $h(y) - x = h(f(z)) \in N'$ para cierto $z \in N$.
+<li> $x = h(y) - h(f(z)) = h(y - f(z))$ despejando $x$.
+</ul>
+
+</ul>
+

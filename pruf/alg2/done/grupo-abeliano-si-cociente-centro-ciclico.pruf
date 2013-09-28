@@ -1,0 +1,30 @@
+[title Grupo abeliano si cociente por el centro es cíclico]
+[category Álgebra 2]
+[tags grupo,abeliano,centro,cíclico,cociente]
+
+Sea $G$ un grupo. Si $G / \mathcal{Z}(G)$ es cíclico, entonces $G$ es
+abeliano.
+
+<strong>Demostración.</strong> Sean $h_1, h_2 \in G$ dos elementos
+cualesquiera del grupo. Se verá que conmutan. El cociente $G / \mathcal{Z}(G)$ es cíclico, de modo que
+está generado por la clase de algún elemento $g \in G$,
+es decir, $G / \mathcal{Z}(G) = \langle g\,\mathcal{Z}(G) \rangle$.
+Por lo tanto, la clase de $h_1$ es una potencia entera de dicho
+generador: $h_1\,\mathcal{Z}(G) = g^{r_1}\,\mathcal{Z}(G)$ para
+algún $r_1 \in \mathbb{Z}$. Por el mismo motivo,
+$h_2\,\mathcal{Z}(G) = g^{r_2}\,\mathcal{Z}(G)$ para algún $r_2 \in
+\mathbb{Z}$.
+
+Se tiene entonces que existe un elemento central
+$z_1 \in \mathcal{Z}(G)$ tal que
+$h_1 = g^{r_1}\,z_1$ y análogamente $h_2 = g^{r_2}\,z_2$
+para algún elemento $z_2 \in \mathcal{Z}(G)$.
+Por lo tanto:
+$h_1\,h_2 = g^{r_1}\,z_1\,g^{r_2}\,z_2$.
+Usando que $z_1$ y $z_2$ conmutan con todo elemento
+y que
+$g^{r_1}\,g^{r_2} = g^{r_1 + r_2} = g^{r_2 + r_1} = g^{r_2}\,g^{r_1}$
+se concluye que $h_1\,h_2 = g^{r_1}\,z_1\,g^{r_2}\,z_2 =
+g^{r_2}\,z_2\,g^{r_1}\,z_1 = h_2\,h_1$.
+
+

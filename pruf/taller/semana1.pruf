@@ -1,0 +1,110 @@
+[title Ejercicios para entregar (1ra semana)]
+[category Taller de cálculo avanzado]
+[tags inconcluso]
+
+<h2>Ejercicio 1</h2>
+
+Probar que $x_n \to x$ cuando $n \to \infty$ si y sólo si toda subsucesión
+$\{x_{n_k}\}_{k\in\mathbb{N}}$ tiene una subsucesión $\{x_{n_{k_j}}\}_{j\in\mathbb{N}}$
+que converge a $x$ cuando $j \to \infty$.
+
+<strong>Lema previo.</strong>
+Sea $\{x_n\}_{n\in\mathbb{N}}$ una sucesión y $\{x_{n_k}\}_{k\in\mathbb{N}}$ una
+subsucesión. Entonces $n_k \geq k$ para todo $k \in \mathbb{N}$.
+
+<em>Demostración del lema.</em>
+El caso base es trivial pues $n_1 \geq 1$ ya que $n_1 \in \mathbb{N}$.
+Para el paso inductivo,
+observar que la función $(k \mapsto n_k)$ es estrictamente creciente,
+por definición de subsucesión.
+Usando la hipótesis inductiva se tiene entonces que
+$n_{k+1} > n_k \geq k$, y por lo tanto que $n_{k+1} \geq k+1$.
+
+Para justificar mejor esta última desigualdad, notar que en general
+dados $a, b \in \mathbb{N}$ si $a > b$ entonces $a \geq b + 1$,
+pues si se tuviera que $a < b + 1$, sumando $-b$
+se concluiría $0 < a - b < 1$, lo cual es absurdo
+ya que $a, b \in \mathbb{N}$.
+
+<strong>Demostración del ejercicio.</strong>
+
+($\Rightarrow$) Suponer que $x_n \to x$ cuando $n \to \infty$.
+Sea $\{x_{n_k}\}_{k\in\mathbb{N}}$ una subsucesión. Para cada $j \in
+\mathbb{N}$ considerar $\varepsilon_j := 1 / j$. Por hipótesis,
+para cada uno de dichos $\varepsilon_j > 0$, existe un $m_j \in
+\mathbb{N}$ tal que para todo $n \geq m_j$ se tiene que $|x_n - x| < \varepsilon_j$.
+Se construye primero una sucesión $\{k_j\}_{j\in\mathbb{N}}$ inductivamente,
+de la siguiente manera:
+
+<ul>
+<li> <em>Caso base:</em> Se define $k_1 := m_1$.
+
+<li> <em>Paso inductivo:</em> Sea $j > 1$ y suponer definidos los términos $k_1, \hdots, k_{j-1}$.
+Se define el $j$-ésimo término de la sucesión
+$\{k_j\}_{j\in\mathbb{N}}$ como:
+
+$k_j := \max\left(\{m_j\} \cup \{1 + k_i\ |\ i < j\}\right)$
+</ul>
+
+Por empezar, la sucesión $\{k_j\}_{j\in\mathbb{N}}$ así definida
+es estrictamente creciente. Esto es claro, pues, por construcción
+del término $k_j$, se tiene que $1 + k_i \leq k_j$ para todo $i < j$, y por lo tanto
+$k_i < k_j$ para todo $i < j$. De este modo
+$\{n_{k_j}\}_{j\in\mathbb{N}}$ está bien definida como
+subsucesión de $\{n_k\}_{k\in\mathbb{N}}$ y así, a su vez,
+$\{x_{n_{k_j}}\}_{j\in\mathbb{N}}$ está bien definida como
+subsucesión de $\{x_{n_k}\}_{k\in\mathbb{N}}$.
+
+Se verá ahora que $x_{n_{k_j}} \to x$ cuando $j \to \infty$.
+Para ello, notar primero que por construcción del término
+$k_j$ se tiene que $k_j \geq m_j$ para todo $j \in \mathbb{N}$.
+Usando el lema previo,
+se tiene que $n_{k_j} \geq k_j \geq m_j$ para todo $j \in \mathbb{N}$.
+Por la condición que aseguraba la hipótesis de la que se
+obtuvieron los $m_j$, se tiene que
+para todo $j \in \mathbb{N}$
+y para todo $n \geq n_{k_j}$ se cumple
+$|x_n - x| < \varepsilon_j = 1 / j$.
+
+Dado ahora un $\varepsilon > 0$ arbitrario, por arquimedianidad
+se tiene que existe un $j \in \mathbb{N}$ tal que
+$1 / \varepsilon < j$. Multiplicando por $\varepsilon / j$ (que es
+positivo pues tanto $\varepsilon$ como $j$ lo son),
+se deduce que $1 / j = \varepsilon_j < \varepsilon$.
+Finalmente, tomando $n_0 := n_{k_j}$, se puede concluir
+que para todo $n > n_0$ se satisface
+$|x_n - x| < \varepsilon_j < \varepsilon$.
+Entonces $x_{n_{j_k}} \to x$ cuando $j \to \infty$.
+
+\bigskip
+($\Leftarrow$) Sea $\{x_n\}_{n\in\mathbb{N}}$ y suponer que
+$x_n \not\to x$ cuando $n \to \infty$. Es decir, existe un
+$\varepsilon_0 > 0$ tal que para todo $n \in \mathbb{N}$ existe un
+$m \geq n$ tal que $|x_m - x| \geq \varepsilon_0$.
+Se construye primero una sucesión $\{n_k\}_{k\in\mathbb{N}}$
+inductivamente de la siguiente manera:
+
+<ul>
+<li> <em>Caso base:</em> Se define $n_1 := m$ donde $m \in \mathbb{N}$
+es tal que $m \geq 1$ y $|x_m - x| \geq \varepsilon_0$.
+
+<li> <em>Paso inductivo:</em> Sea $k > 1$ y suponer ya definidos $n_1, \hdots, n_{k-1}$.
+Se define el $k$-ésimo término de la sucesión $\{n_k\}_{k\in\mathbb{N}}$ como
+$n_k := m$, donde $m \in \mathbb{N}$ es tal que $m \geq 1 + n_{k-1}$ y
+$|x_m - x| \geq \varepsilon_0$.
+
+Se afirma que $\{x_{n_k}\}_{k\in\mathbb{N}}$ es una subsucesión
+de $\{x_n\}_{n\in\mathbb{N}}$ cuyos términos distan de $x$ en al
+menos $\varepsilon_0$. Por empezar, la sucesión
+$\{n_k\}_{k\in\mathbb{N}}$ es estrictamente creciente,
+pues por construcción se tiene que $n_k \geq 1 + n_{k-1}$
+con lo cual $n_k > n_{k-1}$ para todo $k > 1$.
+Así, $\{x_{n_k}\}_{k\in\mathbb{N}}$ está bien definida como
+subsucesión de $\{x_n\}_{n\in\mathbb{N}}$.
+
+Por otra parte, los $n_k$ están elegidos de tal manera que
+$|x_...0|$
+
+</ul>
+
+<h2>Parte 2</h2>

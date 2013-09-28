@@ -1,0 +1,62 @@
+[title Módulo proyectivo sii funtor Hom covariante exacto]
+[category Álgebra 2]
+[tags módulo,proyectivo,funtor,covariante,hom,exacto]
+
+Sea $P$ un $A$-módulo. Entonces $P$ es proyectivo si y sólo
+si para toda sucesión exacta corta de $A$-módulos:
+
+$0 \longrightarrow
+M_1 \overset{f}{\longrightarrow}
+M_2 \overset{g}{\longrightarrow}
+M_3 \longrightarrow
+0$
+
+la sucesión de $\mathbb{Z}$-módulos inducida:
+
+$0 \longrightarrow
+\mathop{\rm{Hom}}_A(P, M_1) \overset{f_*}{\longrightarrow}
+\mathop{\rm{Hom}}_A(P, M_2) \overset{g_*}{\longrightarrow}
+\mathop{\rm{Hom}}_A(P, M_3) \longrightarrow
+0$
+
+es exacta.
+
+<strong>Demostración.</strong> 
+
+($\Rightarrow$) Ya se sabe que el funtor ${\mathop{\rm Hom}}(P, -)$
+<a href="/funtor-hom-covariante-exacto-a-izquierda">es exacto a
+izquierda</a>. Es decir, siempre se cumple que:
+<ul>
+<li> Si $f$ es un monomorfismo, entonces $f_*$ también lo es.
+<li> Si ${\mathop{\rm{im}}}(f) = \ker(g)$, entonces ${\mathop{\rm{im}}}(f_*) = \ker(g_*)$.
+</ul>
+
+En este caso, además $g$ es un epimorfismo.
+Para ver que $g_*$ es un epimorfismo, sea $\psi : P \to M_3$.
+Se quiere ver que existe $\varphi : P \to M_2$ tal que
+$g_*(\varphi) = \psi$, es decir, tal que $\psi = g \cdot \varphi$.
+Se tiene la siguiente situación:
+
+%%{
+\xymatrix{
+& P \ar@{-->}[ld]_{\varphi} \ar[rd]^{\psi} \\
+M_2 \ar[rr]^{g} & & M_3 \ar[r] & 0
+}
+%%}
+
+Tal $\varphi$ existe precisamente porque $P$ es proyectivo.
+
+($\Leftarrow$) Recíprocamente, dado un epimorfismo $g : M_2 \to M_3$,
+se puede completar a una sucesión exacta corta de la siguiente manera:
+
+$0 \longrightarrow
+\ker(g) \overset{\iota}{\longrightarrow}
+M_2 \overset{g}{\longrightarrow}
+M_3 \longrightarrow
+0$
+
+donde $\iota$ es la inclusión. En una situación como esta,
+por hipótesis, la sucesión inducida es exacta, y en particular
+$g_* : {\mathop{\rm Hom}}(P, M_2) \to {\mathop{\rm Hom}}(P, M_3)$
+es un epimorfismo, con lo cual $P$ es proyectivo.
+

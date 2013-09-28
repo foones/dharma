@@ -1,0 +1,44 @@
+[title Propiedades de anillos semisimples]
+[category Álgebra 2]
+[tags anillo,semisimple]
+
+Sea $A$ un anillo semisimple.
+
+Entonces $A$ es de la forma $\bigoplus_{i=1}^{n}{\langle s_i \rangle}$,
+donde los ideales $\langle s_i \rangle$ son simples y además:
+<ul>
+<li> $1 = s_1 + \hdots + s_n$
+<li> $s_i\,s_j = 0$ si $i \neq j$
+<li> $s_i^2 = s_i$
+</ul>
+
+<strong>Demostración.</strong>
+El anillo $A$ es finitamente generado, pues $A = \langle 1 \rangle$.
+Como además es semisimple, es una suma directa
+<a href="/modulos-semisimples-finitamente-generados">finita</a> de
+ideales simples, i.e. $A = \bigoplus_{i = 1}^{n}{S_i}$ donde $S_i
+\subseteq A$ son ideales simples.
+
+En particular, el $1$ se escribe de manera única como una suma
+$1 = s_1 + \hdots + s_n$ con cada $s_i \in S_i$. Notar que
+$s_1$ no puede ser nulo, porque de lo contrario $1 = s_2 + \hdots + s_n$
+y entonces:
+<ul>
+<li> $s_1$ está en $S_1$ por un lado
+<li> $s_1 = s_1\,s_2 + \hdots + s_1\,s_n$ está en $S_2 + \hdots + S_n$
+</ul>
+Con lo cual $S_1$ y $S_2 + \hdots S_n$ no están en suma directa,
+lo cual es absurdo. De igual manera, $s_i \neq 0$ para todo
+$i \in \{1,\hdots,n\}$.
+
+Como <a href="/modulos-simples-son-ciclicos">los módulos simples están generados
+por cualquiera de sus elementos no nulos</a>, se tiene entonces
+que $\langle s_i \rangle = S_i$. Por lo tanto:
+$A = \bigoplus_{i = 1}^{n}{\langle s_i \rangle}$
+con $1 = s_1 + \hdots + s_n$.
+
+Multiplicando ahora dicha igualdad por el elemento $s_1$, se tiene
+que $s_i = s_i\,s_1 + \hdots + s_i\,s_n$. Por unicidad de la
+escritura en una suma directa, se concluye que $s_i^2 = s_i$ y que
+$s_i\,s_j = 0$ para todo $j \neq i$.
+

@@ -1,0 +1,23 @@
+[title Todo ideal primo es maximal en anillo Artiniano]
+[category Álgebra 2]
+[tags anillo,ideal,primo,maximal,artiniano,cociente,cuerpo,dominio íntegro]
+
+Sea $A$ un anillo conmutativo Artiniano. Entonces un ideal de $A$ es
+primo si y sólo si es maximal.
+
+<strong>Demostración.</strong>
+Los ideales maximales <a href="/ideal-maximal-es-primo">son primos</a>
+en cualquier anillo conmutativo. Basta ver entonces que todo ideal
+primo es maximal. Sea $\mathfrak{p}$ un ideal primo de $A$.
+Entonces se cumple la siguiente cadena de implicaciones:
+
+<ul>
+<li> El cociente $A / \mathfrak{p}$ es un dominio íntegro porque
+     es el <a href="/cociente-integro-sii-ideal-primo">cociente por un ideal primo</a>,
+     y además es Artiniano porque es el
+     <a href="/artiniano-sii-nucleo-imagen-artinianos">cociente de un anillo Artiniano</a>.
+<li> El cociente $A / \mathfrak{p}$ es un cuerpo, porque es
+     un <a href="/dominio-integro-artiniano-sii-cuerpo">dominio íntegro Artiniano</a>.
+<li> El ideal $\mathfrak{p}$ es maximal porque el cociente $A / \mathfrak{p}$
+     <a href="/cociente-cuerpo-sii-ideal-maximal">es un cuerpo</a>.
+</ul>

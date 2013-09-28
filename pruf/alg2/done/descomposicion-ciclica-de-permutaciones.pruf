@@ -1,0 +1,83 @@
+[title Descomposición cíclica de permutaciones]
+[category Álgebra 2]
+[tags ciclo,descomposición,permutación]
+
+Toda permutación $\sigma \in S_n$ se escribe de manera única,
+salvo reordenamiento, como producto de ciclos disjuntos.
+
+<strong>Demostración.</strong>
+
+<strong>Existencia.</strong>
+
+Diremos que una permutación $\sigma \in S_n$ <em>fija</em> a un elemento $a \in \{1,\hdots,n\}$ sii $\sigma(a) = a$, y que lo <em>mueve</em> si no. La demostración procede por inducción en la cantidad de elementos movidos por $\sigma$. La construcción es tal que en la descomposición figuran sólo aquellos elementos movidos por $\sigma$.
+
+Si $\sigma$ mueve cero elementos, entonces $\sigma = id$, que se escribe como el producto de cero ciclos.
+
+Si $\sigma$ mueve al menos un elemento, sea $a \in \{1,\hdots,n\}$ tal
+que $\sigma(a) \neq a$. Sea $k \in \mathbb{N}$ el máximo valor tal que
+los elementos $a, \sigma(a), \sigma^2(a), \hdots, \sigma^{k-1}(a)$ son todos
+distintos.
+
+<em>Afirmación.</em> $\sigma^k(a) = a$.
+<em>Demostración.</em> La condición pedida sobre $k$ es equivalente a
+pedir que sea el <em>mínimo</em> valor que cumple que $\sigma^k(a) =
+\sigma^i(a)$ para algún $i \in \mathbb{N}$. Si $i = 0$, se cumple lo
+afirmado. Si $i > 0$, entonces $k - i < k$, lo cual es absurdo,
+pues entonces $k$ no podría ser el máximo valor tal que $a, \sigma(a),
+\sigma^2(a), \hdots, \sigma^{k-1}(a)$ son todos distintos.
+
+De este modo, $\alpha := (a\ \sigma(a)\ \sigma^2(a)\ \hdots\
+\sigma^{k-1}(a))$ es un ciclo, que mueve a $a, \sigma(a), \sigma^2(a),
+\hdots, \sigma^{k-1}(a)$ y fija a todos los elementos restantes.
+
+<em>Observación.</em> Si $\alpha$ mueve a $x$, entonces $\sigma(x) =
+\alpha(x)$. Esto es porque los elementos movidos por $\alpha$ son de
+la forma $\sigma^i(a)$, y $\alpha(\sigma^i(a)) = \sigma^{i+1}(a) =
+\sigma(\sigma^i(a))$.
+
+<em>Observación.</em> La permutación $\alpha^{-1}\sigma$ se comporta
+como sigue:
+<ul>
+<li> Fija a todos los elementos $x$ movidos por
+$\alpha$, pues, para dichos elementos, $\sigma(x) = \alpha(x) \implies
+\alpha^{-1}\sigma(x) = x$.
+<li> Se comporta igual que $\sigma$ para
+los elementos $x$ restantes; $\alpha$ no mueve a $\sigma(x)$, ya que
+$x$ no puede ser de la forma $\sigma^i(a)$.
+</ul>
+
+Por lo tanto, la permutación $\alpha^{-1}\sigma$ mueve menos elementos
+que $\sigma$, y fija a los elementos movidos por $\alpha$. Por
+hipótesis inductiva, $\alpha^{-1}\sigma$ se escribe como producto de
+ciclos disjuntos $\alpha_1 \hdots \alpha_r$, que además no contienen
+elementos de $\alpha$. De modo que $\sigma = \alpha\,\alpha_1 \hdots
+\alpha_r$ es una descomposición de $\sigma$ en ciclos disjuntos.
+
+<strong>Unicidad.</strong>
+
+Sean $\alpha_1 \hdots \alpha_r$ y $\beta_1 \hdots \beta_s$ dos
+descomposiciones de $\sigma$ en ciclos disjuntos. Por inducción en
+$r$.
+
+Si $r = 0$, entonces $\sigma = id$. Dicha escritura es única porque si
+un elemento $a \in \{1,\hdots,n\}$ figura en un ciclo, $\sigma$ mueve
+a dicho elemento. Si $a$ figura en más de un ciclo, los ciclos no son
+disjuntos.
+
+Si $r > 0$, entonces $\sigma \neq id$. Sea $a \in \{1,\hdots,n\}$
+tal que $\alpha_1$ mueve a $a$. Notar que $s > 0$ pues $\sigma \neq
+id$. Sin pérdida de generalidad, se puede suponer que $\beta_1$ mueve
+a $a$.
+
+Basta ver que $\alpha_1 = \beta_1$ para proceder inductivamente. Para
+ello se verá que $\alpha_1^k(a) = \sigma^k(a)$ para todo $k \in
+\mathbb{N}$.
+
+Por inducción en $k$:
+<ul>
+<li> Si $k = 0$, entonces $\alpha_1^0(a) = a = \sigma^0(a)$
+<li> Si $k > 0$, entonces $\alpha_1^k(a) = \alpha_1(\alpha_1^{k-1}(a)) =
+\alpha_1(\sigma^{k-1}(a))$ por h.i.; además $\alpha_1$ mueve a
+$\sigma^{k-1}(a)$, de modo que: $\alpha_1(\sigma^{k-1}(a)) =
+\sigma(\sigma^{k-1}(a)) = \sigma^{k}(a)$.
+</ul>

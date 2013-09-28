@@ -1,0 +1,59 @@
+[title Corolario del teorema de Sylow 1]
+[category Álgebra 2]
+[tags teorema,sylow,grupo,subgrupo,orden,primo]
+
+Sea $G$ un grupo de orden $p^r\,m$ donde $p$ es un primo que no divide
+a $m$. Entonces $G$ tiene al menos un subgrupo de orden $p^i$ para
+cada $0 \leq i \leq r$.
+
+Notar que este corolario generaliza el
+<a href="/teorema-de-sylow-1">primer teorema de Sylow</a>,
+que afirma que $G$ tiene al menos un subgrupo de orden $p^r$,
+y el <a href="/teorema-de-cauchy">teorema de Cauchy</a>,
+que afirma que $G$ tiene al menos un subgrupo de orden $p$.
+
+<strong>Demostración.</strong>
+Por el primer teorema de Sylow, todo grupo de orden $p^r\,m$ tiene
+un subgrupo de orden $p^r$. Por lo tanto, el caso general se reduce
+al caso en que $|G| = p^r$, que se demuestra por inducción en $r$.
+Para $r = 0$, la afirmación es trivial. Para $r > 0$, se separa en
+casos.
+
+Si $i = r$, el mismo $G$ es un subgrupo de orden $p^i = p^r$.
+Si $i = 0$, se tiene a $\{1\} \subseteq G$ como subgrupo de
+orden $p^i = 1$.
+
+Si $0 < i < r$ y $G$ es Abeliano, considerar, por el teorema de
+Cauchy, un subgrupo $K \subseteq G$ de orden $p$.
+Por ser $G$ Abeliano, $K$ es normal y
+su índice es $|G : K| = p^{r-1}$. Por hipótesis inductiva,
+$G / K$ tiene un subgrupo de orden $p^{i-1}$.  Por ser un subgrupo de $G / K$, debe ser de la forma
+$H / K$ con $K \subseteq H \subseteq G$.
+Pero $p^{i-1} = |H:K| = |H| / |K|$ con lo cual
+$|H| = p^{i-1}\,|K| = p^i$, que es lo buscado.
+
+Para el caso en que $0 < i < r$ y $G$ no es Abeliano, observar
+primero que, como $G$ es un $p$-grupo,
+<a href="/p-grupo-tiene-centro-no-trivial">tiene centro no trivial</a>.
+Sea entonces $\mathcal{Z}(G)$ el centro de $G$.
+El centro es de orden mayor que $1$ (pues $\mathcal{Z}(G)$ es no trivial)
+y estrictamente menor que $p^r$ (pues $G$ no es Abeliano).
+Además, divide a $p^r$, de modo que $|\mathcal{Z}(G)| = p^k$ con
+$0 < k < r$.
+
+Si $i \leq k$, se tiene por hipótesis inductiva
+que el centro $\mathcal{Z}(G)$ tiene un subgrupo de orden $p^i$.
+Dicho subgrupo es a su vez subgrupo de $G$, lo que completa la
+demostración.
+
+Si $i > k$, usando que $\mathcal{Z}(G) \trianglelefteq G$,
+considerar el cociente $G / \mathcal{Z}(G)$ de orden $p^{r-k}$.
+Por hipótesis inductiva sobre dicho cociente,
+se tiene que existe un subgrupo de orden $p^{i-k}$, que es
+de la forma $H / \mathcal{Z}(G)$, donde
+$\mathcal{Z}(G) \subseteq H \subseteq G$.
+Por <a href="/teorema-de-lagrange">Lagrange</a>, se sabe que
+$p^{i-k} = |H : \mathcal{Z}(G)| = |H| / |\mathcal{Z}(G)|$,
+con lo cual $|H| = p^{i-k}\,|\mathcal{Z}(G)| = p^i$, lo que
+completa la demostración.
+

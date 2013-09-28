@@ -1,0 +1,78 @@
+[title Teorema de Sylow 1]
+[category Álgebra 2]
+[tags teorema,sylow,grupo,subgrupo]
+
+Sea $G$ un grupo de orden $p^r m$ donde $p$ es un primo
+que no divide a $m$. Entonces $G$ tiene al menos un subgrupo
+de orden $p^r$.
+
+<strong>Demostración.</strong>
+
+Considerar el conjunto $X$ de todos los subconjuntos de $G$ que tienen
+cardinal $p^r$. Más precisamente:
+
+$X = \{ A\ |\ A \subseteq G,\ \#A = p^r \}$
+
+Notar que en este caso se escribe $A \subseteq G$ para la inclusión
+como subconjunto (y no como subgrupo).
+Considerar ahora al grupo $G$ actuando sobre $X$ mediante la
+multiplicación a izquierda; es decir, la acción
+$\varphi : G \to S(X)$ determinada por $g \mapsto (A \mapsto gA)$.
+A cada $g \in G$ se le asocia efectivamente una biyección,
+lo que se puede ver considerando la inversa $A \mapsto g^{-1}A$. 
+
+Por el
+<a href="/ecuacion-de-clases">teorema de ecuación de clases</a>
+se tiene que:
+
+$\#X = \sum_{i=1}^{N}{|G:H_i|}$
+
+Donde $|G:H_i|$ son los cardinales de las órbitas
+de $X$ por la acción de $G$.
+Notar que las órbitas pueden ser puntuales (si
+para algún $i$ se tiene $H_i = G$).
+
+El número $\#X$ es conocido, pues es la cantidad de
+subconjuntos de $G$ que tienen cardinal $p^r$, es decir,
+la cantidad de maneras de elegir $p^r$ elementos de
+un conjunto de $p^r m$ elementos:
+$\#X = {p^r m \choose p^r}$.
+Desarrollando el combinatorio:
+$\#X = \prod_{i = 0}^{p^r - 1}{\frac{p^r m - i}{p^r - i}}$.
+
+Notar que módulo $p$ se tiene $p^r m - i \equiv p^r - i \mod p$,
+con lo cual $\frac{p^r m - i}{p^r - i} \equiv 1 \mod p$,
+y entonces $\#X \equiv 1 \mod p$.
+(<em>Nota:</em> en estos dos últimos pasos se está cometiendo un abuso de
+la aritmética modular, pues al considerar la fracción módulo $p$ podría
+pasar que el denominador se anule. De todas maneras la conclusión es
+válida y se puede justificar con mayor rigurosidad escribiendo cada
+factor de la forma $p \cdot q + r$).
+
+Así, se tiene que $p$ no divide a $\#X = \sum_{i=1}^{N}{|G:H_i|}$.
+No puede ocurrir que $p$ divida a todos los sumandos, y por lo
+tanto existe algún $i_0$ tal que $p$ no divide a $|G:H_{i_0}|$.
+Además, se sabe que
+$|G:H_{i_0}| = |G| / |H_{i_0}| = p^r\,m / |H_{i_0}|$.
+Por lo tanto $p^r$ debe dividir a $|H_{i_0}|$.
+Como $H_{i_0}$ es un subgrupo de $G$
+se tiene entonces que $|H_{i_0}| = p^r\,n$ con $n\ |\ m$.
+Para finalizar, se verá que $n = 1$.
+
+Por el teorema de ecuación de clases, se sabe que en la expresión
+$|G:H_{i_0}|$ el subgrupo $H_{i_0}$ es el estabilizador de un
+cierto $A_0 \in X$. Es decir, para todo $h \in H_{i_0}$ se tiene
+que $h\,A_0 = A_0$.
+
+Sea ahora un elemento $a \in A_0$ cualquiera. Se afirma que
+$H_{i_0}\,a \subseteq A_0$. Para ver esto, observar que
+dado cualquier $h \in H_{i_0}$, se tiene $h\,a \in h\,A_0 = A_0$,
+usando que $h$ estabiliza a $A_0$. Por otro lado, como la
+multiplicación a derecha por $a$ es una biyección (cuya
+inversa es la multiplicación a derecha por $a^{-1}$), se tiene que
+$|H_{i_0}| = |H_{i_0}\,a| \leq \#A_0$.
+Como $|H_{i_0}| = p^r\,n$ y $\#A_0 = p^r$, se tiene entonces
+que $p^r\,n = p^r$, con lo cual $n = 1$,
+de donde se concluye que $H_{i_0} \subseteq G$ es un subgrupo de
+orden $p^r$.
+

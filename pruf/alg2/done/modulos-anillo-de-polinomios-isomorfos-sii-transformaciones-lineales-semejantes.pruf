@@ -1,0 +1,72 @@
+[title Módulos sobre anillos de polinomios isomorfos sii transformaciones lineales semejantes]
+[category Álgebra 2]
+[tags módulo,anillo,polinomio,espacio vectorial,transformación lineal,semejanza,endomorfismo,isomorfismo]
+
+Sean $K$ un cuerpo y $S$ un conjunto. Entonces son equivalentes:
+<ol>
+<li> $M = (S, \cdot_M)$ es un $K[X]$-módulo
+<li> $V = (S, \cdot_V)$ es un $K$-espacio vectorial
+</ol>
+Donde la acción $\cdot_M$ y la acción $\cdot_V$ se relacionan de
+tal modo que existe un endomorfismo $\varphi \in {\mathop{\rm{End}}}(V)$
+que cumple:
+<ul>
+<li> $k\,X^0 \cdot_M v = k \cdot_V v$
+<li> $X \cdot_M v = \varphi(v)$
+</ul>
+
+Notación: dado un $K$-espacio vectorial y $\varphi \in {\mathop{\rm{End}}}(V)$,
+notaremos $V_{\varphi}$ al correspondiente $K[X]$-módulo.
+
+<strong>Demostración.</strong>
+En ambos casos, el conjunto subyacente $S$ es un grupo Abeliano.
+Resta verificar que se cumplan las propiedades sobre las acciones. 
+
+($\Rightarrow$)
+Definiendo la acción $\cdot_V$ mediante: $k \cdot_V v := k\,X^0
+\cdot_M v$, se tiene que $(S, \cdot_V)$ resulta un $K$-espacio
+vectorial.
+Además, $\varphi(v) := X \cdot_M v$ define un morfismo
+$\varphi : V \to V$.
+
+($\Leftarrow$) De manera simétrica, si se tiene un endomorfismo
+$\varphi \in {\mathop{\rm{End}}}(V)$, definiendo la acción
+$\cdot_M$ como en las ecuaciones de arriba, se tiene que
+$(S, \cdot_M)$ resulta un $K[x]$-módulo.
+
+<strong>Corolario.</strong>
+Sean $M = V_{\varphi}$ y $M' = V_{\varphi'}$ dos $K[X]$-módulos.
+Entonces $M \simeq M'$ si y sólo si $\varphi \sim \varphi'$
+(i.e. $\varphi$ y $\varphi'$ son transformaciones lineales
+semejantes).
+
+<strong>Demostración.</strong>
+
+($\Rightarrow$) Sea $\psi : M \to M'$ un isomorfismo de
+$K[x]$-módulos, y sea $v \in M$. Notar que
+$\psi$ mirada como aplicación de $V \to V$
+también es un isomorfismo de $K$-espacios vectoriales.
+
+Entonces $\psi(v) \in M'$. Como $\psi$ es
+$K[X]$-lineal, se tiene que:
+$X \cdot \psi(v) = \psi(X \cdot v)$. Por la definición
+de la acción en cada módulo, se tiene entonces que:
+$\varphi(\psi(v)) = \psi(\varphi'(v))$.
+
+Aplicando $\psi^{-1}$ a ambos lados de la igualdad se
+concluye:
+$\psi^{-1}(\varphi(\psi(v))) = \varphi'(v)$
+para todo $v \in M$.
+Entonces $\psi^{-1}\,\varphi\,\psi = \varphi'$,
+es decir, $\varphi$ y $\varphi'$ son transformaciones
+lineales semejantes.
+
+($\Leftarrow$) Recíprocamente, sea $\psi : V \to V$ un isomorfismo
+de $K$-espacios vectoriales tal que $\varphi' = \psi^{-1}\,\varphi\,\psi$.
+Basta ver que $\psi$ mirada como aplicación de $M \to M'$
+es un morfismo de $K[x]$-módulos.
+
+Para ello, igual que antes, observar que
+$\varphi\,\psi = \psi\,\varphi'$ y por lo tanto
+$X \, \psi(v) = \psi(X\,v)$ para todo $v \in M$.
+

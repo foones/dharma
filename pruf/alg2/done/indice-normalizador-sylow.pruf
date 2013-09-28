@@ -1,0 +1,32 @@
+[title Índice del normalizador de un p-subgrupo de Sylow es la cantidad de p-subgrupos de Sylow]
+[category Álgebra 2]
+[tags índice,órbita,estabilizador,grupo,normalizador,sylow]
+
+Sea $G$ un grupo de orden $n$ y sea $p$ un primo tal que $p$ divide a
+$n$. Si $H$ es un $p$-subgrupo de Sylow, entonces $[G:N_G(H)] = n_p$,
+donde $n_p$ denota la cantidad de $p$-subgrupos de Sylow de $G$.
+
+<strong>Demostración.</strong> Se usará la relación entre <a
+href="/orbita-estabilizador">órbitas y estabilizadores</a> sobre el
+grupo $G$ actuando por conjugación sobre el conjunto de $p$-subgrupos
+de Sylow.
+
+Más precisamente, $G$ actúa sobre el conjunto $Syl_p(G)$ mediante la
+acción $\varphi : G \to S(Syl_p(G))$ dada por $g \mapsto (S \mapsto
+gSg^{-1})$. La acción está bien definida porque al conjugar un
+$p$-subgrupo de Sylow se obtiene otro $p$-subgrupo de Sylow.
+
+Por la relación entre órbitas y estabilizadores, se tiene:
+
+$\#\mathcal{O}_G(H) = [G:\varepsilon_G(H)]$
+
+Por definición de órbita, $\mathcal{O}_G(H) = \{gHg^{-1}\ |\ g \in
+G\}$. Este conjunto es el de todos los $p$-subgrupos de Sylow,
+$Syl_p(G)$, ya que por el <a href="/teorema-de-sylow-2">segundo teorema
+de Sylow</a> todos los $p$-subgrupos de Sylow son conjugados entre sí.
+
+Por definición de estabilizador, $\varepsilon_G(H) = \{g \in G\ |\
+gHg^{-1} = H\}$, que es el normalizador $N_G(H)$.
+
+Hechas estas observaciones, la ecuación de arriba se traduce en $n_p =
+[G:N_G(H)]$, que es lo que se quería probar.

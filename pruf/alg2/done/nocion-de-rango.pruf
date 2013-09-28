@@ -1,0 +1,154 @@
+[title Noción de rango en anillos]
+[category Álgebra 2]
+[tags rango,anillo,módulo]
+
+<h2>Parte 1</h2>
+Sea $M$ un $A$-módulo tal que $M \simeq A^{(I)} \simeq A^{(J)}$.
+Si $I$ es infinito, entonces $\#J = \#I$.
+
+Dicho de otro modo, si un módulo libre tiene una base infinita, todas sus
+bases tienen el mismo cardinal.
+
+<strong>Demostración.</strong>
+Considerar una base $\mathcal{B}_I = \{x_i\}_{i \in I}$ de $M$,
+y otra base $\mathcal{B}_J = \{y_j\}_{j \in J}$ de $M$.
+
+Por empezar, se verá que $J$ debe ser infinito. Cada uno de los $y_j \in M$
+se escribe como combinación lineal de los $x_i \in M$, es decir:
+$y_j = \sum_{k=1}^{n_j}{a^{(j)}_k\,x^{(j)}_k}$ para ciertos
+$n_j \in \mathbb{N}$, $a^{(j)}_k \in A$, $x^{(j)}_k \in
+\mathcal{B}_I$. Considerar
+el conjunto $C$ de aquellos $x_i$ que se usan para escribir a los $y_j$.
+Más precisamente, sea $C = \{x^{(j)}_k\ |\ j \in J,\ 1 \leq k \leq n_j\}$.
+Entonces $\mathcal{B}_J \subseteq \langle C \rangle$, de
+modo que $\langle C \rangle = M$.
+Si $J$ fuera finito, dicho conjunto $C$ sería también finito,
+con lo cual $C \subsetneq \mathcal{B}_I$,
+concluyendo que $\mathcal{B}_I$ no es un sistema de generadores
+minimal, y por lo tanto no puede ser una base, contradiciendo
+la hipótesis. Así, $\mathcal{B}_J$ debe ser infinito.
+
+Teniendo en cuenta ahora que ambos $I$ y $J$ son infinitos, se verá
+que tienen el mismo cardinal. Primero se probará que $\#I \leq \#J$;
+el argumento para la otra desigualdad es simétrico. Considerar
+el conjunto $I_j$ de todos aquellos índices $i$ tales que $x_i$
+aparece en la escritura de $y_j$. Entonces debe ocurrir que
+$\bigcup_{j \in J}{I_j} = I$. La inclusión $\subseteq$ es trivial, pues $I_j
+\subseteq I$. En cuanto a la inclusión $\supseteq$, lo que se debe
+probar es que para todo índice $i \in I$, el elemento $x_i$ interviene en la escritura de
+algún $y_j$. De no ser así, se tiene que
+$\mathcal{B}_J \subseteq \langle \mathcal{B}_I \setminus \{x_i\} \rangle$.
+Pero entonces $\mathcal{B}_I \setminus \{x_i\}$ es un sistema de
+generadores de $M$, de modo que $\mathcal{B}_I$ no es minimal y por lo
+tanto no es una base, lo cual es absurdo.
+Se tiene entonces que $\bigcup_{j \in J}{I_j} = I$. Por lo tanto,
+como cada uno de los conjuntos $I_j$ es finito y $J$ es infinito,
+$\#I \leq \#J$.
+
+<h2>Parte 2</h2>
+Sea $A$ un anillo. Entonces $A$ tiene noción de rango si y sólo si
+$A^n \simeq A^m \implies n = m$ para cualesquiera $n, m \in \mathbb{N}$.
+
+<strong>Demostración.</strong>
+$(\Rightarrow)$
+Suponer que $A^{(I)} \simeq A^{(J)} \implies \#I = \#J$ para todo $I, J$.
+Entonces, en particular,
+esto se cumple tomando $I = \{1, \hdots, n\}$ y $J = \{1, \hdots, m\}$.
+
+$(\Leftarrow)$
+Por definición,
+$A$ tiene noción de rango sii $A^{(I)} \simeq A^{(J)} \implies \#I = \#J$
+para conjuntos $I, J$ arbitrarios. Por la Parte 1, $I$ es infinito
+si y sólo si $J$ es infinito. Además, en tal caso, $\#I = \#J$ por
+la Parte 1.
+
+Si $I, J$ son ambos finitos, entonces $A^{(I)} = A^{\#I} = A^{\#J} =
+A^{(J)}$,
+de modo que $\#I = \#J$.
+
+<h2>Parte 3</h2>
+Sea $A$ un anillo. Entonces son equivalentes:
+<ol>
+<li> $A$ tiene noción de rango.
+<li> Dados $n, m \in \mathbb{N}$, cada vez que existen matrices $M_1 \in A^{n \times m}$ y $M_2 \in
+A^{m \times n}$ tales que $M_1\,M_2 = Id_n$ y $M_2\,M_1 = Id_m$, 
+se tiene que $n = m$.
+</ol>
+
+<strong>Demostración.</strong>
+Por la Parte 2, basta ver que $A^n \simeq A^m$ si y sólo si existen
+matrices $M_1$ y $M_2$ como las del enunciado.
+
+$(\Rightarrow)$
+Sea $\varphi : A^n \to A^m$ un isomorfismo de $A$-módulos y
+$\varphi^{-1}$ su inversa.
+Tomando una base $\mathcal{B} = \{x_i\ |\ 1 \leq i \leq n\}$ de
+$A^n$, su imagen $\varphi(\mathcal{B})$ debe ser una base de $A^m$.
+En efecto:
+
+<ul>
+<li> $\varphi(\mathcal{B})$ genera $A^m$. Sea $y \in A^m$.
+Entonces $\varphi^{-1}(y)$ se escribe como una combinación lineal
+$\varphi^{-1}(y) = \sum_{i=1}^{n}{\alpha_i\,x_i}$ para ciertos
+$\alpha_i \in A$. Aplicando $\varphi$, se tiene que
+$y = \varphi(\sum_{i=1}^{n}{\alpha_i\,x_i}) = \sum_{i=1}^{n}{\alpha_i\,\varphi(x_i)}$.
+
+<li> $\varphi(\mathcal{B})$ es linealmente independiente.
+Considerar una combinación lineal que se anula,
+$\sum_{i=1}^{n}{\alpha_i\,\varphi(x_i)} = 0$ para
+ciertos coeficientes $\alpha_i$. Aplicando
+$\varphi^{-1}$ se tiene entonces que
+$0 = \varphi^{-1}(\sum_{i=1}^{n}{\alpha_i\,\varphi(x_i)}) =
+     \sum_{i=1}^{n}{\alpha_i\,x_i}$, con lo cual
+los $\alpha_i$ deben ser todos nulos.
+</ul>
+
+Considerando una base $\mathcal{B}' = \{y_j\ |\ 1 \leq j \leq m\}$
+de $A^m$ y procediendo análogamente, se tiene también que
+$\varphi^{-1}(\mathcal{B}')$ es una base de $A^n$. De este modo,
+cada uno de los $y_j$ se puede escribir como combinación lieneal
+de los elementos $\varphi(x_i)$ de la base $\mathcal{B}$, y cada uno de los $x_i$ como combinación lineal
+de los elementos $\varphi^{-1}(y_j)$ de la base $\mathcal{B}'$. Es
+decir, existen matrices $\alpha \in A^{m \times n}$ y
+$\beta \in A^{n \times m}$ tales que:
+
+<ul>
+<li> $y_j = \sum_{i=1}^{n}{\alpha_{ji}\,\varphi(x_i)}$
+<li> $x_s = \sum_{r=1}^{m}{\beta_{sr}\,\varphi^{-1}(y_r)}$
+</ul>
+
+Aplicando $\varphi$ a la segunda ecuación, se obtiene:
+$\varphi(x_s) = \varphi(\sum_{r=1}^{m}{\beta_{sr}\,\varphi^{-1}(y_r)})
+= \sum_{r=1}^{m}{\beta_{sr}\,y_r}$.
+Además, reescribiendo $y_r$ según la primera ecuación:
+$\varphi(x_s) = \sum_{r=1}^{m}{\beta_{sr}\,\left(
+\sum_{i=1}^{n}{\alpha_{ri}\,\varphi(x_i)} \right)}$.
+Reagrupando las sumas:
+$\varphi(x_s) = \sum_{i=1}^{n}{\left(\sum_{r=1}^{m}{\beta_{sr}\,\alpha_{ri}}\right)\,\varphi(x_i)}$.
+Aplicando $\varphi^{-1}$, se tiene que:
+$x_s = \sum_{i=1}^{n}{\left(\sum_{r=1}^{m}{\beta_{sr}\,\alpha_{ri}}\right)\,x_i}$.
+Finalmente, observar que la suma
+$\sum_{r=1}^{m}{\beta_{sr}\,\alpha_{ri}}$ corresponde a la entrada
+$s,i$ del producto de matrices $\beta\cdot\alpha$, con lo cual:
+$x_s = \sum_{i=1}^{n}{(\beta\cdot\alpha)_{si}\,x_i}$.
+
+Los elementos $x_i$ forman una base de $A^n$, de tal forma
+que $x_s$ se escribe de manera única como
+$\sum_{i=1}^{n}{\delta_{is}\,x_i}$, para la función $\delta$ de Krönecker.
+Así se concluye $\beta\cdot\alpha = Id_n$. Mediante un razonamiento
+similar, se llega a que $\alpha\cdot\beta = Id_m$, de modo que tomando
+$M_1 = \beta$ y $M_2 = \alpha$ se tienen matrices como las del
+enunciado.
+
+$(\Leftarrow)$ Sean matrices $\alpha \in A^{m \times n}$ y $\beta \in A^{n \times m}$ como las del enunciado.
+Considerar $\mathcal{B} = \{e_1, \hdots, e_n\}$ la base canónica de
+$A^n$ y $\mathcal{B}' = \{e'_1, \hdots, e'_m\}$ la base canónica de $A^m$.
+Considerar también el morfismo de $A$-módulos $\varphi : A^n \to A^m$ determinado
+por $e_i \mapsto \sum_{j=1}^{m}{\alpha_{ji}\,e'_j}$.
+Es decir, el morfismo tal que $[\varphi]_{\mathcal{B}\mathcal{B}'} = \alpha$.
+Definiendo de manera similar $\varphi^{-1} : A^m \to A^n$ como el morfismo
+tal que $[\varphi^{-1}]_{\mathcal{B}'\mathcal{B}} = \beta$ se tiene
+que efectivamente $\varphi \circ \varphi^{-1} = \varphi^{-1} \circ
+\varphi = id$, con lo cual $\varphi$ es un isormofismo, y en
+consecuencia $A^n \simeq A^m$.
+

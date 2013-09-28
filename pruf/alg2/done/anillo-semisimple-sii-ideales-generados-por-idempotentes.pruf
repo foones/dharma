@@ -1,0 +1,77 @@
+[title Anillo es semisimple sii ideales generados por elementos idempotentes]
+[category Álgebra 2]
+[tags anillo,simple,semisimple,ideal,idempotente]
+
+Sea $A$ un anillo. Entonces $A$ es semisimple si y sólo si todo ideal
+está generado por un elemento idempotente.
+(Un elemento $x \in A$ es idempotente sii $x^2 = x$).
+
+<strong>Demostración.</strong>
+
+($\Rightarrow$)
+Por <a href="/anillos-semisimples-propiedades">propiedades de anillos
+semisimples</a> se tiene que
+$A = \bigoplus_{i = 1}^{n}{\langle s_i \rangle}$ donde los $s_i$ son
+tales que:
+<ul>
+<li> $\langle s_i \rangle$ es simple
+<li> $1 = s_1 + \hdots + s_n$
+<li> $s_i\,s_j = 0$ si $i \neq j$
+<li> $s_i^2 = s_i$
+</ul>
+
+Sea $I \subseteq A$ un ideal. Sin pérdida de generalidad,
+reordenando convenientemente los elementos $s_1, \hdots, s_n$
+se tiene por la
+<a href="/caracterizacion-modulos-semisimples">caracterización de módulos semisimples</a>
+que $I \simeq \bigoplus_{i=1}^{k}{\langle s_i \rangle}$.
+Basta ver entonces que $I' := \bigoplus_{i=1}^{k}{\langle s_i \rangle}$
+está generado por un elemento idempotente.
+
+Considerar el elemento $e := s_1 + \hdots + s_k \in I'$.
+Entonces, para todo $j \in \{1, \hdots, k\}$ se tiene que
+$s_j\,e = s_j\,(s_1 + \hdots + s_k) = s_j^2 = s_j$.
+De este modo, los generadores de $I'$ están incluidos en
+$\langle e \rangle$, con lo cual $\langle e \rangle = I'$.
+
+Sólo resta ver que $e$ es idempotente. Esto es cierto pues
+$e^2 = (s_1 + \hdots + s_k)^2 =
+\sum_{i=1}^{k}{\sum_{j=1}^{k}{s_i\,s_j}} =
+s_1^2 + \hdots + s_k^2 =
+s_1 + \hdots + s_k = e$.
+
+($\Leftarrow$) Sea $S \subseteq A$ un ideal de $A$.
+Se verá que admite un complemento directo (i.e.
+un ideal $T \subseteq A$ tal que $S \oplus T = A$), con lo cual se tendrá que
+$A$ <a href="/caracterizacion-modulos-semisimples">es semisimple</a>.
+
+Si $S$ es el ideal nulo basta con tomar $T = A$ y, recíprocamente, si
+$S$ es todo $A$, basta con tomar $T = 0$. Suponer entonces que
+$0 \subsetneq S \subsetneq A$. Por hipótesis, todo ideal está generado
+por un elemento idempotente, de modo que en particular
+$S = \langle a \rangle$, para algún $a \in A$ no nulo tal que $a^2 = a$.
+Considerar el ideal $T := \langle 1 - a \rangle$. Se verá que $T$
+es un sumando directo de $S$.
+
+Por un lado, $1 = a + (1 - a) \in S + T$, de modo que, en efecto,
+$S + T$ es todo el anillo. Por otro lado, suponer que $s + t = 0$
+para ciertos $s \in S$, $t \in T$. Como $S$ y $T$ son ambos cíclicos,
+se tiene que $s = x\,a$ y que $t = y\,(1 - a)$ para ciertos
+$x, y \in A$. Es decir, $x\,a + y - y\,a = 0$. Multiplicando la
+igualdad a derecha por $a$, se tiene que:
+$x\,a^2 + y\,a - y\,a^2 = 0$. Como $a$ es un elemento idempotente,
+se concluye: $x\,a + y\,a - y\,a = 0$, o sea que $x\,a = 0$.
+De este modo, $s = x\,a = 0$ y entonces $t = 0$, con lo cual la suma es
+directa.
+
+<strong>Corolario.</strong> Si $A$ es un anillo semisimple y
+$a \in A$, entonces existe $x \in A$ tal que $a\,x\,a = a$.
+
+<strong>Demostración.</strong> El ideal $\langle a \rangle$
+está generado por un elemento idempotente $b \in A$, es decir:
+$\langle a \rangle = \langle b \rangle$ con $b^2 = b$.
+Como $a \in \langle b \rangle$, se tiene que $a = \lambda\,b$,
+y por lo tanto $a\,b = \lambda\,b^2 = \lambda\,b = a$.
+Como además $b \in \langle a \rangle$, se tiene que $b = x\,a$
+y por lo tanto $a = a\,b = a\,x\,a$.
+

@@ -1,0 +1,72 @@
+[title Módulos finitamente generados en sucesiones exactas cortas]
+[category Álgebra 2]
+[tags módulo,sucesión exacta corta,finitamente generado,noetheriano]
+
+Sea
+
+$0 \longrightarrow M \overset{f}{\longrightarrow} N \overset{g}{\longrightarrow} P \longrightarrow 0$
+
+una sucesión exacta corta de $A$-módulos. Entonces:
+
+<ol>
+<li> Si $N$ es finitamente generado, $P$ es finitamente generado.
+<li> Si $M$ y $P$ son finitamente generados, $N$ es finitamente generado.
+</ol>
+
+<strong>Demostración.</strong> 
+
+La demostración se puede reducir al
+<a href="done/sucesion-exacta-corta-inclusion-proyeccion.pruf">hecho</a>
+de que $M$ es isomorfo a un submódulo $K \subseteq N$
+y $P$ es isomorfo a un cociente $N / K$.
+Sigue una demostración ``a mano'':
+
+<ol>
+<li>
+Si $N$ es finitamente generado, se tiene que
+$N = \langle x_1, \hdots, x_n \rangle$.
+Entonces ${\mathop{\rm{im}}}(g) = \langle g(x_1), \hdots, g(x_n) \rangle$
+es finitamente generado. Además ${\mathop{\rm{im}}}(g) = P$ porque
+$g$ es un epimorfismo.
+
+<li>
+
+Sean $M$ y $P$ finitamente generados.
+Entonces ${\mathop{\rm{im}}}(f)$ es finitamente generado.
+Más precisamente,
+dado $\{x_1, \hdots, x_m\}$ un sistema de generadores de $M$,
+todo elemento $y \in {\mathop{\rm{im}}}(f)$ se escribe como
+combinación lineal de los $f(x_i)$.
+
+Por otro lado, sea $\{z_1, \hdots, z_p\}$ un sistema de generadores de $P$.
+Como $g$ es un epimorfismo, considerar un conjunto de preimágenes
+$\{y_1, \hdots, y_p\}$ tales que $y_i \in N$ con $g(y_i) = z_i$.
+
+Sea $y \in N$. Entonces $g(y) \in P$ se escribe como:
+
+$g(y)
+= \sum_{i = 1}^{p}{\alpha_i\,z_i}
+= \sum_{i = 1}^{p}{\alpha_i\,g(y_i)}$
+
+para ciertos elementos $\alpha_i$ en el anillo.
+Restando, se tiene entonces:
+
+$g(y - \sum_{i = 1}^{p}{\alpha_i\,y_i}) = 0$
+
+Entonces $y - \sum_{i = 1}^{p}{\alpha_i\,y_i} \in \ker(g) = {\mathop{\rm{im}}}(f)$.
+Como ya se vio, los elementos de la imagen se escriben como
+combinación lineal de los $f(x_i)$. Es decir:
+
+$y - \sum_{i=1}^{p}{\alpha_i\,y_i} = \sum_{i=1}^{m}{\beta_i\,f(x_i)}$.
+
+Despejando se concluye:
+
+$y = \sum_{i=1}^{p}{\alpha_i\,y_i} + \sum_{i=1}^{m}{\beta_i\,f(x_i)}$
+
+con lo cual todo elemento $y \in N$ está en el módulo
+generado por:
+$\langle y_1, \hdots, y_p, f(x_1), \hdots, f(x_m) \rangle$.
+
+Así, $N$ resulta finitamente generado.
+</ol>
+

@@ -1,0 +1,21 @@
+[title Cociente íntegro sii ideal primo]
+[category Álgebra 2]
+[tags anillo,cociente,dominio,íntegro,ideal,primo]
+
+Sea $A$ un anillo conmutativo e $I$ un ideal (bilátero). Entonces
+$A / I$ es un dominio íntegro sii $I$ es un ideal primo.
+
+<strong>Demostración.</strong>
+
+Basta observar que, dado un elemento $x \in A$, decir que $x$
+pertenece al ideal $I$ es lo mismo que decir que la clase de $x$ en
+$A / I$ es la clase del $0$.
+Más precisamente, $x \in I \iff x + I = I \iff \bar{x} = \bar{0}$.
+
+Dicho esto, se ve que son equivalentes:
+<ul>
+<li> $A / I$ es un dominio íntegro
+<li> $\forall x, y \in A.\ \bar{x}\,\bar{y} = 0 \implies (\bar{x} = \bar{0} \lor \bar{y} = \bar{0})$
+<li> $\forall x, y \in A.\ x\,y \in I \implies (x \in I \lor y \in I)$
+<li> $I$ es un ideal primo
+</ul>

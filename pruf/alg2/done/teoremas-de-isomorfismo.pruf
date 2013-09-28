@@ -1,0 +1,125 @@
+[title Teoremas de isomorfismo de grupos]
+[category Álgebra 2]
+[tags teorema,isomorfismo,grupo]
+
+<h2>Primer teorema de isomorfismo</h2>
+
+Sean $G$, $G'$ grupos arbitrarios y
+$\varphi : G \to G'$ un morfismo de grupos.
+Entonces $G / \ker(\varphi) \simeq {\mathop{\rm{im}}}(\varphi)$.
+
+<strong>Demostración.</strong>
+
+Usando la
+<a href="/factorizacion-de-morfismos-de-grupos">factorización de morfismos de grupos</a>
+sobre el núcleo $\ker(\varphi)$,
+se tiene que existe un único morfismo
+$\bar{\varphi} : G / \ker(\varphi) \to G'$ tal que
+$\varphi = \bar{\varphi} \cdot \pi$.
+
+Considerar dicho morfismo $\bar{\varphi}$ restringiendo su
+codominio a ${\mathop{\rm{im}}}(\varphi)$. Es un epimorfismo,
+porque por definición de la imagen,
+para todo $y \in {\mathop{\rm{im}}}(\varphi)$ existe
+un $x \in G$ tal que $\varphi(x) = y$, y por lo tanto
+$\bar{\varphi}(\bar{x}) = y$.
+
+Además, es un monomorfismo, porque $\bar{\varphi}(\bar{x}) =
+\varphi(x)$. Entonces si $\bar{\varphi}(\bar{x}) = 0$
+se tiene que $x \in \ker(\varphi)$, con lo cual
+$\bar{x} = 0$.
+
+Así, $\bar{\varphi} : G / \ker(\varphi) \to {\mathop{\rm{im}}}(\varphi)$
+resulta un isomorfismo.
+
+<h2>Segundo teorema de isomorfismo</h2>
+
+Sean $G$, $H$, $K$ grupos tales que $K \leq H \leq G$
+con $K \trianglelefteq G$ y $H \trianglelefteq G$.
+Entonces se tiene que $(G/K) / (H/K) \simeq G/H$.
+
+Informalmente, esto afirma que se pueden ``cancelar'' las
+ocurrencias de $K$. Desde otro punto de vista, esto afirma
+que tomar el cociente de un cociente ($(G/K) / (H/K)$)
+no aporta mayor información que tomar un cociente del
+grupo original ($G/H$).
+
+<strong>Demostración.</strong>
+
+Por empezar, se debe verificar que las expresiones del enunciado están
+bien definidas. Es decir, que todos los grupos por los que se cocienta
+son normales.
+Por un lado, $K \trianglelefteq H$, pues
+$H$ es un subconjunto de $G$, con lo que $g\,K\,g^{-1} = K$
+para todo $g \in H$.
+Además, $H/K \trianglelefteq G/K$, ya que dados
+$g\,K \in G/K$ y $h\,K \in H/K$
+se tiene que
+$g\,h\,g^{-1} \in H$ y por lo tanto
+$g\,h\,g^{-1}\,K \in H/K$.
+
+Para el isomorfismo, considerar primero la proyección
+al cociente: $\pi_H : G \to G/H$. Su núcleo es $H$, y
+$K \subseteq H$. Por lo tanto, se puede aplicar la
+<a href="/factorizacion-de-morfismos-de-grupos">factorización de morfismos de grupos</a>
+para concluir que existe un único morfismo
+$\psi : G/K \to G/H$ que cumple
+$\pi_H = \psi \cdot \pi_K$,
+donde $\pi_K : G \to G/K$ es la proyección al cociente sobre $K$.
+
+El morfismo $\psi$ es un epimorfismo, porque $\pi_H = \psi \cdot \pi_K$ lo es.
+Además, $\ker(\psi) = \{x\,K \in G/K\ |\ \psi(x\,K) = 0\}$, es decir,
+$\ker(\psi) = \{x\,K \in G/K\ |\ \pi_H(x) = 0\}$. Esto a su vez
+equivale a afirmar que $\ker(\psi) = \{x\,K \in G/K\ | x \in H\} = H/K$.
+
+Resumiendo, $\psi : G/K \to G/H$ es un epimorfismo tal que
+$\ker(\psi) = H/K$, con lo cual, por el primer teorema
+de isomorfismo, se concluye
+$(G/K) / (H/K) \simeq G/H$.
+
+<h2>Tercer teorema de isomorfismo</h2>
+
+Sean $G$ un grupo y $S$, $T$ subgrupos de $G$.
+Sea $S \trianglelefteq G$. Entonces se tiene
+que $ST / S = T / (S \cap T)$.
+
+Si el grupo es Abeliano, usando notación aditiva:
+$\frac{S + T}{S} = \frac{T}{S \cap T}$.
+
+<strong>Demostración.</strong>
+
+Por empezar se debe verificar que las expresiones que intervienen
+en el enunciado están bien definidas. Por un lado, $ST$ es un subgrupo
+de $G$ porque $S$ es normal en $G$. Teniendo esto en cuenta, se
+cumple también que $S \trianglelefteq ST$, porque dado cualquier
+$x \in ST$, en particular $x \in G$, y por lo tanto
+$x\,S\,x^{-1} = S$. Por último, $S \cap T \trianglelefteq T$.
+Para ello, dados $t \in T$ y $s \in S \cap T$, se debe ver que
+$t\,s\,t^{-1} \in S \cap T$.
+En efecto, $t\,s\,t^{-1}$ está en $t\,S\,t^{-1} = S$
+porque $S$ es normal, y está en $T$ porque todos sus factores
+lo están.
+
+Para el isomorfismo, considerar primero la aplicación:
+$\varphi : T \to ST / S$ definida por
+$t \mapsto \bar{t} = 1\,t\,S$. Se tiene que $\varphi$ es un morfismo
+de grupos porque
+$\varphi(t\,t')
+= \bar{t}\bar{t'}
+= \varphi(t)\,\varphi(t')$.
+
+Por un lado, $\varphi$ es un epimorfismo. Para ver esto,
+considerar un elemento $s\,t\,S \in ST/S$ arbitrario.
+Por ser $S$ normal, se sabe que $s\,t$ se escribe
+como $t\,\tilde{s}$ para algún $\tilde{s} \in S$.
+Se tiene entonces que
+$s\,t\,S = t\,\tilde{s}\,S = t\,S = \varphi(t)$.
+
+Por otro lado, el núcleo $\ker(\varphi)$ es el conjunto
+$\{t \in T\ |\ t\,S = S\}$, es decir, $T \cap S$.
+
+Resumiendo, $\varphi : T \to ST / S$ es un epimorfismo 
+cuyo núcleo es $T \cap S$. Por el primer teorema de
+isomorfismo se concluye entonces que
+$T / (T \cap S) \simeq ST / S$.
+

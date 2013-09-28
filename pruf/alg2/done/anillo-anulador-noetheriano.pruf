@@ -1,0 +1,53 @@
+[title Anillo sobre anulador Noetheriano si módulo Noetheriano]
+[category Álgebra 2]
+[tags anillo,conmutativo,anulador,módulo,noetheriano]
+
+Sea $A$ un anillo conmutativo y $M$ un $A$-módulo. Si
+$M$ es Noetheriano, entonces $A / \mathop{\rm{Ann}}(M)$
+es Noetheriano.
+
+<strong>Demostración.</strong> Sea $\{x_1, \hdots, x_n\}$
+un sistema de generadores de $M$. Es posible tomar un sistema de
+generadores finito porque $M$ es Noetheriano, con lo cual es también
+finitamente generado.
+Considerar la aplicación
+$\varphi : A \to M^n$ determinada por:
+$a \mapsto a\,(x_1, \hdots, x_n) = (a\,x_1, \hdots, a\,x_n)$.
+Es un morfismo porque son iguales:
+<ul>
+<li> $\varphi(\sum_{i=1}^{m}{\lambda_i\,a_i})$
+<li> $((\sum_{i=1}^{m}{\lambda_i\,a_i})\,x_1, \hdots,
+       (\sum_{i=1}^{m}{\lambda_i\,a_i})\,x_n)$
+<li> $\sum_{i=1}^{m}{\lambda_i\,(\,a_i\,x_1, \hdots, a_i\,x_n)}$
+<li> $\sum_{i=1}^{m}{\lambda_i\,\varphi(a_i)}$
+</ul>
+
+Por el primer teorema de isomorfismo,
+se tiene que $A / \ker(\varphi) \simeq \mathop{\rm{Im}}(\varphi)$.
+
+Observar que $\ker(\varphi) = \mathop{\rm{Ann}}(M)$:
+<ul>
+<li> $(\subseteq)$ Sea $a \in \ker(\varphi)$. Entonces $\varphi(a) = 0$,
+     es decir $a\,x_i = 0$ para todos los generadores $x_i$.
+     Entonces $a\,m = 0$ para todo $m \in M$, pues $m$
+     se escribe como combinación lineal de los $x_i$, de modo que
+     $a \in \mathop{\rm{Ann}}(M)$.
+
+<li> $(\supseteq)$ Sea $a \in \mathop{\rm{Ann}}(M)$. Entonces
+     $\varphi(a) = (a\,x_1, \hdots, a\,x_n) = 0$, con lo cual
+     $a \in \ker(\varphi)$.
+</ul>
+
+Se tiene entonces que $A / \mathop{\rm{Ann}}(M) \simeq \mathop{\rm{Im}}(\varphi)$.
+Para probar que $A / \mathop{\rm{Ann}}(M)$ es Noetheriano,
+basta ver que $\mathop{\rm{Im}}(\varphi)$ es Noetheriano, pues
+dicha propiedad se preserva por isomorfismos.
+
+Observar que $\mathop{\rm{Im}}(\varphi)$ es un
+submódulo de $M^n$, y por lo tanto
+<a href="/submodulos-noetherianos">basta ver</a> que $M^n$ es
+Noetheriano. Finalmente, $M^n = \bigoplus_{i=0}^{n}{M}$ es Noetheriano
+porque $M$ es Noetheriano y
+<a href="/noetheriano-sii-suma-directa-noetheriano">sus sumas directas</a>
+lo son.
+

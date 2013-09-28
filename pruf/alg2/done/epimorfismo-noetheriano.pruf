@@ -1,0 +1,40 @@
+[title Epimorfismo sobre módulo Noetheriano es isomorfismo]
+[category Álgebra 2]
+[tags endomorfismo,módulo,noetheriano,epimorfismo,monomorfismo,isomorfismo]
+
+Sea $M$ un $A$-módulo Noetheriano y $f \in \rm{\mathop{End}}_A(M)$ un
+endomorfismo. Si $f$ es un epimorfismo, entonces es un isomorfismo.
+
+<strong>Demostración.</strong> Basta ver que $f$ es un monomorfismo.
+Suponer que no lo fuera. Se verá que para todo $n \in \mathbb{N}$
+existen elementos $x_n \in M$ tales que $f^{n-1}(x_n) \neq 0$ pero
+$f^n(x_n) = 0$.
+
+Por inducción en $n$. Si $n = 1$, como $f$ no es un monomorfismo,
+existe un $x_1 \in M$ no nulo tal que $f(x_1) = 0$.
+
+Para el caso $n + 1$, considerar por hipótesis inductiva un
+elemento $x_n$ que cumpla con las propiedades requeridas.
+Como $f$ es un epimorfismo, $x_n$ es la imagen
+de un cierto elemento $x_{n+1} \in M$, es decir $f(x_{n+1}) = x_n$.
+Por hipótesis inductiva se tiene que
+$f^{n-1}(x_n) \neq 0$.
+Reemplazando $x_n$ por $f(x_{n+1})$ se obtiene:
+$f^{n-1}(f(x_{n+1})) = f^n(x_{n+1}) \neq 0$.
+La segunda propiedad de la hipótesis inductiva asegura que
+$f^n(x_n) = 0$, de modo que nuevamente
+$f^n(f(x_{n+1})) = f^{n+1}(x_{n+1}) = 0$.
+
+En general se verifica la inclusión $\ker(f^n) \subseteq \ker(f^{n+1})$.
+Además, por lo ya probado, se tienen elementos $x_n$ con $n \in \mathbb{N}$
+tales que $x_n \not\in \ker(f^{n-1})$ pero $x_n \in \ker(f^n)$.
+Es decir, para todo $n \in \mathbb{N}$ se tiene que
+$\ker(f^n) \subsetneq \ker(f^{n + 1})$.
+Entonces, la siguiente:
+$\ker(f) \subsetneq \ker(f^2) \subsetneq \ker(f^3) \subsetneq \hdots$
+es una cadena creciente de submódulos de $M$ que no se estaciona.
+Esto es absurdo, pues contradice el hecho de que $M$ es Noetheriano,
+de modo que $f$ es un monomorfismo.
+
+De manera dual, si $M$ es un $A$-módulo Artiniano y $f$
+un monomorfismo, entonces <a href="/monomorfismo-artiniano">es un isomorfismo</a>.

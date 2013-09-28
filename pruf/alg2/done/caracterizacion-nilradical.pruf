@@ -1,0 +1,78 @@
+[title Caracterización del nilradical]
+[category Álgebra 2]
+[tags anillo,conmutativo,primo,ideal,nilradical,multiplicativo]
+
+Sea $A$ un anillo conmutativo y $S \subseteq  A$ un conjunto
+multiplicativo que no contiene a $0$.
+
+<h2>Parte 1</h2>
+Existen ideales de $A$ maximales con la propiedad de no cortar a $S$.
+
+<strong>Demostración.</strong> La demostración usa el Lema de Zorn.
+Para esto, considerar el conjunto $\Omega$ formado por los ideales de
+$A$ que no cortan a $S$. Por empezar, $\Omega$ es no vacío pues
+contiene al ideal $\{0\}$ que no corta a $S$.
+Se verá además que toda cadena infinita creciente de elementos de
+$\Omega$ tiene una cota superior en $\Omega$, con lo cual habrá un
+elemento maximal en $\Omega$, que es lo que se quiere probar.
+
+Dada una cadena creciente $I_1 \subseteq I_2 \subseteq \hdots$ de
+ideales que no cortan a $S$, considerar la unión $J = \bigcup_{i \in
+\mathbb{N}}{I_i}$. Es un ideal de $A$ que contiene a todos los $I_i$.
+Además $J$ no corta a $S$, pues si lo hiciera, existiría un $s \in S$ 
+que también está en $J$, y por lo tanto $s \in I_i$ para algún
+$i \in \mathbb{N}$, lo cual es absurdo porque los $I_i$ no cortan a
+$S$.
+
+<h2>Parte 2</h2>
+
+Sea $I$ un ideal maximal entre aquellos que no cortan a $S$. Entonces
+$I$ es primo.
+
+<strong>Demostración.</strong>
+Sea $x\,y \in I$, y suponer que $x, y \not\in I$.
+Como $I$ es un ideal maximal entre aquellos que no
+cortan a $S$, y como $x \not\in I$, se tiene que $\langle I, x \rangle$ corta a $S$. Por lo
+tanto existe un $s_1 \in S$ que se escribe de la forma
+$s_1 = i_1 + \alpha_1\,x$ para ciertos $i_1 \in I$, $\alpha_1 \in A$.
+Análogamente, como $y \not\in I$, se tiene que existe un $s_2 \in S$
+que se escribe como 
+$s_2 = i_2 + \alpha_2\,y$ para $i_2 \in I$, $\alpha_2 \in A$.
+
+El producto $s_1\,s_2$ está en $S$, pues este es un conjunto
+multiplicativo. Por otra parte,
+$s_1\,s_2 = (i_1 + \alpha_1\,x)\,(i_2 + \alpha_2\,y) =
+i_1\,(i_2 + \alpha_2\,y) + \alpha_1\,x\,i_2 + \alpha_1\,x\,y$.
+Los primeros dos términos están en $I$ pues $i_1, i_2 \in I$.
+El tercer término está en $I$ porque $x\,y \in I$.
+Entonces $s_1\,s_2 \in S \cap I$, lo cual es absurdo pues $I$ no corta
+a $S$.
+
+<h2>Parte 3</h2>
+Un elemento $a \in A$ pertenece a todos los ideales primos del anillo
+si y sólo si alguna potencia de $a$ es $0$. En otras palabras, la
+intersección de todos los ideales primos de un anillo conmutativo
+coincide con el conjunto de los elementos nilpotentes. En particular,
+los nilpotentes forman un ideal, que se conoce con el nombre de
+<em>nilradical</em> del anillo $A$.
+
+<strong>Demostración.</strong>
+
+$(\subseteq)$ Sea $a \in \bigcap_{\mathfrak{p} {\mathrm{\,primo}}}{\mathfrak{p}}$.
+Considerar $S = \{a^n\ |\ n \in \mathbb{N}\}$ el conjunto de todas las
+potencias de $a$. Por el absurdo, suponer que $a$ no fuera nilpotente.
+Entonces $S$ es un conjunto multiplicativo que no contiene a $0$.
+Por la Parte 1, existe un ideal $I$ maximal que no corta a $S$.
+Por la Parte 2, dicho ideal $I$ es primo. Entonces $a \in I$, pues
+$a$ está en todos los ideales primos de $A$. Pero además $a \in S$,
+que es el conjunto de todas las potencias de $a$.
+Esto es absurdo pues $I$ no corta a $S$.
+
+$(\supseteq)$ Sea $a$ nilpotente y $\mathfrak{p}$ un ideal primo de $A$.
+Por inducción en el orden de nilpotencia de $a$. Si $a^1 = 0$,
+entonces $a \in \mathfrak{p}$. Si $a^{r+1} = 0$, entonces
+$a^{r+1} \in \mathfrak{p}$. Como $\mathfrak{p}$ es primo se tiene que
+o bien $a \in \mathfrak{p}$, en cuyo caso no hay nada que probar,
+o bien que $a^r \in \mathfrak{p}$, en cuyo caso se concluye que $a \in
+\mathfrak{p}$ por hipótesis inductiva.
+

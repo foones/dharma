@@ -1,0 +1,22 @@
+[title Módulos simples son cíclicos]
+[category Álgebra 2]
+[tags módulo,simple,cíclico,submódulo,genera]
+
+Sea $M$ un $A$-módulo. Entonces $M$ es simple si y sólo si
+$M \neq 0$ y para todo $x \in M$ tal que $x \neq 0$ se tiene que $\langle x \rangle = M$.
+
+<strong>Demostración.</strong>
+
+($\Rightarrow$) Sea $M$ simple. Por definición de simplicidad, $M \neq 0$.
+Sea entonces un elemento $x \in M$ no nulo.
+El submódulo cíclico $\langle x \rangle \subseteq M$ es no
+nulo. Como $M$ es simple, se concluye $\langle x \rangle = M$.
+
+($\Leftarrow$) Sea $S$ un submódulo no nulo de $M$. Entonces existe un
+elemento $x \in S$ no nulo. Por lo tanto $S \supseteq \langle x
+\rangle = M$, con lo cual $S = M$.
+
+<strong>Corolario.</strong> Todo $A$-módulo simple es cíclico.
+Esto es porque $M$ no es nulo y está generado por cualquier elemento
+no nulo.
+

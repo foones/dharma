@@ -1,0 +1,28 @@
+[title Ideal maximal es primo]
+[category Álgebra 2]
+[tags anillo,ideal,maximal,primo]
+
+Sea $A$ un anillo conmutativo. Si $\mathfrak{m}$ es un ideal maximal
+de $A$, entonces $\mathfrak{m}$ es primo.
+
+<strong>Demostración.</strong> Sean $x, y \in A$ tales que $x\,y \in
+\mathfrak{m}$. Se verá que, o bien $x \in \mathfrak{m}$, o bien $y \in
+\mathfrak{m}$.
+
+Suponer que $x \not\in \mathfrak{m}$ y considerar el ideal
+$I = \langle \mathfrak{m},x \rangle$; i.e., $I$ está generado
+por $\mathfrak{m} \cup \{x\}$. El ideal $I$ no es $\mathfrak{m}$,
+pues contiene a $x \not\in \mathfrak{m}$. Como $\mathfrak{m}$ es
+maximal, $I$ es todo el anillo $A$. En particular, $1_A \in I =
+\langle \mathfrak{m}, x \rangle$ de modo que:
+$$1_A = \underbrace{m}_{\in \mathfrak{m}} + \underbrace{\alpha\,x}_{\in \langle x \rangle}$$
+para algún $m \in \mathfrak{m}$ y algún elemento $\alpha \in A$.
+
+Multiplicando la ecuación por $y$, y reordenando los factores (usando
+que $A$ es conmutativo) se obtiene:
+$$y = \underbrace{m\,y}_{\in \mathfrak{m}} + \underbrace{\alpha\,x\,y}_{\in \mathfrak{m}}$$
+Al multiplicar, $m\,y$ se mantiene dentro de $\mathfrak{m}$ porque
+este es un ideal. Por otra parte, $x\,y$ está en $\mathfrak{m}$ por
+hipótesis, y por lo tanto también $\alpha\,x\,y \in \mathfrak{m}$.
+Entonces $y$ es suma de dos elementos de $\mathfrak{m}$ y
+por lo tanto $y \in \mathfrak{m}$.
