@@ -1,9 +1,6 @@
 #include <stdlib.h>
 #include "io.h"
 
-#include "math.h"
-#include "time.h"
-
 void refresh(IO io)
 {
 	static int t = 0;
