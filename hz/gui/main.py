@@ -16,12 +16,12 @@ def rotate_players(players, player):
     post = []
     self_seen = False
     for p in players:
+        if p == player:
+            self_seen = True
         if self_seen:
             prev.append(p)
         else:
             post.append(p)
-        if p == player:
-            self_seen = True
     return prev + post
 
 class GameState(object):
@@ -39,6 +39,7 @@ class App(object):
         self._gui.window = gtk.Window(gtk.WINDOW_TOPLEVEL)
         self._gui.window.show()
         self._gui.box = None
+        self._gui.pixbuf_pool = {}
 
     def read_message(self):
         msg = sys.stdin.readline()
@@ -94,7 +95,7 @@ class App(object):
         self._update_player_positions()
  
     def _update_player_positions(self):
-        assert len(self._game.players) == 4
+        assert len(self._game.player_names) == 4
         p_i = -1
 
         relative_fracts_x = [
@@ -115,7 +116,7 @@ class App(object):
         ]
         width, height = self._gui.window.get_size()
         pi = -1
-        for p in self._game.players:
+        for p in self._game.player_names:
             pi += 1
             posx, posy = player_positions[pi]
             xf0, xf1 = relative_fracts_x[posx]
@@ -127,29 +128,28 @@ class App(object):
             self._gui.box.move(self._gui.player_box[p], x0_px, y0_px)
             self._gui.player_box[p].set_usize(x1_px - x0_px, y1_px - y0_px)
             self._gui.player_box[p].modify_bg(gtk.STATE_NORMAL, gtk.gdk.color_parse('red'))
-            #sys.stderr.write(' %s \n' % (dir(self._gui.player_box[p]), ))
+            self._gui.player_orientation[p] = 'horizontal' if pi % 2 == 0 else 'vertical'
 
-    def _start_game(self, cards, players, player):
+    def _start_game(self, cards, player_names, player_name):
 
         if self._gui.box is not None:
             self._gui.window.remove(self._gui.box)
 
+        player_name = player_name[0]
+
         self._game = GameState()
-        self._game.player = player[0]
-        self._game.players = rotate_players(players, player)
+        self._game.player_name = player_name
+        self._game.player_names = rotate_players(player_names, player_name)
 
         self._gui.box = gtk.Fixed()
         self._gui.player_box = {}
+        self._gui.player_orientation = {}
 
-        for p in players:
-            #pbox = gtk.Label('Hola_' + ''.join([random.choice('abced') for i in range(16)]))
+        for p in player_names:
             pbox = gtk.Frame()
             pbox.show()
             self._gui.player_box[p] = pbox
             self._gui.box.put(pbox, 0, 0)
-
-        #self._box = gtk.Fixed()
-        #self._box.add(x)
 
         self._gui.box.show()
         self._gui.window.add(self._gui.box)
@@ -159,30 +159,69 @@ class App(object):
         self._update_player_positions()
         return True
 
-        #bbox = gtk.HButtonBox()
-        bbox = gtk.HBox()
-        #bbox.set_layout(gtk.BUTTONBOX_SPREAD)
-        #bbox.set_spacing(10)
-        
-        nums = map(str, range(1, 11)) + ['J', 'Q', 'K']
-        
-        for num in nums:
-            #btn = gtk.EventBox()
-            btn = gtk.Button()
+    def _card_widget(self, card):
+        if card not in self._gui.pixbuf_pool:
+            pixbuf = gtk.gdk.pixbuf_new_from_file_at_size('gui/img/%s.svg' % (card,), 128, 256)
+            self._gui.pixbuf_pool[card] = pixbuf
+        img = gtk.Image()
+        img.set_from_pixbuf(self._gui.pixbuf_pool[card])
+        img.show()
+        btn = gtk.Button()
+        btn.add(img)
+        btn.show()
+        return btn
+        #   #image.set_size_request(32, 64) #
+        #   btn.connect('button_press_event', self.image_clicked)
+        #   bbox.add(btn)
+        #   bbox.pack_end(btn)
+        #   bbox.show()
 
-            image = gtk.Image()
-            image.set_from_file('gui/img/%sC.svg' % (num,))
+    def _add_cards(self, player_name, cards):
+        box_class = {
+            'horizontal': gtk.HBox,
+            'vertical': gtk.VBox,
+        } 
+        box = box_class[self._gui.player_orientation[player_name]]()
+        for card in cards:
+            btn = self._card_widget(card)
+            box.add(btn)
+        box.show()
+        self._gui.player_box[player_name].add(box)
 
-            image.show()
-            #image.set_size_request(32, 64) #
-            btn.add(image)
-            btn.show()
-            btn.connect('button_press_event', self.image_clicked)
-            bbox.add(btn)
-            bbox.pack_end(btn)
-        bbox.show()
+    def _hand(self, cards):
+        sys.stderr.write('CARDS %s' % (cards,))
+        for p in self._game.player_names:
+            sys.stderr.write('CARGO PARA %s %s\n' % (p, self._game.player_name,))
+            if p != self._game.player_name:
+                self._add_cards(p, ['back' for i in range(len(cards))])
+            else:
+                self._add_cards(p, cards)
+        return True
 
-        self._gui.window.add(bbox)
+#       #bbox = gtk.HButtonBox()
+#       bbox = gtk.HBox()
+#       #bbox.set_layout(gtk.BUTTONBOX_SPREAD)
+#       #bbox.set_spacing(10)
+#       
+#        nums = map(str, range(1, 11)) + ['J', 'Q', 'K']
+#        
+#        for num in nums:
+#            #btn = gtk.EventBox()
+#            btn = gtk.Button()
+#
+#            image = gtk.Image()
+#            image.set_from_file('gui/img/%sC.svg' % (num,))
+#
+#            image.show()
+#            #image.set_size_request(32, 64) #
+#            btn.add(image)
+#            btn.show()
+#            btn.connect('button_press_event', self.image_clicked)
+#            bbox.add(btn)
+#            bbox.pack_end(btn)
+#        bbox.show()
+#
+#        self._gui.window.add(bbox)
 
     def dispatch(self, *args):
         opcode, args = self.read_message_with_ack()
@@ -192,6 +231,10 @@ class App(object):
 
         elif opcode == 'start':
             self._start_game(*args)
+            return True
+
+        elif opcode == 'hand':
+            self._hand(*args)
             return True
 
         else:
