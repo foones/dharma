@@ -89,8 +89,6 @@ typedef struct _Fu_MM {
 						 * color */
 } Fu_MM;
 
-typedef Fu_MMObject Fu_Object;
-
 void fu_mm_gc(Fu_MM *mm);
 void fu_mm_init(Fu_MM *mm);
 Fu_MMObject *fu_mm_allocate(Fu_MM *mm, Fu_MMTag *tag, Fu_MMSize size);

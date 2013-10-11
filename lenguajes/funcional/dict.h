@@ -22,6 +22,6 @@ void fu_dict_define(Fu_Dict *dict, Key key, void *value);
 void *fu_dict_get(Fu_Dict *dict, Key key);
 
 /* Does not free the pointer itself */
-void *fu_free_dict(Fu_Dict *dict);
+void fu_free_dict(Fu_Dict *dict);
 
 #endif

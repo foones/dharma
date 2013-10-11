@@ -73,7 +73,7 @@ int main()
 {
 	/*test_mm();*/
 	/*test_lexer();*/
-	test_dict();
+	/*test_dict();*/
 	return 0;
 }
 
