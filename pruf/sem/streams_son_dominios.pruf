@@ -1,0 +1,52 @@
+[title Stream sobre un dominio es un dominio]
+[category Semántica]
+[tags inconcluso]
+
+Dado un tipo $X$, sea
+$S(X) := \mathcal{I} \to X$, el tipo de los ``streams'' con dominio
+$\mathcal{I}$ sobre $X$.
+Sea $(D,\leq_D)$ un dominio. Entonces se le puede dar a $S(D)$
+estructura de dominio.
+
+<em>Demostración.</em>
+En primer lugar, $S(D)$ es un conjunto parcialmente ordenado.
+Dadas $f, g : S(D)$, tomar:
+$$f \leq_{S(D)} g \iff \forall d : D,\ f(d) \leq_D g(d)$$
+$\leq_{S(D)}$ es una relación de orden parcial.
+
+Además, $S(D)$ admite un elemento mínimo:
+$$\bot_{S(D)}(-) = \bot_{D}$$
+Para ver que es un dominio, resta ver que todo filtro admite un
+supremo. Sea $\mathcal{F}$ un filtro de $S(D)$. Para cada $i :
+\mathcal{I}$ sea:
+$$\mathcal{F}_i := \{ f(i)\ |\ f : \mathcal{F} \}$$
+<em>Afirmación:</em> para todo $i$, se tiene que $\mathcal{F}_i$
+es un filtro. Demostración de la afirmación:
+sean $d_1, d_2 : \mathcal{F}_n$. Entonces existen
+$f_1, f_2 : \mathcal{F}$ tales que $d_1 = f_1(i)$ y $d_2 = f_2(i)$.
+Como $\mathcal{F}$ es un filtro de $S(D)$ existe $g$ tal que
+$f_1 \leq_{S(D)} g$ y $f_2 \leq_{S(D)} g$. En particular, evaluando
+en $i$ se tiene que $d_1 = f_1(i) \leq_{S(D)} g(i)$ y análogamente
+$d_2 = f_2(i) \leq_{S(D)} g(i)$.
+
+Como $D$ es un dominio y cada $\mathcal{F}_i$ es un filtro,
+para cada $i$ existe un elemento $\bigvee\mathcal{F}_i : D$.
+Sea $s : S(D)$ definido por:
+$$s(i) := \bigvee\mathcal{F}_i$$
+y veamos que es la mínima cota superior de $\mathcal{F}$.
+
+Para ver que es una cota superior, sean $f : \mathcal{F}$ y $i : \mathcal{I}$.
+Por definición, $f(i) \in \mathcal{F}_i$, y por lo tanto
+$f(i) \leq_D \bigvee\mathcal{F}_i = s(i)$. Esto implica
+$f \leq_{S(D)} s$ para toda $f : \mathcal{F}$.
+
+Para ver que es la mínima de las cotas superiores, sea
+$g : S(D)$ una cota superior de $\mathcal{F}$. Entonces
+para toda $f : \mathcal{F}$ y para todo $i : \mathcal{I}$
+se tiene que $f(i) \leq_D g(i)$.
+Es decir, $g(i)$ es una cota superior para $\mathcal{F}_i$.
+Como $\bigvee\mathcal{F}_i$ es la mínima de las cotas superiores
+de $\mathcal{F}_i$, se tiene que
+$s(i) = \bigvee\mathcal{F}_i \leq_D g(i)$ para todo $i$.
+Esto implica que $s \leq_{S(D)} g$.
+
