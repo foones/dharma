@@ -186,14 +186,20 @@ let rec normalize_expr (env : exp environment) (e0 : exp) : exp =
   ;;
 
 let rec normalize_type (env : exp environment) (t0 : typ) : typ =
-  VarT "XXX" (*** TODO ***)
-  ;;
-(*
   match t0 with
-  | VarT x -> lookup_env env x
-  | ForallT 
-  | AppExpT 
-*)
+  | VarT x              -> VarT x
+  | ForallT (x, t1, t2) ->
+      let t2' = normalize_type env t2 in
+        ForallT (x, t1, t2')
+  | AppExpT (t, e) ->
+      let t' = normalize_type env t in
+      let e' = normalize_expr env e in
+        (match t' with
+        | ForallT (x, t1, t2) ->
+            normalize_type (extend_env env x e') t2
+        | _ -> AppExpT (t', e')
+        )
+  ;;
 
 (* Contexts *)
 
@@ -234,10 +240,29 @@ let var_get_type (ctx : context) (x : id) : typ =
 
 (* Checking *)
 
-let equal_types (t1 : typ) (t2 : typ) : bool =
+let equal_types (env : exp environment) (t1 : typ) (t2 : typ) : bool =
+  let rec check_equal_types (t1 : typ) (t2 : typ) : bool =
+    (match t1 with
+    | VarT x -> (match t2 with
+                | VarT y -> x = y
+                | _      -> false
+                )
+    | ForallT (x, t1a, t1b) ->
+                (match t2 with
+                | ForallT (y, t2a, t2b) ->
+                    check_equal_types t1a t2a &&
+                    let z = fresh_var x in
+                      check_equal_types
+                        (substitute_type t1b (extend_env env x (VarE z)))
+                        (substitute_type t2b (extend_env env y (VarE z)))
+                | _ -> false
+                )
+    | _ -> false
+    )
+  in
   let t1 = normalize_type [] t1 in
   let t2 = normalize_type [] t2 in
-    true (** TODO **)
+    check_equal_types t1 t2 
   ;;
 
 let
@@ -293,7 +318,8 @@ let
     )
   and assert_expr_has_type (ctx : context) (e0 : exp) (t0 : typ) : unit =
     let t1 = infer_expr_type ctx e0 in
-      if equal_types t0 t1
+      (*** TODO: reemplazar [] por un parametro (env : exp environment) ***)
+      if equal_types [] t0 t1
         then ()
         else raise (Failure
                      ("types do not match; expected: " ^ show_typ t0 ^ " got: " ^ show_typ t1))
