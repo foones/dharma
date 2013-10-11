@@ -28,8 +28,20 @@ Section RealLine.
     Variable inv : R -> R.
     Hypothesis mul_inv_eq_one : forall x, x = zero \/ mul x (inv x) = one.
 
-    Hypothesis distr : forall x y z, mul x (add y z) = add (mul x y) (mul x z).
+    Hypothesis zero_neq_one : ~ (zero = one).
 
+    Hypothesis distr : forall x y z, mul x (add y z) = add (mul x y) (mul x z).
+    
+    Variable rlt : R -> R -> Prop.
+ 
+    Hypothesis ord_trich : forall x y, rlt x y \/ x = y \/ rlt y x.
+    Hypothesis ord_trich_lt_not_eq : forall x y, rlt x y -> ~(x = y).
+    Hypothesis ord_trich_lt_not_gt : forall x y, rlt x y -> ~(rlt y x).
+    Hypothesis ord_trich_eq_not_lt : forall x y, x = y -> ~(rlt x y).
+    Hypothesis ord_trans : forall x y z, rlt x y -> rlt y z -> rlt x z.
+    Hypothesis ord_add : forall x y z, rlt x y -> rlt (add x z) (add y z).
+    Hypothesis ord_mul : forall x y z, rlt x y -> rlt z zero -> rlt (mul x z) (mul y z).
+    
     (* Slopes at 0 -- axioms *)
 
     Variable slope0 : (R -> R) -> R.
@@ -85,13 +97,36 @@ Section RealLine.
 
     (* Areas *)
 
-    Let is_area (area : (R -> R) -> R -> R) :=
-      forall f, forall x,
-      forall eps, mul eps eps = zero ->
+    Let two := add one one.
+    Let half := inv two.
+    Let halve x := mul x half.
+    Let is_area (area : (R -> R) -> R -> R) : Prop :=
+      forall f x eps, mul eps eps = zero ->
         area f (add x eps) =
-        add (area f x) (add (mul (f x) eps)
-                            (mul (mul (slopeX0 f x) eps) (inv (add one one)))).
-
+        add (area f x) (halve
+                          (mul eps
+                               (add (f x) (f (add x eps))))).
+    
+    Lemma two_not_zero : not (add one one = zero).
+      intro H.
+      symmetry in H.
+      apply ord_trich_eq_not_lt in H.
+      assert (rlt zero one).
+      replace one (
+      
+    
+    Lemma halve_x_plus_x :
+      forall x, halve (add x x) = x.
+      intros.
+      unfold halve, half, two.
+      replace (add x x) with (mul x (add one one)).
+      rewrite <- mul_assoc.
+      assert (mul (add one one) (inv (add one one)) = one).
+      destruct (mul_inv_eq_one (add one one)).
+      
+      rewrite <- mul_inv_eq_one.
+      
+                                 
     Lemma fund_thm_calc1 :
       forall a f, is_area a -> slopeX0 (a f) = f.
     Proof.
@@ -99,19 +134,34 @@ Section RealLine.
       apply functional_extensionality.
       intro x0.
       symmetry. apply slopeX0_unique.
+      unfold is_slopeX0.
       intros eps eps_nil.
-      rewrite (is_area a f x0 eps). 
+
       replace (add (a f x0) (mul (f x0) eps)) with
-              (add (a f x0) (add (mul (f x0) eps)
-                            (mul (mul (slopeX0 f x0) eps) (inv (add one one))))).
+              (add (a f x0)
+                (halve
+                  (mul eps
+                    (add (f x0) (f (add x0 eps)))))).
+      apply is_a.
+      apply eps_nil.
+      
+      assert (
+        (halve (mul eps (add (f x0) (f (add x0 eps)))))
+        =
+        (mul (f x0) eps)
+      ).
+      assert (
+        (mul eps (add (f x0)
+                      (f (add x0 eps))))
+        =
+        (add (mul (f x0) eps)
+             (mul (f x0) eps))
+      ).
       admit.
-      apply f_equal2.
-        reflexivity.
-        replace (mul (mul (slopeX0 f x0) eps)
-                     (inv (add one one)))
-           with zero.
-        rewrite add_zero_r. reflexivity.
-        
+      rewrite H.
+
+      apply f_equal. assumption.
+
 
       
 
