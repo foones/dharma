@@ -66,6 +66,7 @@ void test_dict()
 	for (i = 0; i < M; i++) {
 		printf("%llu %llu\n", (unsigned long long int)fu_dict_get(&dict, i), a[i]);
 	}
+	fu_free_dict(&dict);
 }
 
 int main()

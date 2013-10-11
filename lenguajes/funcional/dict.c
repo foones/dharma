@@ -55,3 +55,20 @@ void *fu_dict_get(Fu_Dict *dict, Key key)
 	return node->value;
 }
 
+void free_node(Node *node)
+{
+	if (node == NULL) {
+		return;
+	}
+	int i;
+	for (i = 0; i < FU_DICT_NCHILDREN; i++) {
+		free_node(node->child[i]);
+	}
+	free(node);
+}
+
+void fu_free_dict(Fu_Dict *dict)
+{
+	free_node(dict->root);
+}
+
