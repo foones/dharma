@@ -45,10 +45,34 @@ void test_lexer()
 	fclose(f);
 }
 
+#include <stdlib.h>
+#include <time.h>
+void test_dict()
+{
+#define M	1000
+	int i;
+	unsigned long long int a[M];
+	srand(time(NULL));
+
+	for (i = 0; i < M; i++) {
+		a[i] = rand() % 1000;
+	}
+
+	Fu_Dict dict;
+	fu_dict_init(&dict);
+	for (i = 0; i < M; i++) {
+		fu_dict_define(&dict, i, (void *)a[i]);
+	}
+	for (i = 0; i < M; i++) {
+		printf("%llu %llu\n", (unsigned long long int)fu_dict_get(&dict, i), a[i]);
+	}
+}
+
 int main()
 {
 	/*test_mm();*/
-	test_lexer();
+	/*test_lexer();*/
+	test_dict();
 	return 0;
 }
 

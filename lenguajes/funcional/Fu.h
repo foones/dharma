@@ -3,6 +3,7 @@
 
 #include "mm.h"
 #include "lexer.h"
+#include "dict.h"
 
 #include "objects/cons.h"
 

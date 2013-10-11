@@ -12,8 +12,8 @@ CFLAGS+= -g -ggdb
 ## Profiling
 #CFLAGS+= -pg
 
-OBJS=co.o mm.o objects/cons.o lexer.o
-INCS=mm.h common.h objects/cons.h lexer.h
+OBJS=co.o mm.o objects/cons.o lexer.o dict.o
+INCS=mm.h common.h objects/cons.h lexer.h dict.h
 co : ${OBJS} $(INCS)
 	$(CC) -o co $(OBJS)
 
