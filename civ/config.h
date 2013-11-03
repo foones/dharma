@@ -1,6 +1,8 @@
 #ifndef _CIVCONFIG_H_
 #define _CIVCONFIG_H_
 
+#include "io.h"
+
 #define CIV_MAX_COLORS	16384
 
 typedef struct _config {

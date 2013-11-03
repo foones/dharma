@@ -37,9 +37,8 @@ void init_empty_map(Map *m)
 	m->width = 200;
 	m->height = 100;
 
-	m->terrain = (Terrain ***)malloc(sizeof(Terrain **) * m->height);
+	INIT_MATRIX(m->terrain, m->height, m->width, NULL);
 	for (i = 0; i < m->height; i++) {
-		m->terrain[i] = (Terrain **)malloc(sizeof(Terrain *) * m->width);
 		for (j = 0; j < m->height; j++) {
 			if ((i + j) % 3 == 0) {
 				m->terrain[i][j] = ocean;

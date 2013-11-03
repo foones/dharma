@@ -1,9 +1,8 @@
 #include "civ.h"
 
-void init_tribe(Tribe *tribe, Color color, Player *player)
+void init_tribe(Tribe *tribe, Color color)
 {
 	tribe->color = color;
-	tribe->player = player;
 	tribe->units = UnitVector_new();
 }
 

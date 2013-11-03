@@ -21,3 +21,15 @@ Unit *unit_new(UnitType *unit_type)
 	return unit;
 }
 
+int unit_can_step_on_terrain(Unit *unit, Terrain *terrain)
+{
+	switch (unit->type->domain) {
+	case DOMAIN_AIR:
+		return 1;
+	case DOMAIN_GROUND:
+		return terrain != ocean;
+	case DOMAIN_SEA:
+		return terrain == ocean;
+	}
+	return 0;
+}

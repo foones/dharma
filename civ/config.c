@@ -20,7 +20,7 @@ void init_config(Config *config)
 	config->palette[COL_EMPTY_CELL] = io_color(40, 40, 40);
 
 	config->palette[COL_GRASSLAND] = io_color(30, 188, 10);
-	config->palette[COL_OCEAN] = io_color(30, 188, 10);
+	config->palette[COL_OCEAN] = io_color(10, 30, 188);
 
 	config->palette[COL_TRIBE0] = io_color(0, 0, 80);
 	config->palette[COL_TRIBE1] = io_color(80, 0, 0);
