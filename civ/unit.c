@@ -4,7 +4,7 @@ DEFINE_VECTOR_TYPE(UnitVector, Unit *)
 
 static UnitType _settlers = {
 	1,		/* move */
-	DOMAIN_GROUND,	/* domain */
+	UNIT_DOMAIN_GROUND,	/* domain */
 
 	0,		/* att */
 	1,		/* def */
@@ -24,12 +24,13 @@ Unit *unit_new(UnitType *unit_type)
 int unit_can_step_on_terrain(Unit *unit, Terrain *terrain)
 {
 	switch (unit->type->domain) {
-	case DOMAIN_AIR:
+	case UNIT_DOMAIN_AIR:
 		return 1;
-	case DOMAIN_GROUND:
-		return terrain != ocean;
-	case DOMAIN_SEA:
-		return terrain == ocean;
+	case UNIT_DOMAIN_GROUND:
+		return terrain->kind == TERRAIN_KIND_LAND;
+	case UNIT_DOMAIN_SEA:
+		return terrain->kind == TERRAIN_KIND_SEA;
 	}
 	return 0;
 }
+

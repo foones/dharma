@@ -1,11 +1,13 @@
-#ifndef _CIVCONFIG_H_
-#define _CIVCONFIG_H_
+#ifndef _CIVVIEWCONFIG_H_
+#define _CIVVIEWCONFIG_H_
 
 #include "io.h"
 
 #define CIV_MAX_COLORS	16384
 
-typedef struct _config {
+#define TERRAIN_MODEL_SIZE 100
+
+typedef struct _view_config {
 	int cell_size;
 	int map_x0;
 	int map_y0;
@@ -15,7 +17,16 @@ typedef struct _config {
 	int ncells_height;
 
 	IOColor palette[CIV_MAX_COLORS];
-} Config;
+
+	unsigned char terrain_model[TERRAIN_MODEL_SIZE][TERRAIN_MODEL_SIZE];
+} ViewConfig;
+
+typedef struct _viewport {
+	int i0;
+	int j0;
+	int i1;
+	int j1;
+} Viewport;
 
 typedef unsigned short Color;
 
@@ -35,6 +46,6 @@ typedef unsigned short Color;
 #define COL_TRIBE6	2006
 #define COL_TRIBE7	2007
 
-void init_config(Config *config);
+void init_view_config(ViewConfig *view_config);
 
 #endif

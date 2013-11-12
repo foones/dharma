@@ -16,7 +16,6 @@ typedef struct _player {
 	ActionQueue *action_queue;
 } Player;
 
-void init_player(Player *player, GameState *game_state, ActionQueue *action_queue);
-int player_movement_for(Player *player, Unit *unit);
+void init_player(Player *player, PlayerType player_type, GameState *game_state, ActionQueue *action_queue);
 
 #endif

@@ -4,7 +4,7 @@
 #include "io.h"
 #include "unit.h"
 #include "utils.h"
-#include "config.h"
+#include "view_config.h"
 
 typedef struct _tribe {
 	Color color;

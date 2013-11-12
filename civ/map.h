@@ -1,11 +1,19 @@
 #ifndef _CIVMAP_H_
 #define _CIVMAP_H_
 
-#include "config.h"
+#include "view_config.h"
 #include "io.h"
+
+typedef int TerrainKind;
+
+#define TERRAIN_KIND_LAND	0
+#define TERRAIN_KIND_SEA	1
+
 
 typedef struct _terrain {
 	char *name;
+
+	TerrainKind kind;
 
 	int movecost;
 	int defense;

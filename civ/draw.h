@@ -3,6 +3,6 @@
 
 #include "civ.h"
 
-void draw_game_state(IO io, GameState *game_state);
+void draw_game_view(GameView *game_view);
 
 #endif

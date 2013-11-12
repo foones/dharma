@@ -4,6 +4,8 @@
 #include "utils.h"
 #include "map.h"
 
+typedef int UnitDomain;
+
 typedef struct _unit_type {
 	int move;	/* Movement rate (spaces per turn) */
 	int domain;	/* 0 = ground, 1 = air, 2 = sea */
@@ -13,9 +15,9 @@ typedef struct _unit_type {
 	int hit;	/* Hit points */
 } UnitType;
 
-#define DOMAIN_GROUND	0
-#define DOMAIN_AIR	1
-#define DOMAIN_SEA	2
+#define UNIT_DOMAIN_GROUND	0
+#define UNIT_DOMAIN_AIR		1
+#define UNIT_DOMAIN_SEA		2
 
 typedef struct _unit {
 	struct _tribe *tribe;	/* use struct _tribe to break inclusion cycle */

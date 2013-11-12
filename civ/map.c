@@ -4,6 +4,8 @@
 static Terrain _grassland = {
 	"Grassland",
 
+	TERRAIN_KIND_LAND,
+
 	1, /* movecost */
 	2, /* defense */
 
@@ -17,6 +19,8 @@ Terrain *grassland = &_grassland;
 
 static Terrain _ocean = {
 	"Ocean",
+
+	TERRAIN_KIND_SEA,
 
 	1, /* movecost */
 	2, /* defense */
@@ -34,8 +38,10 @@ Color empty_cell_color = COL_EMPTY_CELL;
 void init_empty_map(Map *m)
 {
 	int i, j;
-	m->width = 200;
-	m->height = 100;
+	//m->width = 200;
+	//m->height = 100;
+	m->width = 10;
+	m->height = 10;
 
 	INIT_MATRIX(m->terrain, m->height, m->width, NULL);
 	for (i = 0; i < m->height; i++) {
