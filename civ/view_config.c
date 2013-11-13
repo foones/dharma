@@ -19,6 +19,8 @@ void init_view_config(ViewConfig *view_config)
 		view_config->palette[i] = io_color(255, 0, 255);
 	}
 
+	view_config->palette[COL_BACKGROUND] = io_color(0, 0, 0);
+	
 	view_config->palette[COL_EMPTY_CELL] = io_color(40, 40, 40);
 
 	view_config->palette[COL_GRASSLAND] = io_color(30, 188, 10);
@@ -26,6 +28,8 @@ void init_view_config(ViewConfig *view_config)
 
 	view_config->palette[COL_TRIBE0] = io_color(0, 0, 80);
 	view_config->palette[COL_TRIBE1] = io_color(80, 0, 0);
+
+	view_config->palette[COL_INFO_TEXT_1] = io_color(255, 255, 255);
 
 	/* Generate a random terrain model */
 

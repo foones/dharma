@@ -3,7 +3,7 @@
 DEFINE_VECTOR_TYPE(UnitVector, Unit *)
 
 static UnitType _settlers = {
-	1,		/* move */
+	1,		/* moves */
 	UNIT_DOMAIN_GROUND,	/* domain */
 
 	0,		/* att */
@@ -34,3 +34,7 @@ int unit_can_step_on_terrain(Unit *unit, Terrain *terrain)
 	return 0;
 }
 
+int unit_has_moves_left(Unit *unit)
+{
+	return unit->moves_left > 0;
+}

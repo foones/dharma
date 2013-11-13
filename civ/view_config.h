@@ -30,7 +30,8 @@ typedef struct _viewport {
 
 typedef unsigned short Color;
 
-#define COL_EMPTY_CELL	0
+#define COL_BACKGROUND	0
+#define COL_EMPTY_CELL	1
 
 /* Terrains */
 #define COL_GRASSLAND	1001
@@ -45,6 +46,9 @@ typedef unsigned short Color;
 #define COL_TRIBE5	2005
 #define COL_TRIBE6	2006
 #define COL_TRIBE7	2007
+
+/* Information */
+#define COL_INFO_TEXT_1	3001
 
 void init_view_config(ViewConfig *view_config);
 

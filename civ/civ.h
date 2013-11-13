@@ -33,7 +33,8 @@ typedef struct _game_view {
 	ActionQueue *action_queue;
 	int current_unit;		/* current unit on focus */
 	int local_tribe_index;		/* index of the local tribe in the game state */
-	int blink;			/* blink counter for the current unit on focus */
+	unsigned int blink;		/* blink counter for the current unit on focus */
+	int end_of_turn;		/* is it the end of my turn? */
 } GameView;
 
 #endif

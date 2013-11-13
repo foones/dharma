@@ -7,7 +7,7 @@
 typedef int UnitDomain;
 
 typedef struct _unit_type {
-	int move;	/* Movement rate (spaces per turn) */
+	int moves;	/* Movement rate (spaces per turn) */
 	int domain;	/* 0 = ground, 1 = air, 2 = sea */
 
 	int att;	/* Chance to score hit attacking */
@@ -24,6 +24,9 @@ typedef struct _unit {
 	UnitType *type;
 	int pos_i;
 	int pos_j;
+
+	int hit_left;		/* hit points left */
+	int moves_left;		/* at current turn */
 } Unit;
 
 DECLARE_VECTOR_TYPE(UnitVector, Unit *)
@@ -32,5 +35,6 @@ extern UnitType *settlers;
 
 Unit *unit_new(UnitType *unit_type);
 int unit_can_step_on_terrain(Unit *unit, Terrain *terrain);
+int unit_has_moves_left(Unit *unit);
 
 #endif

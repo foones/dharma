@@ -77,6 +77,22 @@ static void draw_empty_cell(IO io, ViewConfig *view_config, int x, int y)
 extern Unit *current_local_unit_ptr(GameView *game_view);
 extern void viewport_for(GameView *game_view, Viewport *viewport);
 
+static int blink_for_unit(GameView *game_view, Unit *unit)
+{
+	if (game_view->end_of_turn) {
+		return 0;
+	}
+	if (unit == current_local_unit_ptr(game_view)) {
+		return game_view->blink;
+	}
+	return 0;
+}
+
+static int blink_is_on(int blink)
+{
+	return blink % 16 < 8;
+}
+
 static void draw_map(GameView *game_view, ViewConfig *view_config, IO io, GameState *game_state, int i_center, int j_center)
 {
 	Map *map = &game_state->map; 
@@ -98,13 +114,7 @@ static void draw_map(GameView *game_view, ViewConfig *view_config, IO io, GameSt
 			if (map_valid_pos(map, i, j)) {
 				draw_terrain(io, view_config, x, y, map->terrain[i][j]);
 				if (unit_map[i][j] != NULL) {
-					int blink; 
-					if (unit_map[i][j] == current_local_unit_ptr(game_view)) {
-						blink = game_view->blink;
-					} else {
-						blink = 0;
-					}
-					if (blink % 20 < 10) {
+					if (blink_is_on(blink_for_unit(game_view, unit_map[i][j]))) {
 						draw_unit(io, view_config, x, y, unit_map[i][j]);
 					}
 				}
@@ -117,6 +127,12 @@ static void draw_map(GameView *game_view, ViewConfig *view_config, IO io, GameSt
 
 void draw_game_view(GameView *game_view)
 {
+	draw_rectangle(game_view->io, &game_view->view_config, 0, 0, IO_WIDTH, IO_HEIGHT, COL_BACKGROUND, COL_BACKGROUND);
 	draw_map(game_view, &game_view->view_config, game_view->io, game_view->game_state, game_view->i_center, game_view->j_center);
+	if (game_view->end_of_turn) {
+		if (blink_is_on(game_view->blink)) {
+			draw_rectangle(game_view->io, &game_view->view_config, IO_WIDTH - 10, IO_HEIGHT - 10, IO_WIDTH, IO_HEIGHT, COL_INFO_TEXT_1, COL_INFO_TEXT_1);
+		}
+	}
 }
 

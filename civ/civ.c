@@ -25,6 +25,9 @@ void game_position_unit_at(GameState *game_state, Unit *unit, int i, int j)
 int can_game_move_unit_to(GameState *game_state, Unit *unit, int i, int j)
 /* Check that unit can step on the terrain */
 {
+	if (!unit_has_moves_left(unit)) {
+		return 0;
+	}
 	if (i < 0 || i >= game_state->map.height || j < 0 || j >= game_state->map.width) {
 		return 0;
 	}
@@ -37,10 +40,10 @@ int can_game_move_unit_to(GameState *game_state, Unit *unit, int i, int j)
 void game_move_unit_to(GameState *game_state, Unit *unit, int i, int j)
 /* Also erases the unit from the old position */
 {
-	if (can_game_move_unit_to(game_state, unit, i, j)) {
-		game_state->unit_map[unit->pos_i][unit->pos_j] = NULL;
-		game_position_unit_at(game_state, unit, i, j);
-	}
+	assert(can_game_move_unit_to(game_state, unit, i, j));
+	game_state->unit_map[unit->pos_i][unit->pos_j] = NULL;
+	game_position_unit_at(game_state, unit, i, j);
+	unit->moves_left--;
 }
 
 void game_add_unit(GameState *game_state, Tribe *tribe, UnitType *unit_type, int i, int j)
@@ -89,20 +92,47 @@ void local_set_current_unit(GameView *game_view, int u)
 
 void local_focus_on_next_unit(GameView *game_view)
 {
+	int n, i0, i;
 	GameState *game_state = game_view->game_state;
 	Tribe *local_tribe = &game_state->tribe[game_state->current_tribe_index];
-	local_set_current_unit(game_view, (game_view->current_unit + 1) % local_tribe->units->size);
+
+	n = local_tribe->units->size;
+	i0 = game_view->current_unit;
+	if (i0 < 0 || i0 >= n) {
+		i0 = n - 1;
+	}
+
+	game_view->end_of_turn = 1;
+	for (i = (i0 + 1) % n; i != i0; i = (i + 1) % n) {
+		if (unit_has_moves_left(AT(local_tribe->units, i))) {
+			game_view->end_of_turn = 0;
+			local_set_current_unit(game_view, i);
+			break;
+		}
+	}
+	printf("EOT: %u\n", game_view->end_of_turn);
+}
+
+void start_turn(GameView *game_view, Tribe *tribe)
+{
+	int i;
+	for (i = 0; i < tribe->units->size; i++) {
+		Unit *u = AT(tribe->units, i);
+		u->hit_left = u->type->hit;
+		u->moves_left = u->type->moves;
+	}
+	if (tribe->units->size < 1) {
+		printf("la tribu no tiene mas unidades!!!!");
+		exit(1);
+	}
 }
 
 void local_start_turn(GameView *game_view)
 {
 	GameState *game_state = game_view->game_state;
 	Tribe *local_tribe = &game_state->tribe[game_state->current_tribe_index];
-	if (local_tribe->units->size < 1) {
-		printf("la tribu local no tiene mas unidades!!");
-		exit(1);
-	}
-	local_set_current_unit(game_view, 0);
+	start_turn(game_view, local_tribe);
+	local_focus_on_next_unit(game_view);
 }
 
 void advance_current_tribe(GameView *game_view)
@@ -172,23 +202,42 @@ int game_view_out_of_viewport_threshold(GameView *game_view, int i, int j, int t
 	);
 }
 
-#define LOCAL_VIEWPORT_THRESHOLD 2
+#define LOCAL_DISPLAY_WAIT_MILLISECS 400
+
+void refresh_screen_and_wait_a_moment(GameView *game_view)
+{
+	refresh_screen(game_view);
+	io_update(game_view->io);
+	io_sleep(LOCAL_DISPLAY_WAIT_MILLISECS);
+}
+
+#define LOCAL_VIEWPORT_THRESHOLD 2	/* Distance to the border of the map that triggers
+					 * centering the map on the place where the current
+					 * focus is located.
+					 */
 void local_move_current_unit(GameView *game_view, int di, int dj)
 {
 	int i, j;
 	Unit *u;
 	if (!check_turn_local_move_current_unit(game_view)) {
-		printf("cannot move\n");
 		return;
 	}
 	u = current_local_unit_ptr(game_view);
 	i = u->pos_i + di;
 	j = u->pos_j + dj;
-	game_move_unit_to(game_view->game_state, u, i, j);
 
-	if (game_view_out_of_viewport_threshold(game_view, i, j, LOCAL_VIEWPORT_THRESHOLD)) {
-		game_view->i_center = i;
-		game_view->j_center = j;
+
+	if (can_game_move_unit_to(game_view->game_state, u, i, j)) {
+		game_move_unit_to(game_view->game_state, u, i, j);
+		if (game_view_out_of_viewport_threshold(game_view, i, j, LOCAL_VIEWPORT_THRESHOLD)) {
+			game_view->i_center = i;
+			game_view->j_center = j;
+		}
+	}
+	if (!unit_has_moves_left(u)) {
+		game_view->blink = 0;
+		refresh_screen_and_wait_a_moment(game_view);
+		local_focus_on_next_unit(game_view);
 	}
 }
 
@@ -223,6 +272,7 @@ int main(int argc, char **argv) {
 	init_empty_game_state(game_state, interactive_action_queue);
 	init_game_view(game_view, game_state, io, interactive_action_queue);
 
+	game_view->blink = 0;		/* start blinking */
 	game_view->local_tribe_index = 0; /* index of the tribe that is controlled by the player */
 
 	game_state->current_tribe_index = 0; /* index of the tribe that is currently moving */
@@ -232,7 +282,7 @@ int main(int argc, char **argv) {
 	while (1) {
 		/* Refresh screen */
 		io_update(io);
-		game_view->blink++;
+		game_view->blink = (game_view->blink + 1) % 20;
 		refresh_screen(game_view);
 
 		advance_current_tribe(game_view);
@@ -246,6 +296,9 @@ int main(int argc, char **argv) {
 			update_game_view_on_key(game_view, key);
 			printf("%u\n", key % 256);
 		}
+
+		/** TODO **/
+
 	}
 
 	return 0;
