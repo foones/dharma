@@ -93,10 +93,42 @@ static int blink_is_on(int blink)
 	return blink % 16 < 8;
 }
 
+
+static void draw_units(GameView *game_view, UnitVector **unit_map, int i, int j, int x, int y)
+{
+	int k;
+	int drawing_on = 1;
+	int current_unit_index = unit_map[i][j].size - 1;
+
+	/* Search for the selected unit, check if should blink */
+	for (k = 0; k < unit_map[i][j].size; k++) {
+		Unit *u = AT(&unit_map[i][j], k);
+		if (u == current_local_unit_ptr(game_view)) {
+			current_unit_index = k;
+			drawing_on = blink_is_on(blink_for_unit(game_view, u));
+		}
+	}
+
+	if (!drawing_on) return;
+
+	/* Draw all units except topmost one */
+	for (k = 0; k < unit_map[i][j].size; k++) {
+		if (k == current_unit_index) continue;
+		Unit *u = AT(&unit_map[i][j], k);
+		draw_unit(game_view->io, &game_view->view_config, x, y, u);
+	}
+
+	/* Draw selected unit, if any */
+	if (current_unit_index >= 0) {
+		Unit *u = AT(&unit_map[i][j], current_unit_index);
+		draw_unit(game_view->io, &game_view->view_config, x, y, u);
+	}
+}
+
 static void draw_map(GameView *game_view, ViewConfig *view_config, IO io, GameState *game_state, int i_center, int j_center)
 {
 	Map *map = &game_state->map; 
-	Unit ***unit_map = game_state->unit_map; 
+	UnitVector **unit_map = game_state->unit_map; 
 
 	int i, j;
 	int x, y;
@@ -113,11 +145,8 @@ static void draw_map(GameView *game_view, ViewConfig *view_config, IO io, GameSt
 		for (j = j0, x = view_config->map_x0; j < j1; j++, x+= view_config->cell_size) {
 			if (map_valid_pos(map, i, j)) {
 				draw_terrain(io, view_config, x, y, map->terrain[i][j]);
-				if (unit_map[i][j] != NULL) {
-					if (blink_is_on(blink_for_unit(game_view, unit_map[i][j]))) {
-						draw_unit(io, view_config, x, y, unit_map[i][j]);
-					}
-				}
+				draw_units(game_view, unit_map, i, j, x, y);
+
 			} else {
 				draw_empty_cell(io, view_config, x, y);
 			}

@@ -8,7 +8,7 @@
 
 int game_no_units_at(GameState *game_state, int i, int j)
 {
-	return game_state->unit_map[i][j] == NULL;
+	return game_state->unit_map[i][j].size == 0;
 }
 
 void game_position_unit_at(GameState *game_state, Unit *unit, int i, int j)
@@ -19,7 +19,7 @@ void game_position_unit_at(GameState *game_state, Unit *unit, int i, int j)
 	assert(game_no_units_at(game_state, i, j));
 	unit->pos_i = i;
 	unit->pos_j = j;
-	game_state->unit_map[i][j] = unit;
+	UnitVector_add(&game_state->unit_map[i][j], unit);
 }
 
 int can_game_move_unit_to(GameState *game_state, Unit *unit, int i, int j)
@@ -41,7 +41,7 @@ void game_move_unit_to(GameState *game_state, Unit *unit, int i, int j)
 /* Also erases the unit from the old position */
 {
 	assert(can_game_move_unit_to(game_state, unit, i, j));
-	game_state->unit_map[unit->pos_i][unit->pos_j] = NULL;
+	UnitVector_remove1(&game_state->unit_map[unit->pos_i][unit->pos_j], unit);
 	game_position_unit_at(game_state, unit, i, j);
 	unit->moves_left--;
 }
@@ -70,7 +70,11 @@ void init_empty_game_state(GameState *game_state, ActionQueue *interactive_actio
 	init_player(&game_state->tribe_player[0], PLAYER_INTERACTIVE, game_state, interactive_action_queue);
 	init_player(&game_state->tribe_player[1], PLAYER_AI, game_state, NULL);
 
-	INIT_MATRIX(game_state->unit_map, game_state->map.height, game_state->map.width, NULL);
+	INIT_MATRIX_BLOCK(game_state->unit_map,
+				i, game_state->map.height,
+				j, game_state->map.width, {
+		UnitVector_init(&game_state->unit_map[i][j]);
+	})
 
 	game_add_unit(game_state, &game_state->tribe[0], settlers, 1, 0);
 	game_add_unit(game_state, &game_state->tribe[0], settlers, 7, 1);

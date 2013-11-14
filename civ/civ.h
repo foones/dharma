@@ -16,7 +16,7 @@ typedef struct _game_state GameState;
 
 struct _game_state {
 	Map map;
-	Unit ***unit_map;
+	UnitVector **unit_map;
 
 	int ntribes;
 	Tribe *tribe;

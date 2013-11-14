@@ -14,11 +14,22 @@
 		unsigned int size; \
 		T *elems; \
 	} TVECTOR; \
+	void TVECTOR##_init(TVECTOR *vec); \
 	TVECTOR *TVECTOR##_new(void); \
 	TVECTOR *TVECTOR##_new_capacity(unsigned int capacity); \
-	void TVECTOR##_add(TVECTOR *vec, T elem);
+	void TVECTOR##_add(TVECTOR *vec, T elem); \
+	void TVECTOR##_remove1(TVECTOR *vec, T elem);
 
 #define DEFINE_VECTOR_TYPE(TVECTOR, T) \
+	\
+	void TVECTOR##_init(TVECTOR *vec) \
+	{ \
+		printf("init0\n"); \
+		vec->capacity = 1; \
+		vec->size = 0; \
+		vec->elems = (T *)malloc(sizeof(T)); \
+		printf("init1\n"); \
+	} \
 	\
 	TVECTOR *TVECTOR##_new_capacity(unsigned int capacity) \
 	{ \
@@ -44,6 +55,18 @@
 			vec->elems = new_elems; \
 		} \
 		vec->elems[vec->size++] = elem; \
+	} \
+	\
+	void TVECTOR##_remove1(TVECTOR *vec, T elem) \
+	{ \
+		int i; \
+		for (i = 0; i < vec->size; i++) { \
+			if (vec->elems[i] == elem) { \
+				vec->elems[i] = vec->elems[vec->size - 1]; \
+				vec->size--; \
+				break; \
+			} \
+		} \
 	}
 
 #define AT(VECTOR, I)	((VECTOR)->elems[(I)])
@@ -101,13 +124,24 @@
 
 /* Initialize a bidimensional matrix */
 
-#define INIT_MATRIX(MATRIX, NROWS, NCOLS, VALUE) { \
+#define INIT_MATRIX(MATRIX, NROWS, NCOLS, EXPRESSION) { \
 	int __i, __j; \
 	MATRIX = (__typeof__(MATRIX))malloc(sizeof(__typeof__(*MATRIX)) * (NROWS)); \
 	for (__i = 0; __i < (NROWS); __i++) { \
 		MATRIX[__i] = (__typeof__(*MATRIX))malloc(sizeof(__typeof__(**MATRIX)) * (NCOLS)); \
 		for (__j = 0; __j < (NCOLS); __j++) { \
-			MATRIX[__i][__j] = VALUE; \
+			MATRIX[__i][__j] = EXPRESSION; \
+		} \
+	} \
+}
+
+#define INIT_MATRIX_BLOCK(MATRIX, II, NROWS, JJ, NCOLS, BLOCK) { \
+	int II, JJ; \
+	MATRIX = (__typeof__(MATRIX))malloc(sizeof(__typeof__(*MATRIX)) * (NROWS)); \
+	for (II = 0; II < (NROWS); II++) { \
+		MATRIX[II] = (__typeof__(*MATRIX))malloc(sizeof(__typeof__(**MATRIX)) * (NCOLS)); \
+		for (JJ = 0; JJ < (NCOLS); JJ++) { \
+			BLOCK ; \
 		} \
 	} \
 }
