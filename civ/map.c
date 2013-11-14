@@ -47,7 +47,8 @@ void init_empty_map(Map *m)
 	for (i = 0; i < m->height; i++) {
 		for (j = 0; j < m->height; j++) {
 			if ((i + j) % 3 == 0) {
-				m->terrain[i][j] = ocean;
+				//m->terrain[i][j] = ocean;
+				m->terrain[i][j] = grassland;
 			} else {
 				m->terrain[i][j] = grassland;
 			}

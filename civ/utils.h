@@ -24,11 +24,9 @@
 	\
 	void TVECTOR##_init(TVECTOR *vec) \
 	{ \
-		printf("init0\n"); \
 		vec->capacity = 1; \
 		vec->size = 0; \
 		vec->elems = (T *)malloc(sizeof(T)); \
-		printf("init1\n"); \
 	} \
 	\
 	TVECTOR *TVECTOR##_new_capacity(unsigned int capacity) \

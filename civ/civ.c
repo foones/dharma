@@ -16,7 +16,6 @@ void game_position_unit_at(GameState *game_state, Unit *unit, int i, int j)
 {
 	assert(map_valid_pos(&game_state->map, i, j));
 	assert(unit_can_step_on_terrain(unit, game_state->map.terrain[i][j]));
-	assert(game_no_units_at(game_state, i, j));
 	unit->pos_i = i;
 	unit->pos_j = j;
 	UnitVector_add(&game_state->unit_map[i][j], unit);
@@ -139,6 +138,15 @@ void local_start_turn(GameView *game_view)
 	local_focus_on_next_unit(game_view);
 }
 
+void turn_of_next_tribe(GameView *game_view)
+{
+	GameState *game_state = game_view->game_state;
+	game_state->current_tribe_index = (game_state->current_tribe_index + 1) % game_state->ntribes;
+	if (game_state->current_tribe_index == game_view->local_tribe_index) {
+		local_start_turn(game_view);
+	}
+}
+
 void advance_current_tribe(GameView *game_view)
 {
 	GameState *game_state = game_view->game_state;
@@ -146,11 +154,9 @@ void advance_current_tribe(GameView *game_view)
 	/*Tribe *tribe = &game_state->tribe[tribe_index];*/
 	Player *player = &game_state->tribe_player[tribe_index];
 	if (player->type == PLAYER_AI) {
-		game_state->current_tribe_index = (game_state->current_tribe_index + 1) % game_state->ntribes;
-		if (game_state->current_tribe_index == game_view->local_tribe_index) {
-			local_start_turn(game_view);
-		}
 		/* TODO: code for AI mover */
+		printf("playing with AI tribe %u\n", tribe_index);
+		turn_of_next_tribe(game_view);
 	}
 }
 
@@ -168,10 +174,20 @@ void init_game_view(GameView *game_view, GameState *game_state, IO io, ActionQue
 	game_view->j_center = 0;
 }
 
+int check_local_turn(GameView *game_view)
+{
+	return game_view->game_state->current_tribe_index == game_view->local_tribe_index;
+}
+
+int check_local_end_of_turn(GameView *game_view)
+{
+	return check_local_turn(game_view) && game_view->end_of_turn;
+}
+
 int check_turn_local_move_current_unit(GameView *game_view)
 {
 	GameState *game_state = game_view->game_state;
-	if (game_state->current_tribe_index != game_view->local_tribe_index) {
+	if (!check_local_turn(game_view)) {
 		return 0;
 	}
 	return 0 <= game_view->current_unit && game_view->current_unit < game_state->tribe->units->size;
@@ -259,6 +275,13 @@ void update_game_view_on_key(GameView *game_view, int key)
 	case 'k': local_move_current_unit(game_view, -1, 0); break;
 
 	case 'n': local_focus_on_next_unit(game_view); break;
+	case '\r':
+		{
+			if (check_local_end_of_turn(game_view)) {
+				turn_of_next_tribe(game_view);
+			}
+			break;
+		}
 	}
 }
 
