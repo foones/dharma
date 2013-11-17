@@ -79,11 +79,8 @@ void test_vm()
 
 	fu_mm_init(mm);
 
-	int ndefs = 1;
+	int ndefs = 2;
 	Fu_VMEnvironment *env = (Fu_VMEnvironment *)malloc(sizeof(Fu_VMEnvironment) + ndefs * sizeof(Fu_VMSupercombinator));
-
-	/* Constructors */
-	fu_dict_init(&env->constructors);
 
 	/* Supercombinators */
 
@@ -92,13 +89,17 @@ void test_vm()
 	int d;
 	int code_len;
 
-	d = 0;
-	code_len = 9;
+	/* def 0 omitted */
+
+	/* def 1 */
+	d = 1;
+	code_len = 2;
 	env->defs[d] = (Fu_VMSupercombinator *)malloc(sizeof(Fu_VMSupercombinator) + code_len * sizeof(Fu_VMOpcode));
-	env->defs[d]->nargs = 0;
+	env->defs[d]->nargs = 1;
 	env->defs[d]->code_len = code_len;
-	env->defs[d]->code[0] = FU_OP_PUSH_CONS;
+	env->defs[d]->code[0] = FU_OP_PUSH_ARG_8;
 	env->defs[d]->code[1] = 0x00;
+	/*
 	env->defs[d]->code[2] = 0x00;
 	env->defs[d]->code[3] = 0x00;
 	env->defs[d]->code[4] = 0x00;
@@ -106,12 +107,16 @@ void test_vm()
 	env->defs[d]->code[6] = 0x00;
 	env->defs[d]->code[7] = 0x00;
 	env->defs[d]->code[8] = 0x01;
+	*/
 
+	/* def to call = 1 */
 	Fu_Object *res;
+	Fu_Object **args = (Fu_Object **)malloc(env->defs[d]->nargs * sizeof(Fu_Object *));
+	args[0] = fu_constructor(0x42);
 	
-	res = fu_vm_execute(mm, env, 0, 0, NULL);
+	res = fu_vm_execute(mm, env, d, NULL);
 	printf("%p\n", res);
-	res = fu_vm_execute(mm, env, 0, 0, NULL);
+	res = fu_vm_execute(mm, env, d, NULL);
 	printf("%p\n", res);
 	fu_mm_end(mm);
 }

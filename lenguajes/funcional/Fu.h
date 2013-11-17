@@ -8,6 +8,5 @@
 #include "vm.h"
 
 #include "objects/cons.h"
-#include "objects/constructor.h"
 
 #endif

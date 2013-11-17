@@ -5,7 +5,7 @@ typedef struct _Cons {
 	Fu_Object *tail;
 } Cons;
 
-static void cons_ref_iterator(Fu_MM *mm, Fu_Object *cons_cell, Fu_MMRefCallback callback)
+void cons_ref_iterator(Fu_MM *mm, Fu_Object *cons_cell, Fu_MMRefCallback callback)
 {
 	Fu_Object *head = ((Cons *)cons_cell->data)->head;
 	Fu_Object *tail = ((Cons *)cons_cell->data)->tail;
