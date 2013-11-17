@@ -12,6 +12,7 @@
 
 typedef unsigned char uchar;
 typedef unsigned int uint;
+typedef unsigned long long int uint64;
 
 #define TRUE	1
 #define FALSE	0

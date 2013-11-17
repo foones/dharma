@@ -5,11 +5,18 @@
 
 typedef uchar Fu_MMData;
 
+#define Fu_MM_NBITS_PADDING		3
+#define Fu_MM_IMMEDIATE_MASK		((((uint64)1) << Fu_MM_NBITS_PADDING) - 1)
+#define Fu_MM_MK_IMMEDIATE(X, TAG)	((Fu_Object *)((X) << Fu_MM_NBITS_PADDING | (TAG)))
+#define Fu_MM_IMMEDIATE_TAG(X)		((uint64)(X) & Fu_MM_IMMEDIATE_MASK)
+#define Fu_MM_IS_IMMEDIATE(X)		(Fu_MM_IMMEDIATE_TAG(X) != 0x0)
+#define Fu_MM_IMMEDIATE_VALUE(X)	((uint64)(X) >> Fu_MM_NBITS_PADDING)
+
 /* Fu_MM_FIRST_GC_THRESHOLD is the amount of allocated bytes that,
  * when reached, triggers GC for the very first time.
  */
 #define Fu_MM_FIRST_GC_THRESHOLD	Fu_MB
-#define MAX(X, Y)		((X) < (Y) ? (Y) : (X))
+#define MAX(X, Y)			((X) < (Y) ? (Y) : (X))
 
 /* The Fu_MMFlags type is used to represent both the size and the color
  * of an object.
@@ -41,14 +48,14 @@ typedef struct _Fu_MMTag {
 typedef struct _Fu_MMObject {
 	struct _Fu_MMObject *prev, *next;	/* Most objects belong to a doubly linked list. */
 	Fu_MMFlags flags;			/* The flags for an object indicate its color and
-				  	 * size. */
+						 * size. */
 	Fu_MMTag *tag;			/* Tag indicating the type of the object.
 					 * The main reason for the tag is
 					 * being able to know which parts of an object data are
 					 * pointers to other objects, for the memory
 					 * manager to calculate reachability.
 					 */
-	Fu_MMData data[];			/* Raw data. */
+	Fu_MMData data[];		/* Raw data. */
 } Fu_MMObject;
 
 /* Memory manager */

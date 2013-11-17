@@ -5,7 +5,9 @@
 #include "object.h"
 #include "lexer.h"
 #include "dict.h"
+#include "vm.h"
 
 #include "objects/cons.h"
+#include "objects/constructor.h"
 
 #endif

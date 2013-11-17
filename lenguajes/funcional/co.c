@@ -19,6 +19,9 @@ void test_mm()
 		if (i % 3 == 0) {
 			lst = fu_cons(mm, lst, lst);
 			mm->root = lst;
+		} else if (i % 3 == 1) {
+			lst = fu_cons(mm, lst, Fu_MM_MK_IMMEDIATE(32982, 1));
+			mm->root = lst;
 		} else {
 			fu_cons(mm, lst, lst);
 		}
@@ -69,11 +72,56 @@ void test_dict()
 	fu_free_dict(&dict);
 }
 
+void test_vm()
+{
+	Fu_MM _mm;
+	Fu_MM *mm = &_mm;
+
+	fu_mm_init(mm);
+
+	int ndefs = 1;
+	Fu_VMEnvironment *env = (Fu_VMEnvironment *)malloc(sizeof(Fu_VMEnvironment) + ndefs * sizeof(Fu_VMSupercombinator));
+
+	/* Constructors */
+	fu_dict_init(&env->constructors);
+
+	/* Supercombinators */
+
+	env->ndefs = ndefs;
+
+	int d;
+	int code_len;
+
+	d = 0;
+	code_len = 9;
+	env->defs[d] = (Fu_VMSupercombinator *)malloc(sizeof(Fu_VMSupercombinator) + code_len * sizeof(Fu_VMOpcode));
+	env->defs[d]->nargs = 0;
+	env->defs[d]->code_len = code_len;
+	env->defs[d]->code[0] = FU_OP_PUSH_CONS;
+	env->defs[d]->code[1] = 0x00;
+	env->defs[d]->code[2] = 0x00;
+	env->defs[d]->code[3] = 0x00;
+	env->defs[d]->code[4] = 0x00;
+	env->defs[d]->code[5] = 0x00;
+	env->defs[d]->code[6] = 0x00;
+	env->defs[d]->code[7] = 0x00;
+	env->defs[d]->code[8] = 0x01;
+
+	Fu_Object *res;
+	
+	res = fu_vm_execute(mm, env, 0, 0, NULL);
+	printf("%p\n", res);
+	res = fu_vm_execute(mm, env, 0, 0, NULL);
+	printf("%p\n", res);
+	fu_mm_end(mm);
+}
+
 int main()
 {
 	/*test_mm();*/
 	/*test_lexer();*/
 	/*test_dict();*/
+	test_vm();
 	return 0;
 }
 
