@@ -92,44 +92,50 @@ void test_vm()
 
 	/* def 0 omitted */
 
-	/* def 1 */
+	/* def 1 ==> I */
 	d = 1;
-	code_len = 5;
+	code_len = 2;
+	vm->env->defs[d] = (Fu_VMSupercombinator *)malloc(sizeof(Fu_VMSupercombinator) + code_len * sizeof(Fu_VMOpcode));
+	vm->env->defs[d]->nparams = 1;
+	vm->env->defs[d]->code_len = code_len;
+	vm->env->defs[d]->code[0] = Fu_OP_PUSH_ARG_8;
+	vm->env->defs[d]->code[1] = 0x00;
+
+	/* def 2 ==> K */
+	d = 2;
+	code_len = 2;
 	vm->env->defs[d] = (Fu_VMSupercombinator *)malloc(sizeof(Fu_VMSupercombinator) + code_len * sizeof(Fu_VMOpcode));
 	vm->env->defs[d]->nparams = 2;
 	vm->env->defs[d]->code_len = code_len;
 	vm->env->defs[d]->code[0] = Fu_OP_PUSH_ARG_8;
 	vm->env->defs[d]->code[1] = 0x00;
-	vm->env->defs[d]->code[2] = Fu_OP_PUSH_ARG_8;
-	vm->env->defs[d]->code[3] = 0x01;
-	vm->env->defs[d]->code[4] = Fu_OP_APP;
 
-	/* def 2 */
-	d = 2;
-	code_len = 9;
+	/* def 3 ==> S */
+	d = 3;
+	code_len = 11;
 	vm->env->defs[d] = (Fu_VMSupercombinator *)malloc(sizeof(Fu_VMSupercombinator) + code_len * sizeof(Fu_VMOpcode));
-	vm->env->defs[d]->nparams = 0;
+	vm->env->defs[d]->nparams = 3;
 	vm->env->defs[d]->code_len = code_len;
-	vm->env->defs[d]->code[0] = Fu_OP_PUSH_CONS_64;
+	vm->env->defs[d]->code[0] = Fu_OP_PUSH_ARG_8;
 	vm->env->defs[d]->code[1] = 0x00;
-	vm->env->defs[d]->code[2] = 0x00;
-	vm->env->defs[d]->code[3] = 0x00;
-	vm->env->defs[d]->code[4] = 0x00;
-	vm->env->defs[d]->code[5] = 0x00;
-	vm->env->defs[d]->code[6] = 0x00;
-	vm->env->defs[d]->code[7] = 0x00;
-	vm->env->defs[d]->code[8] = 0x01;
+	vm->env->defs[d]->code[2] = Fu_OP_PUSH_ARG_8;
+	vm->env->defs[d]->code[3] = 0x02;
+	vm->env->defs[d]->code[4] = Fu_OP_APP;
+	vm->env->defs[d]->code[5] = Fu_OP_PUSH_ARG_8;
+	vm->env->defs[d]->code[6] = 0x01;
+	vm->env->defs[d]->code[7] = Fu_OP_PUSH_ARG_8;
+	vm->env->defs[d]->code[8] = 0x02;
+	vm->env->defs[d]->code[9] = Fu_OP_APP;
+	vm->env->defs[d]->code[10] = Fu_OP_APP;
+
+	Fu_Object *I = Fu_VM_MK_SUPERCOMBINATOR(0x1);
+	Fu_Object *K = Fu_VM_MK_SUPERCOMBINATOR(0x2);
+	Fu_Object *S = Fu_VM_MK_SUPERCOMBINATOR(0x3);
 
 	/* def to call = 1 */
-	vm->current_supercomb = 1;
-
-	Fu_Object *res;
-	vm->args[0] = Fu_VM_MK_SUPERCOMBINATOR(0x2);
-	vm->args[1] = Fu_VM_MK_SUPERCOMBINATOR(0x3);
-	
-	res = fu_vm_execute(mm, vm);
+	Fu_Object *res = fu_cons(mm, fu_cons(mm, fu_cons(mm, K, I), S), S);
 	printf("tree: "); fu_vm_print_object(stdout, res); printf("\n");
-	fu_vm_eval(mm, vm, &res);
+	fu_vm_weak_head_normalize(mm, vm, &res);
 	printf("tree whnf: "); fu_vm_print_object(stdout, res); printf("\n");
 
 	fu_vm_end(vm);

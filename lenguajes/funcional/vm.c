@@ -50,14 +50,14 @@ void fu_vm_end(Fu_VM *vm)
 	free(vm->stack);
 }
 
-Fu_Object *fu_vm_execute(Fu_MM *mm, Fu_VM *vm)
+Fu_Object *fu_vm_execute(Fu_MM *mm, Fu_VM *vm, uint supercombinator_id)
 /*
  * Execute the code in a supercombinator and build the tree.
  * TODO: add the arguments.
  */
 {
 	int i, j;
-	Fu_VMSupercombinator *sc = vm->env->defs[vm->current_supercomb];
+	Fu_VMSupercombinator *sc = vm->env->defs[supercombinator_id];
 
 	vm->stack_index = 0;
 
@@ -139,7 +139,7 @@ void fu_vm_print_object(FILE *out, Fu_Object *obj)
 	free(spine); \
 }
 
-void fu_vm_eval(Fu_MM *mm, Fu_VM *vm, Fu_Object **obj)
+void fu_vm_weak_head_normalize(Fu_MM *mm, Fu_VM *vm, Fu_Object **obj)
 /*
  * Evaluate a tree to WHNF.
  * Requires a pointer to a (Fu_Object *) since evaluation
@@ -151,20 +151,30 @@ void fu_vm_eval(Fu_MM *mm, Fu_VM *vm, Fu_Object **obj)
 	uint spine_capacity;
 	uint spine_index;
 	DEF_STACK(spine, Fu_Object **);
-
-	/* Unwind the spine */
 	uint nargs = 0;
-	while (Fu_IS_CONS(*obj)) {
-		STACK_PUSH(spine, obj);
-		obj = &Fu_CONS_HEAD(*obj);
-		nargs++;
-	}
 
-	if (IS_SUPERCOMBINATOR(*obj)) {
-		uint current_supercomb = Fu_MM_IMMEDIATE_VALUE(*obj);
-		Fu_VMSupercombinator *sc = vm->env->defs[current_supercomb];
+	while (1) {
+		/* Unwind the spine */
+		while (Fu_IS_CONS(*obj)) {
+			STACK_PUSH(spine, obj);
+			obj = &Fu_CONS_HEAD(*obj);
+			nargs++;
+		}
+
+		if (!IS_SUPERCOMBINATOR(*obj)) {
+			/*
+			 * The leftmost atom is not a supercombinator: already in WHNF
+			 */
+			CLEANUP();
+			return;
+		}
+
+		uint supercomb_id = Fu_MM_IMMEDIATE_VALUE(*obj);
+		Fu_VMSupercombinator *sc = vm->env->defs[supercomb_id];
+		printf("nargs requeridos  = %u\n", sc->nparams);
+		printf("nargs disponibles = %u\n", nargs);
 		if (nargs < sc->nparams) {
-			/* Already in WHNF */
+			/* Not enough arguments: already in WHNF */
 			CLEANUP();
 			return;
 		}
@@ -173,22 +183,18 @@ void fu_vm_eval(Fu_MM *mm, Fu_VM *vm, Fu_Object **obj)
 
 		/* Read arguments from spine */
 		Fu_Object **root = obj;
-		vm->current_supercomb = current_supercomb;
 		for (int i = 0; i < sc->nparams; i++) {
 			root = STACK_POP(spine);
-			vm->args[i] = Fu_CONS_HEAD(*root);
+			vm->args[i] = Fu_CONS_TAIL(*root);
 		}
+		nargs -= sc->nparams;
 
 		/* Call supercombinator */
-		printf("calling %u\n", current_supercomb);
-		Fu_Object *res = fu_vm_execute(mm, vm);
-		printf("got: "); fu_vm_print_object(stdout, res); printf("\n");
+		Fu_Object *res = fu_vm_execute(mm, vm, supercomb_id);
 
 		/* Overwrite root with result */
 		*root = res;
-
-	} else {
-		assert(!"not implemented");
+		obj = root;
 	}
 
 	CLEANUP();

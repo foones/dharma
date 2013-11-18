@@ -50,7 +50,6 @@ typedef struct _Fu_VM_Environment {
 
 typedef struct _Fu_VM {
 	Fu_VMEnvironment *env;
-	uint current_supercomb;
 	Fu_Object *args[Fu_VM_MAX_ARGS];
 
 	Fu_Object **stack;
@@ -60,8 +59,8 @@ typedef struct _Fu_VM {
 
 void fu_vm_init(Fu_VM *vm);
 void fu_vm_end(Fu_VM *vm);
-Fu_Object *fu_vm_execute(Fu_MM *mm, Fu_VM *vm);
-void fu_vm_eval(Fu_MM *mm, Fu_VM *vm, Fu_Object **obj);
+Fu_Object *fu_vm_execute(Fu_MM *mm, Fu_VM *vm, uint supercombinator_id);
+void fu_vm_weak_head_normalize(Fu_MM *mm, Fu_VM *vm, Fu_Object **obj);
 
 void fu_vm_print_object(FILE *out, Fu_Object *obj);
 
