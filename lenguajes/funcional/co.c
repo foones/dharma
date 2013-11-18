@@ -80,7 +80,7 @@ void test_vm()
 	fu_mm_init(mm);
 	fu_vm_init(vm);
 
-	int ndefs = 2;
+	int ndefs = 3;
 	vm->env = (Fu_VMEnvironment *)malloc(sizeof(Fu_VMEnvironment) + ndefs * sizeof(Fu_VMSupercombinator));
 
 	/* Supercombinators */
@@ -96,14 +96,22 @@ void test_vm()
 	d = 1;
 	code_len = 5;
 	vm->env->defs[d] = (Fu_VMSupercombinator *)malloc(sizeof(Fu_VMSupercombinator) + code_len * sizeof(Fu_VMOpcode));
-	vm->env->defs[d]->nargs = 1;
+	vm->env->defs[d]->nparams = 2;
 	vm->env->defs[d]->code_len = code_len;
 	vm->env->defs[d]->code[0] = Fu_OP_PUSH_ARG_8;
 	vm->env->defs[d]->code[1] = 0x00;
 	vm->env->defs[d]->code[2] = Fu_OP_PUSH_ARG_8;
-	vm->env->defs[d]->code[3] = 0x00;
+	vm->env->defs[d]->code[3] = 0x01;
 	vm->env->defs[d]->code[4] = Fu_OP_APP;
-	/*
+
+	/* def 2 */
+	d = 2;
+	code_len = 9;
+	vm->env->defs[d] = (Fu_VMSupercombinator *)malloc(sizeof(Fu_VMSupercombinator) + code_len * sizeof(Fu_VMOpcode));
+	vm->env->defs[d]->nparams = 0;
+	vm->env->defs[d]->code_len = code_len;
+	vm->env->defs[d]->code[0] = Fu_OP_PUSH_CONS_64;
+	vm->env->defs[d]->code[1] = 0x00;
 	vm->env->defs[d]->code[2] = 0x00;
 	vm->env->defs[d]->code[3] = 0x00;
 	vm->env->defs[d]->code[4] = 0x00;
@@ -111,19 +119,18 @@ void test_vm()
 	vm->env->defs[d]->code[6] = 0x00;
 	vm->env->defs[d]->code[7] = 0x00;
 	vm->env->defs[d]->code[8] = 0x01;
-	*/
 
 	/* def to call = 1 */
 	vm->current_supercomb = 1;
 
 	Fu_Object *res;
-	vm->args[0] = Fu_VM_MK_CONSTRUCTOR(0x42);
+	vm->args[0] = Fu_VM_MK_SUPERCOMBINATOR(0x2);
+	vm->args[1] = Fu_VM_MK_SUPERCOMBINATOR(0x3);
 	
 	res = fu_vm_execute(mm, vm);
-	fu_vm_print_object(stdout, res); printf("\n");
-	printf("\n");
-	res = fu_vm_execute(mm, vm);
-	fu_vm_print_object(stdout, res); printf("\n");
+	printf("tree: "); fu_vm_print_object(stdout, res); printf("\n");
+	fu_vm_eval(mm, vm, &res);
+	printf("tree whnf: "); fu_vm_print_object(stdout, res); printf("\n");
 
 	fu_vm_end(vm);
 	fu_mm_end(mm);

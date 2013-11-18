@@ -4,12 +4,13 @@
 #include "vm.h"
 
 #define MIN_STACK_SIZE	1024
-#define DEF_STACK(S)	S = (Fu_Object **)malloc(sizeof(Fu_Object *) * MIN_STACK_SIZE); \
-			S##_capacity = MIN_STACK_SIZE; \
-			S##_index = 0;
+#define DEF_STACK(S, T) \
+	S = (T *)malloc(sizeof(T) * MIN_STACK_SIZE); \
+	S##_capacity = MIN_STACK_SIZE; \
+	S##_index = 0;
 #define STACK_GROW(S) { \
-	Fu_Object **__temp = (Fu_Object **)malloc(sizeof(Fu_Object *) * 2 * (S##_capacity)); \
-	memcpy(__temp, (S), sizeof(Fu_Object *) * (S##_capacity)); \
+	__typeof__(S) __temp = (__typeof__(S))malloc(sizeof(__typeof__(*S)) * 2 * (S##_capacity)); \
+	memcpy(__temp, (S), sizeof(__typeof__(*S)) * (S##_capacity)); \
 	free(S); \
 	(S) = __temp; \
 	(S##_capacity) *= 2; \
@@ -41,7 +42,7 @@
 
 void fu_vm_init(Fu_VM *vm)
 {
-	DEF_STACK(vm->stack);
+	DEF_STACK(vm->stack, Fu_Object *);
 }
 
 void fu_vm_end(Fu_VM *vm)
@@ -86,7 +87,7 @@ Fu_Object *fu_vm_execute(Fu_MM *mm, Fu_VM *vm)
 			i++;
 			uchar arg_id;
 			READ_UINT8(i, arg_id);
-			assert(arg_id < sc->nargs);
+			assert(arg_id < sc->nparams);
 			Fu_Object *arg = vm->args[arg_id];
 			STACK_PUSH(vm->stack, arg);
 			break;
@@ -130,5 +131,66 @@ void fu_vm_print_object(FILE *out, Fu_Object *obj)
 	} else {
 		fprintf(out, "<REF %p>", obj);
 	}
+}
+
+#define IS_SUPERCOMBINATOR(X)	(Fu_MM_IS_IMMEDIATE(X) && Fu_MM_IMMEDIATE_TAG(X) == Fu_VM_TAG_SUPERCOMBINATOR)
+
+#define CLEANUP() { \
+	free(spine); \
+}
+
+void fu_vm_eval(Fu_MM *mm, Fu_VM *vm, Fu_Object **obj)
+/*
+ * Evaluate a tree to WHNF.
+ * Requires a pointer to a (Fu_Object *) since evaluation
+ * overwrites parts of the graph.
+ */
+{
+	/* The spine is a stack of (Fu_Object **) */
+	Fu_Object ***spine;
+	uint spine_capacity;
+	uint spine_index;
+	DEF_STACK(spine, Fu_Object **);
+
+	/* Unwind the spine */
+	uint nargs = 0;
+	while (Fu_IS_CONS(*obj)) {
+		STACK_PUSH(spine, obj);
+		obj = &Fu_CONS_HEAD(*obj);
+		nargs++;
+	}
+
+	if (IS_SUPERCOMBINATOR(*obj)) {
+		uint current_supercomb = Fu_MM_IMMEDIATE_VALUE(*obj);
+		Fu_VMSupercombinator *sc = vm->env->defs[current_supercomb];
+		if (nargs < sc->nparams) {
+			/* Already in WHNF */
+			CLEANUP();
+			return;
+		}
+
+		assert(sc->nparams < Fu_VM_MAX_ARGS);
+
+		/* Read arguments from spine */
+		Fu_Object **root = obj;
+		vm->current_supercomb = current_supercomb;
+		for (int i = 0; i < sc->nparams; i++) {
+			root = STACK_POP(spine);
+			vm->args[i] = Fu_CONS_HEAD(*root);
+		}
+
+		/* Call supercombinator */
+		printf("calling %u\n", current_supercomb);
+		Fu_Object *res = fu_vm_execute(mm, vm);
+		printf("got: "); fu_vm_print_object(stdout, res); printf("\n");
+
+		/* Overwrite root with result */
+		*root = res;
+
+	} else {
+		assert(!"not implemented");
+	}
+
+	CLEANUP();
 }
 
