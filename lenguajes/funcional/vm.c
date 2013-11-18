@@ -8,25 +8,27 @@
 			S##_capacity = MIN_STACK_SIZE; \
 			S##_index = 0;
 #define STACK_GROW(S) { \
-	Fu_Object **__temp = (Fu_Object **)malloc(sizeof(Fu_Object *) * 2 * S##_capacity); \
-	memcpy(__temp, S, sizeof(Fu_Object *) * S##_capacity); \
-	S = __temp; \
-	S##_capacity *= 2; \
+	Fu_Object **__temp = (Fu_Object **)malloc(sizeof(Fu_Object *) * 2 * (S##_capacity)); \
+	memcpy(__temp, (S), sizeof(Fu_Object *) * (S##_capacity)); \
+	free(S); \
+	(S) = __temp; \
+	(S##_capacity) *= 2; \
 }
 #define STACK_PUSH(S, X) { \
-	if (S##_index == S##_capacity) { \
+	if ((S##_index) == (S##_capacity)) { \
 		STACK_GROW(S); \
 	} \
-	S[S##_index] = (X); \
-	S##_index++; \
+	(S)[(S##_index)] = (X); \
+	(S##_index)++; \
 }
 #define STACK_TOP(S) ((S)[(S##_index) - 1])
+#define STACK_POP(S) ((S)[--(S##_index)])
 
 #define NBITS_PER_BYTE		8
 
 #define READ_UINT8(I, N) { \
 	(N) = sc->code[(I)]; \
-	(I) = (I) + 1; \
+	(I)++; \
 }
 
 #define READ_UINT64(I, J, N) { \
@@ -37,58 +39,96 @@
 	I = J; \
 }
 
-#define TAG_CONSTRUCTOR		0x1
-#define TAG_SUPERCOMBINATOR	0x2
+void fu_vm_init(Fu_VM *vm)
+{
+	DEF_STACK(vm->stack);
+}
 
-Fu_Object *fu_vm_execute(Fu_MM *mm, Fu_VMEnvironment *env, uint idx, Fu_Object **args)
+void fu_vm_end(Fu_VM *vm)
+{
+	free(vm->stack);
+}
+
+Fu_Object *fu_vm_execute(Fu_MM *mm, Fu_VM *vm)
 /*
  * Execute the code in a supercombinator and build the tree.
  * TODO: add the arguments.
  */
 {
 	int i, j;
-	Fu_VMSupercombinator *sc = env->defs[idx];
+	Fu_VMSupercombinator *sc = vm->env->defs[vm->current_supercomb];
 
-	Fu_Object **stack;
-	uint stack_capacity;
-	uint stack_index;
-
-	DEF_STACK(stack);
+	vm->stack_index = 0;
 
 	for (i = 0; i < sc->code_len;) {
 		switch (sc->code[i]) {
-		case FU_OP_PUSH_CONS_64:
+		case Fu_OP_PUSH_CONS_64:
 			{
-			uint64 constructor_id;
 			i++;
+			uint64 constructor_id;
 			READ_UINT64(i, j, constructor_id);
 
-			Fu_Object *constructor = Fu_MM_MK_IMMEDIATE(constructor_id, TAG_CONSTRUCTOR);
-			printf("pushing constructor: %llu\n", constructor_id);
-			STACK_PUSH(stack, constructor);
+			Fu_Object *constructor = Fu_VM_MK_CONSTRUCTOR(constructor_id);
+			STACK_PUSH(vm->stack, constructor);
 			break;
 			}
-		case FU_OP_PUSH_COMB_64:
+		case Fu_OP_PUSH_COMB_64:
 			{
+			i++;
 			uint64 supercombinator_id;
-			i++;
 			READ_UINT64(i, j, supercombinator_id);
-			Fu_Object *supercombinator = Fu_MM_MK_IMMEDIATE(supercombinator_id, TAG_SUPERCOMBINATOR);
-			printf("pushing supercombinator: %llu\n", supercombinator_id);
-			STACK_PUSH(stack, supercombinator);
+			Fu_Object *supercombinator = Fu_VM_MK_SUPERCOMBINATOR(supercombinator_id);
+			STACK_PUSH(vm->stack, supercombinator);
 			break;
 			}
-		case FU_OP_PUSH_ARG_8:
+		case Fu_OP_PUSH_ARG_8:
 			{
-			uchar arg_id;
 			i++;
+			uchar arg_id;
 			READ_UINT8(i, arg_id);
 			assert(arg_id < sc->nargs);
-			Fu_Object *arg = args[arg_id];
-			STACK_PUSH(stack, arg);
+			Fu_Object *arg = vm->args[arg_id];
+			STACK_PUSH(vm->stack, arg);
+			break;
+			}
+		case Fu_OP_APP:
+			{
+			i++;
+			assert(vm->stack_index >= 2);
+			Fu_Object *arg = STACK_POP(vm->stack);
+			Fu_Object *fun = STACK_POP(vm->stack);
+			Fu_Object *app = fu_cons(mm, fun, arg);
+			STACK_PUSH(vm->stack, app);
+			break;
 			}
 		}
 	}
-	return STACK_TOP(stack);
+	return STACK_TOP(vm->stack);
+}
+
+void fu_vm_print_object(FILE *out, Fu_Object *obj)
+/* Print a tree */
+{
+	if (Fu_MM_IS_IMMEDIATE(obj)) {
+		fprintf(out, "<IMM tag=0x%llx value=0x%llx>", Fu_MM_IMMEDIATE_TAG(obj), Fu_MM_IMMEDIATE_VALUE(obj));
+	} else if (Fu_IS_CONS(obj)) {
+		int first = 1;
+		fprintf(out, "(");
+		while (Fu_IS_CONS(obj)) {
+			if (!first) {
+				fprintf(out, " ");
+			}
+			first = 0;
+			fu_vm_print_object(out, Fu_CONS_HEAD(obj));
+			obj = Fu_CONS_TAIL(obj);
+		}
+		if (obj != NULL) {
+			fprintf(out, " . ");
+			fu_vm_print_object(out, obj);
+		}
+		fprintf(out, ")");
+	} else {
+		fprintf(out, "<REF %p>", obj);
+	}
 }
 

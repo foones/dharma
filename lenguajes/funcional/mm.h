@@ -12,6 +12,12 @@ typedef uchar Fu_MMData;
 #define Fu_MM_IS_IMMEDIATE(X)		(Fu_MM_IMMEDIATE_TAG(X) != 0x0)
 #define Fu_MM_IMMEDIATE_VALUE(X)	((uint64)(X) >> Fu_MM_NBITS_PADDING)
 
+/* For an object to be a reference it has to be both:
+ * - non-null
+ * - not inmediate
+ */
+#define Fu_MM_IS_REFERENCE(X)		((X) != NULL && !Fu_MM_IS_IMMEDIATE(X))
+
 /* Fu_MM_FIRST_GC_THRESHOLD is the amount of allocated bytes that,
  * when reached, triggers GC for the very first time.
  */

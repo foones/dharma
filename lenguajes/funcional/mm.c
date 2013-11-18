@@ -109,7 +109,7 @@ static void whiten_all(Fu_MM *mm)
 
 static void mark_as_gray(Fu_MM *mm, Fu_MMObject *referenced)
 {
-	if (referenced != NULL && !Fu_MM_IS_IMMEDIATE(referenced) && Fu_MM_FLAGS_COLOR(referenced->flags) == WHITE(mm)) {
+	if (Fu_MM_IS_REFERENCE(referenced) && Fu_MM_FLAGS_COLOR(referenced->flags) == WHITE(mm)) {
 		list_remove(&mm->white, referenced);
 		grayen(referenced);
 		list_add_front(&mm->gray, referenced);

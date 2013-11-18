@@ -2,15 +2,15 @@
 #define _FU_DICT_H_
 
 typedef unsigned long int Key;
-#define FU_DICT_CHILD_BITS	1
-#define FU_DICT_NCHILDREN	(1 << FU_DICT_CHILD_BITS)
-#define FU_DICT_CHILD(KEY)	(KEY & (FU_DICT_NCHILDREN - 1))
-#define FU_DICT_NEXT(KEY)	(KEY >> FU_DICT_CHILD_BITS)
+#define Fu_DICT_CHILD_BITS	1
+#define Fu_DICT_NCHILDREN	(1 << Fu_DICT_CHILD_BITS)
+#define Fu_DICT_CHILD(KEY)	(KEY & (Fu_DICT_NCHILDREN - 1))
+#define Fu_DICT_NEXT(KEY)	(KEY >> Fu_DICT_CHILD_BITS)
 
 typedef struct _Fu_Dict_Node Node;
 struct _Fu_Dict_Node {
 	void *value;
-	Node *child[FU_DICT_NCHILDREN];
+	Node *child[Fu_DICT_NCHILDREN];
 };
 
 typedef struct _Fu_Dict {

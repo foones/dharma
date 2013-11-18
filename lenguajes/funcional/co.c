@@ -74,17 +74,18 @@ void test_dict()
 
 void test_vm()
 {
-	Fu_MM _mm;
-	Fu_MM *mm = &_mm;
+	Fu_MM _mm; Fu_MM *mm = &_mm;
+	Fu_VM _vm; Fu_VM *vm = &_vm;
 
 	fu_mm_init(mm);
+	fu_vm_init(vm);
 
 	int ndefs = 2;
-	Fu_VMEnvironment *env = (Fu_VMEnvironment *)malloc(sizeof(Fu_VMEnvironment) + ndefs * sizeof(Fu_VMSupercombinator));
+	vm->env = (Fu_VMEnvironment *)malloc(sizeof(Fu_VMEnvironment) + ndefs * sizeof(Fu_VMSupercombinator));
 
 	/* Supercombinators */
 
-	env->ndefs = ndefs;
+	vm->env->ndefs = ndefs;
 
 	int d;
 	int code_len;
@@ -93,31 +94,38 @@ void test_vm()
 
 	/* def 1 */
 	d = 1;
-	code_len = 2;
-	env->defs[d] = (Fu_VMSupercombinator *)malloc(sizeof(Fu_VMSupercombinator) + code_len * sizeof(Fu_VMOpcode));
-	env->defs[d]->nargs = 1;
-	env->defs[d]->code_len = code_len;
-	env->defs[d]->code[0] = FU_OP_PUSH_ARG_8;
-	env->defs[d]->code[1] = 0x00;
+	code_len = 5;
+	vm->env->defs[d] = (Fu_VMSupercombinator *)malloc(sizeof(Fu_VMSupercombinator) + code_len * sizeof(Fu_VMOpcode));
+	vm->env->defs[d]->nargs = 1;
+	vm->env->defs[d]->code_len = code_len;
+	vm->env->defs[d]->code[0] = Fu_OP_PUSH_ARG_8;
+	vm->env->defs[d]->code[1] = 0x00;
+	vm->env->defs[d]->code[2] = Fu_OP_PUSH_ARG_8;
+	vm->env->defs[d]->code[3] = 0x00;
+	vm->env->defs[d]->code[4] = Fu_OP_APP;
 	/*
-	env->defs[d]->code[2] = 0x00;
-	env->defs[d]->code[3] = 0x00;
-	env->defs[d]->code[4] = 0x00;
-	env->defs[d]->code[5] = 0x00;
-	env->defs[d]->code[6] = 0x00;
-	env->defs[d]->code[7] = 0x00;
-	env->defs[d]->code[8] = 0x01;
+	vm->env->defs[d]->code[2] = 0x00;
+	vm->env->defs[d]->code[3] = 0x00;
+	vm->env->defs[d]->code[4] = 0x00;
+	vm->env->defs[d]->code[5] = 0x00;
+	vm->env->defs[d]->code[6] = 0x00;
+	vm->env->defs[d]->code[7] = 0x00;
+	vm->env->defs[d]->code[8] = 0x01;
 	*/
 
 	/* def to call = 1 */
+	vm->current_supercomb = 1;
+
 	Fu_Object *res;
-	Fu_Object **args = (Fu_Object **)malloc(env->defs[d]->nargs * sizeof(Fu_Object *));
-	args[0] = fu_constructor(0x42);
+	vm->args[0] = Fu_VM_MK_CONSTRUCTOR(0x42);
 	
-	res = fu_vm_execute(mm, env, d, NULL);
-	printf("%p\n", res);
-	res = fu_vm_execute(mm, env, d, NULL);
-	printf("%p\n", res);
+	res = fu_vm_execute(mm, vm);
+	fu_vm_print_object(stdout, res); printf("\n");
+	printf("\n");
+	res = fu_vm_execute(mm, vm);
+	fu_vm_print_object(stdout, res); printf("\n");
+
+	fu_vm_end(vm);
 	fu_mm_end(mm);
 }
 

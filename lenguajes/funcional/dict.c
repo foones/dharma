@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include "dict.h"
 
-#define KEY_LEN		((8 * sizeof(Key)) / FU_DICT_CHILD_BITS)
+#define KEY_LEN		((8 * sizeof(Key)) / Fu_DICT_CHILD_BITS)
 
 void fu_dict_init(Fu_Dict *dict)
 {
@@ -13,7 +13,7 @@ Node *mk_node()
 	int i;
 	Node *node = (Node *)malloc(sizeof(Node));
 	node->value = NULL;
-	for (i = 0; i < FU_DICT_NCHILDREN; i++) {
+	for (i = 0; i < Fu_DICT_NCHILDREN; i++) {
 		node->child[i] = NULL;
 	}
 	return node;
@@ -27,9 +27,9 @@ void fu_dict_define(Fu_Dict *dict, Key key, void *value)
 		if (*node == NULL) {
 			*node = mk_node();
 		}
-		node = &(*node)->child[FU_DICT_CHILD(key)];
-		key = FU_DICT_NEXT(key);
-		i += FU_DICT_CHILD_BITS;
+		node = &(*node)->child[Fu_DICT_CHILD(key)];
+		key = Fu_DICT_NEXT(key);
+		i += Fu_DICT_CHILD_BITS;
 	}
 	if (*node == NULL) {
 		*node = mk_node();
@@ -45,9 +45,9 @@ void *fu_dict_get(Fu_Dict *dict, Key key)
 		if (node == NULL) {
 			return NULL;
 		}
-		node = node->child[FU_DICT_CHILD(key)];
-		key = FU_DICT_NEXT(key);
-		i += FU_DICT_CHILD_BITS;
+		node = node->child[Fu_DICT_CHILD(key)];
+		key = Fu_DICT_NEXT(key);
+		i += Fu_DICT_CHILD_BITS;
 	}
 	if (node == NULL) {
 		return NULL;
@@ -61,7 +61,7 @@ void free_node(Node *node)
 		return;
 	}
 	int i;
-	for (i = 0; i < FU_DICT_NCHILDREN; i++) {
+	for (i = 0; i < Fu_DICT_NCHILDREN; i++) {
 		free_node(node->child[i]);
 	}
 	free(node);

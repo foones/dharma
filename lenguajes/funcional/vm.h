@@ -30,17 +30,38 @@ typedef struct _Fu_VMSupercombinator {
  * 0x03 --> 32 bits
  * 0x04 --> 64 bits
  */
-#define FU_OP_PUSH_CONS_64	0x14
-#define FU_OP_PUSH_COMB_64	0x24
-#define FU_OP_PUSH_ARG_8	0x31
-#define FU_OP_APP		0x40
+#define Fu_OP_PUSH_CONS_64	0x14
+#define Fu_OP_PUSH_COMB_64	0x24
+#define Fu_OP_PUSH_ARG_8	0x31
+#define Fu_OP_APP		0x40
 
-typedef struct _Fu_VMEnvironment {
+#define Fu_VM_TAG_CONSTRUCTOR		0x1
+#define Fu_VM_TAG_SUPERCOMBINATOR	0x2
+#define Fu_VM_MK_CONSTRUCTOR(ID)	Fu_MM_MK_IMMEDIATE((ID), Fu_VM_TAG_CONSTRUCTOR)
+#define Fu_VM_MK_SUPERCOMBINATOR(ID)	Fu_MM_MK_IMMEDIATE((ID), Fu_VM_TAG_SUPERCOMBINATOR)
+
+#define Fu_VM_MAX_ARGS		256
+
+typedef struct _Fu_VM_Environment {
 	/* Definition of supercombinators */
 	uint ndefs;
 	Fu_VMSupercombinator *defs[];
 } Fu_VMEnvironment;
 
-Fu_Object *fu_vm_execute(Fu_MM *mm, Fu_VMEnvironment *env, uint idx, Fu_Object **args);
+typedef struct _Fu_VM {
+	Fu_VMEnvironment *env;
+	uint current_supercomb;
+	Fu_Object *args[Fu_VM_MAX_ARGS];
+
+	Fu_Object **stack;
+	uint stack_capacity;
+	uint stack_index;
+} Fu_VM;
+
+void fu_vm_init(Fu_VM *vm);
+void fu_vm_end(Fu_VM *vm);
+Fu_Object *fu_vm_execute(Fu_MM *mm, Fu_VM *vm);
+
+void fu_vm_print_object(FILE *out, Fu_Object *obj);
 
 #endif
