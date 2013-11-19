@@ -141,12 +141,34 @@ void test_vm()
 	fu_mm_end(mm);
 }
 
+void test_protocomp()
+{
+	Fu_MM _mm; Fu_MM *mm = &_mm;
+	fu_mm_init(mm);
+
+	Fu_Object *vmobj = fu_proto_compile_definition(mm,
+		Fu_PROTO_MK_ABSTRACTION(mm,
+			0x10,
+			Fu_PROTO_MK_VARIABLE(0x10)
+		)
+	);
+
+	Fu_Object *res = fu_cons(mm, Fu_VM_MK_SUPERCOMBINATOR(0), Fu_VM_MK_CONSTRUCTOR(0x42));
+	printf("tree: "); fu_vm_print_object(stdout, res); printf("\n");
+	fu_vm_weak_head_normalize(mm, vmobj, &res);
+	printf("tree whnf: "); fu_vm_print_object(stdout, res); printf("\n");
+
+	fu_vm_end(vmobj);
+	fu_mm_end(mm);
+}
+
 int main()
 {
 	/*test_mm();*/
 	/*test_lexer();*/
 	/*test_dict();*/
-	test_vm();
+	/*test_vm();*/
+	test_protocomp();
 	return 0;
 }
 

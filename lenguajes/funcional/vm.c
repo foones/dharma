@@ -3,28 +3,6 @@
 #include "Fu.h"
 #include "vm.h"
 
-#define MIN_STACK_SIZE	1024
-#define DEF_STACK(S, T) \
-	S = (T *)malloc(sizeof(T) * MIN_STACK_SIZE); \
-	S##_capacity = MIN_STACK_SIZE; \
-	S##_index = 0;
-#define STACK_GROW(S) { \
-	__typeof__(S) __temp = (__typeof__(S))malloc(sizeof(__typeof__(*S)) * 2 * (S##_capacity)); \
-	memcpy(__temp, (S), sizeof(__typeof__(*S)) * (S##_capacity)); \
-	free(S); \
-	(S) = __temp; \
-	(S##_capacity) *= 2; \
-}
-#define STACK_PUSH(S, X) { \
-	if ((S##_index) == (S##_capacity)) { \
-		STACK_GROW(S); \
-	} \
-	(S)[(S##_index)] = (X); \
-	(S##_index)++; \
-}
-#define STACK_TOP(S) ((S)[(S##_index) - 1])
-#define STACK_POP(S) ((S)[--(S##_index)])
-
 #define NBITS_PER_BYTE		8
 
 #define READ_UINT8(I, N) { \
@@ -80,8 +58,8 @@ Fu_Object *fu_vm(Fu_MM *mm)
 	Fu_Object *vmobj = fu_mm_allocate(mm, &fu_vm_tag, sizeof(Fu_VM));
 	Fu_VM *vm = Fu_OBJ_AS_VM(vmobj);
 
-	DEF_STACK(vm->stack, Fu_Object *);
-	DEF_STACK(vm->spine, Fu_Object **);
+	Fu_DEF_STACK(vm->stack, Fu_Object *);
+	Fu_DEF_STACK(vm->spine, Fu_Object **);
 	mm->root = vmobj;
 	return vmobj;
 }
@@ -90,8 +68,8 @@ void fu_vm_end(Fu_Object *vmobj)
 {
 	assert(Fu_IS_VM(vmobj));
 	Fu_VM *vm = Fu_OBJ_AS_VM(vmobj);
-	free(vm->stack);
-	free(vm->spine);
+	Fu_STACK_FREE(vm->stack);
+	Fu_STACK_FREE(vm->spine);
 }
 
 Fu_Object *fu_vm_execute(Fu_MM *mm, Fu_Object *vmobj, uint supercombinator_id)
@@ -101,10 +79,12 @@ Fu_Object *fu_vm_execute(Fu_MM *mm, Fu_Object *vmobj, uint supercombinator_id)
  * as a result.
  */
 {
+	printf("ejecutando supercombinators %u\n", supercombinator_id);
 	assert(Fu_IS_VM(vmobj));
 	Fu_VM *vm = Fu_OBJ_AS_VM(vmobj);
 	int i, j;
 	Fu_VMSupercombinator *sc = vm->env->defs[supercombinator_id];
+	printf("len %u\n", sc->code_len);
 
 	vm->stack_index = 0;
 
@@ -117,7 +97,7 @@ Fu_Object *fu_vm_execute(Fu_MM *mm, Fu_Object *vmobj, uint supercombinator_id)
 			READ_UINT64(i, j, constructor_id);
 
 			Fu_Object *constructor = Fu_VM_MK_CONSTRUCTOR(constructor_id);
-			STACK_PUSH(vm->stack, constructor);
+			Fu_STACK_PUSH(vm->stack, constructor);
 			break;
 			}
 		case Fu_OP_PUSH_COMB_64:
@@ -126,7 +106,7 @@ Fu_Object *fu_vm_execute(Fu_MM *mm, Fu_Object *vmobj, uint supercombinator_id)
 			uint64 supercombinator_id;
 			READ_UINT64(i, j, supercombinator_id);
 			Fu_Object *supercombinator = Fu_VM_MK_SUPERCOMBINATOR(supercombinator_id);
-			STACK_PUSH(vm->stack, supercombinator);
+			Fu_STACK_PUSH(vm->stack, supercombinator);
 			break;
 			}
 		case Fu_OP_PUSH_ARG_8:
@@ -136,7 +116,7 @@ Fu_Object *fu_vm_execute(Fu_MM *mm, Fu_Object *vmobj, uint supercombinator_id)
 			READ_UINT8(i, arg_id);
 			assert(arg_id < sc->nparams);
 			Fu_Object *arg = vm->args[arg_id];
-			STACK_PUSH(vm->stack, arg);
+			Fu_STACK_PUSH(vm->stack, arg);
 			break;
 			}
 		case Fu_OP_APP:
@@ -151,7 +131,7 @@ Fu_Object *fu_vm_execute(Fu_MM *mm, Fu_Object *vmobj, uint supercombinator_id)
 			}
 		}
 	}
-	return STACK_TOP(vm->stack);
+	return Fu_STACK_TOP(vm->stack);
 }
 
 void fu_vm_print_object(FILE *out, Fu_Object *obj)
@@ -201,7 +181,7 @@ void fu_vm_weak_head_normalize(Fu_MM *mm, Fu_Object *vmobj, Fu_Object **obj)
 	while (1) {
 		/* Unwind the spine */
 		while (Fu_IS_CONS(*obj)) {
-			STACK_PUSH(vm->spine, obj);
+			Fu_STACK_PUSH(vm->spine, obj);
 			obj = &Fu_CONS_HEAD(*obj);
 			nargs++;
 		}
@@ -226,7 +206,7 @@ void fu_vm_weak_head_normalize(Fu_MM *mm, Fu_Object *vmobj, Fu_Object **obj)
 		Fu_Object **root = obj;
 		vm->nargs = sc->nparams;
 		for (int i = 0; i < sc->nparams; i++) {
-			root = STACK_POP(vm->spine);
+			root = Fu_STACK_POP(vm->spine);
 			vm->args[i] = Fu_CONS_TAIL(*root);
 		}
 		nargs -= sc->nparams;

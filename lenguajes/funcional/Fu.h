@@ -5,6 +5,7 @@
 #include "lexer.h"
 #include "dict.h"
 #include "vm.h"
+#include "protocomp.h"
 
 #include "objects/cons.h"
 
