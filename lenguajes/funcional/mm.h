@@ -110,4 +110,8 @@ void fu_mm_init(Fu_MM *mm);
 Fu_MMObject *fu_mm_allocate(Fu_MM *mm, Fu_MMTag *tag, Fu_MMSize size);
 void fu_mm_end(Fu_MM *mm);
 
+/* Fu_Object is just an alias for Fu_MMObject */
+
+typedef Fu_MMObject Fu_Object;
+
 #endif
