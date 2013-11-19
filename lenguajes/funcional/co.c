@@ -75,10 +75,10 @@ void test_dict()
 void test_vm()
 {
 	Fu_MM _mm; Fu_MM *mm = &_mm;
-	Fu_VM _vm; Fu_VM *vm = &_vm;
-
 	fu_mm_init(mm);
-	fu_vm_init(vm);
+
+	Fu_Object *vmobj = fu_vm(mm);
+	Fu_VM *vm = Fu_OBJ_AS_VM(vmobj);
 
 	int ndefs = 3;
 	vm->env = (Fu_VMEnvironment *)malloc(sizeof(Fu_VMEnvironment) + ndefs * sizeof(Fu_VMSupercombinator));
@@ -132,13 +132,12 @@ void test_vm()
 	Fu_Object *K = Fu_VM_MK_SUPERCOMBINATOR(0x2);
 	Fu_Object *S = Fu_VM_MK_SUPERCOMBINATOR(0x3);
 
-	/* def to call = 1 */
 	Fu_Object *res = fu_cons(mm, fu_cons(mm, fu_cons(mm, K, I), S), S);
 	printf("tree: "); fu_vm_print_object(stdout, res); printf("\n");
-	fu_vm_weak_head_normalize(mm, vm, &res);
+	fu_vm_weak_head_normalize(mm, vmobj, &res);
 	printf("tree whnf: "); fu_vm_print_object(stdout, res); printf("\n");
 
-	fu_vm_end(vm);
+	fu_vm_end(vmobj);
 	fu_mm_end(mm);
 }
 

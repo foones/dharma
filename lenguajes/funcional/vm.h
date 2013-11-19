@@ -50,17 +50,32 @@ typedef struct _Fu_VM_Environment {
 
 typedef struct _Fu_VM {
 	Fu_VMEnvironment *env;
+	
+	int nargs;
 	Fu_Object *args[Fu_VM_MAX_ARGS];
 
 	Fu_Object **stack;
 	uint stack_capacity;
 	uint stack_index;
+
+	Fu_Object ***spine;
+	uint spine_capacity;
+	uint spine_index;
 } Fu_VM;
 
-void fu_vm_init(Fu_VM *vm);
-void fu_vm_end(Fu_VM *vm);
-Fu_Object *fu_vm_execute(Fu_MM *mm, Fu_VM *vm, uint supercombinator_id);
-void fu_vm_weak_head_normalize(Fu_MM *mm, Fu_VM *vm, Fu_Object **obj);
+/* For the Fu_Object wrapper */
+
+extern Fu_MMTag fu_vm_tag;
+
+#define Fu_IS_VM(X)		Fu_MM_IS_OF_TYPE(X, fu_vm_tag)
+#define Fu_OBJ_AS_VM(X)		Fu_MM_OBJ_AS_OF_TYPE(X, Fu_VM)
+
+/* Functions */
+
+Fu_Object *fu_vm(Fu_MM *mm);
+void fu_vm_end(Fu_Object *vmobj);
+Fu_Object *fu_vm_execute(Fu_MM *mm, Fu_Object *vmobj, uint supercombinator_id);
+void fu_vm_weak_head_normalize(Fu_MM *mm, Fu_Object *vmobj, Fu_Object **obj);
 
 void fu_vm_print_object(FILE *out, Fu_Object *obj);
 

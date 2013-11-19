@@ -32,12 +32,15 @@ typedef unsigned long long int Fu_MMFlags;
 typedef unsigned long long int Fu_MMSize;
 typedef char Fu_MMColor;
 
-#define Fu_MM_COLOR_NBITS				1
-#define Fu_MM_MAX_FREELIST				1024
-#define Fu_MM_FLAGS(SIZE, COLOR)			(((SIZE) << Fu_MM_COLOR_NBITS) | (COLOR))
-#define Fu_MM_FLAGS_COLOR(FLAGS)			((FLAGS) & ((1 << Fu_MM_COLOR_NBITS) - 1))
+#define Fu_MM_COLOR_NBITS			1
+#define Fu_MM_MAX_FREELIST			1024
+#define Fu_MM_FLAGS(SIZE, COLOR)		(((SIZE) << Fu_MM_COLOR_NBITS) | (COLOR))
+#define Fu_MM_FLAGS_COLOR(FLAGS)		((FLAGS) & ((1 << Fu_MM_COLOR_NBITS) - 1))
 #define Fu_MM_FLAGS_SIZE(FLAGS)			((FLAGS) >> Fu_MM_COLOR_NBITS)
 #define Fu_MM_FLAGS_SET_COLOR(FLAGS, COLOR)	Fu_MM_FLAGS(Fu_MM_FLAGS_SIZE(FLAGS), (COLOR))
+
+#define Fu_MM_IS_OF_TYPE(X, TAG)		(Fu_MM_IS_REFERENCE(X) && (X)->tag == &(TAG))
+#define Fu_MM_OBJ_AS_OF_TYPE(X, TYPE)		((TYPE *)(X)->data)
 
 /* Object */
 
@@ -91,13 +94,13 @@ typedef struct _Fu_MM {
 	 */
 
 	Fu_MMObject *black, *gray, *white;		/* Linked lists for the black, gray
-						 * and white sets */
+						 	 * and white sets */
 	Fu_MMObject *freelist[Fu_MM_MAX_FREELIST];	/* Linked list for the free cells,
-						 * indexed by the allocation size */
+						 	 * indexed by the allocation size */
 	Fu_MMSize nalloc;				/* Amount of allocated memory in the black list */
 	Fu_MMSize gc_threshold;			/* GC triggers when the allocated memory reaches
 						 * this number of bytes */
-	Fu_MMObject *root;				/* For marking the root */
+	Fu_MMObject *root;			/* For marking the root */
 	Fu_MMColor graycol;			/* Current gray color, (1 - graycol) is white
 						 * color */
 } Fu_MM;

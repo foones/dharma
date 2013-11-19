@@ -40,22 +40,69 @@
 	I = J; \
 }
 
-void fu_vm_init(Fu_VM *vm)
-{
-	DEF_STACK(vm->stack, Fu_Object *);
-}
 
-void fu_vm_end(Fu_VM *vm)
-{
-	free(vm->stack);
-}
-
-Fu_Object *fu_vm_execute(Fu_MM *mm, Fu_VM *vm, uint supercombinator_id)
+static void vm_ref_iterator(Fu_MM *mm, Fu_Object *vmobj, Fu_MMRefCallback callback)
 /*
- * Execute the code in a supercombinator and build the tree.
- * TODO: add the arguments.
+ * The objects which the callback is fed here constitute the
+ * root set of the garbage collector.
  */
 {
+	assert(Fu_IS_VM(vmobj));
+	Fu_VM *vm = Fu_OBJ_AS_VM(vmobj);
+
+	int i;
+
+	/* Arguments */
+	for (i = 0; i < vm->nargs; i++) {
+		callback(mm, vm->args[i]);
+	}
+
+	/* Objects in the stack */
+	for (i = 0; i < vm->stack_index; i++) {
+		callback(mm, vm->stack[i]);
+	}
+
+	/* Root of the spine */
+	if (vm->spine_index > 0) {
+		callback(mm, *vm->spine[0]);
+	}
+}
+
+Fu_MMTag fu_vm_tag = { vm_ref_iterator };
+
+Fu_Object *fu_vm(Fu_MM *mm)
+/*
+ * Initializes the stacks for the virtual machine.
+ * It also initializes the memory manager, so that the root
+ * set for the garbage collector makes sense.
+ */
+{
+	Fu_Object *vmobj = fu_mm_allocate(mm, &fu_vm_tag, sizeof(Fu_VM));
+	Fu_VM *vm = Fu_OBJ_AS_VM(vmobj);
+
+	DEF_STACK(vm->stack, Fu_Object *);
+	DEF_STACK(vm->spine, Fu_Object **);
+	mm->root = vmobj;
+	return vmobj;
+}
+
+void fu_vm_end(Fu_Object *vmobj)
+{
+	assert(Fu_IS_VM(vmobj));
+	Fu_VM *vm = Fu_OBJ_AS_VM(vmobj);
+	free(vm->stack);
+	free(vm->spine);
+}
+
+Fu_Object *fu_vm_execute(Fu_MM *mm, Fu_Object *vmobj, uint supercombinator_id)
+/*
+ * Execute the VM code of the given supercombinator,
+ * building a tree of applications, supercombinators and constructors
+ * as a result.
+ */
+{
+	assert(Fu_IS_VM(vmobj));
+	Fu_VM *vm = Fu_OBJ_AS_VM(vmobj);
 	int i, j;
 	Fu_VMSupercombinator *sc = vm->env->defs[supercombinator_id];
 
@@ -96,10 +143,10 @@ Fu_Object *fu_vm_execute(Fu_MM *mm, Fu_VM *vm, uint supercombinator_id)
 			{
 			i++;
 			assert(vm->stack_index >= 2);
-			Fu_Object *arg = STACK_POP(vm->stack);
-			Fu_Object *fun = STACK_POP(vm->stack);
-			Fu_Object *app = fu_cons(mm, fun, arg);
-			STACK_PUSH(vm->stack, app);
+			Fu_Object *arg = vm->stack[vm->stack_index - 1];
+			Fu_Object *fun = vm->stack[vm->stack_index - 2];
+			vm->stack[vm->stack_index - 1] = fu_cons(mm, fun, arg);
+			vm->stack_index--;
 			break;
 			}
 		}
@@ -135,28 +182,26 @@ void fu_vm_print_object(FILE *out, Fu_Object *obj)
 
 #define IS_SUPERCOMBINATOR(X)	(Fu_MM_IS_IMMEDIATE(X) && Fu_MM_IMMEDIATE_TAG(X) == Fu_VM_TAG_SUPERCOMBINATOR)
 
-#define CLEANUP() { \
-	free(spine); \
-}
-
-void fu_vm_weak_head_normalize(Fu_MM *mm, Fu_VM *vm, Fu_Object **obj)
+void fu_vm_weak_head_normalize(Fu_MM *mm, Fu_Object *vmobj, Fu_Object **obj)
 /*
- * Evaluate a tree to WHNF.
+ * Evaluate a tree made out of:
+ * - applications
+ * - supercombinators
+ * - constructors
+ * to WHNF.
  * Requires a pointer to a (Fu_Object *) since evaluation
  * overwrites parts of the graph.
  */
 {
+	assert(Fu_IS_VM(vmobj));
+	Fu_VM *vm = Fu_OBJ_AS_VM(vmobj);
 	/* The spine is a stack of (Fu_Object **) */
-	Fu_Object ***spine;
-	uint spine_capacity;
-	uint spine_index;
-	DEF_STACK(spine, Fu_Object **);
 	uint nargs = 0;
 
 	while (1) {
 		/* Unwind the spine */
 		while (Fu_IS_CONS(*obj)) {
-			STACK_PUSH(spine, obj);
+			STACK_PUSH(vm->spine, obj);
 			obj = &Fu_CONS_HEAD(*obj);
 			nargs++;
 		}
@@ -165,17 +210,13 @@ void fu_vm_weak_head_normalize(Fu_MM *mm, Fu_VM *vm, Fu_Object **obj)
 			/*
 			 * The leftmost atom is not a supercombinator: already in WHNF
 			 */
-			CLEANUP();
 			return;
 		}
 
 		uint supercomb_id = Fu_MM_IMMEDIATE_VALUE(*obj);
 		Fu_VMSupercombinator *sc = vm->env->defs[supercomb_id];
-		printf("nargs requeridos  = %u\n", sc->nparams);
-		printf("nargs disponibles = %u\n", nargs);
 		if (nargs < sc->nparams) {
 			/* Not enough arguments: already in WHNF */
-			CLEANUP();
 			return;
 		}
 
@@ -183,20 +224,19 @@ void fu_vm_weak_head_normalize(Fu_MM *mm, Fu_VM *vm, Fu_Object **obj)
 
 		/* Read arguments from spine */
 		Fu_Object **root = obj;
+		vm->nargs = sc->nparams;
 		for (int i = 0; i < sc->nparams; i++) {
-			root = STACK_POP(spine);
+			root = STACK_POP(vm->spine);
 			vm->args[i] = Fu_CONS_TAIL(*root);
 		}
 		nargs -= sc->nparams;
 
 		/* Call supercombinator */
-		Fu_Object *res = fu_vm_execute(mm, vm, supercomb_id);
+		Fu_Object *res = fu_vm_execute(mm, vmobj, supercomb_id);
 
 		/* Overwrite root with result */
 		*root = res;
 		obj = root;
 	}
-
-	CLEANUP();
 }
 
