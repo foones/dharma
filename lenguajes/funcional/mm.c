@@ -62,6 +62,8 @@ void fu_mm_init(Fu_MM *mm)
 	forn (i, Fu_MM_MAX_FREELIST) {
 		mm->freelist[i] = NULL;
 	}
+
+	pthread_mutex_init(&mm->allocate_mtx, NULL);
 }
 
 /*
@@ -70,11 +72,15 @@ void fu_mm_init(Fu_MM *mm)
  */
 Fu_MMObject *fu_mm_allocate(Fu_MM *mm, Fu_MMTag *tag, Fu_MMSize size)
 {
+	pthread_mutex_lock(&mm->allocate_mtx);
+
 	Fu_MMSize sz = sizeof(Fu_MMObject) + size;
 
-	char reach_gc_threshold = mm->nalloc + sz > mm->gc_threshold;
+	char reach_gc_threshold = mm->nalloc > mm->gc_threshold;
+
 	if (reach_gc_threshold) {
-		fu_mm_gc(mm);
+		/* TODO: wait until GC finishes (?) */
+		/*fu_mm_gc(mm);*/
 	}
 
 	Fu_MMObject *obj;
@@ -93,6 +99,8 @@ Fu_MMObject *fu_mm_allocate(Fu_MM *mm, Fu_MMTag *tag, Fu_MMSize size)
 	mm->nalloc += sz;
 
 	assert(!Fu_MM_IS_IMMEDIATE(obj));
+
+	pthread_mutex_unlock(&mm->allocate_mtx);
 	return obj;
 }
 
@@ -134,7 +142,10 @@ static void mark(Fu_MM *mm)
 		/* Blacken the first gray object */
 		Fu_MMObject *obj = list_pop(&mm->gray);
 		assert(Fu_MM_FLAGS_COLOR(obj->flags) == GRAY(mm));
+
+		pthread_mutex_lock(&mm->allocate_mtx);
 		list_add_front(&mm->black, obj);
+		pthread_mutex_unlock(&mm->allocate_mtx);
 
 		/* Grayen the white objects referenced by it */
 		obj->tag->ref_iterator(mm, obj, mark_as_gray);
@@ -162,10 +173,16 @@ static void list_free(Fu_MM *mm, Fu_MMObject **list)
 		Fu_MMObject *obj = p;
 		Fu_MMSize sz = sizeof(Fu_MMObject) + Fu_MM_FLAGS_SIZE(obj->flags);
 		p = p->next;
+
+		pthread_mutex_lock(&mm->allocate_mtx);
 		assert(mm->nalloc >= sz);
 		mm->nalloc -= sz;
+		pthread_mutex_unlock(&mm->allocate_mtx);
+
 		if (sz < Fu_MM_MAX_FREELIST) {
+			pthread_mutex_lock(&mm->allocate_mtx);
 			list_add_front(&mm->freelist[sz], obj);
+			pthread_mutex_unlock(&mm->allocate_mtx);
 		} else {
 			free(obj);
 		}
@@ -216,5 +233,19 @@ void fu_mm_end(Fu_MM *mm)
 			list_deallocate(mm->freelist[i]);
 		}
 	}
+	pthread_mutex_destroy(&mm->allocate_mtx);
+}
+
+#include <unistd.h>
+/* Main concurrent garbage collector loop */
+void *fu_mm_gc_mainloop(void *mmptr)
+{
+	Fu_MM *mm = (Fu_MM *)mmptr;
+	while (1) {
+		if (mm->nalloc > mm->gc_threshold) {
+			fu_mm_gc(mm);
+		}
+	}
+	return NULL;
 }
 

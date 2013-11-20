@@ -1,20 +1,14 @@
 #include <stdio.h>
 #include "Fu.h"
 
-void test_mm()
+void *test_mm_worker(void *mmptr)
 {
-	Fu_MM _mm;
-	Fu_MM *mm = &_mm;
-	int i;
-	Fu_MMObject *lst;
-
-	fu_mm_init(mm);
+	Fu_MM *mm = (Fu_MM *)mmptr;
 	mm->root = fu_cons(mm, NULL, NULL);
 
-	lst = NULL;
+	Fu_MMObject *lst = NULL;
 
-	for (i = 0; i < 1000000; i++) {
-	/*for (i = 0; i < 10000000; i++) {*/
+	for (int i = 0; i < 1000000; i++) {
 		/*if (i % 1000000 == 0) printf("%u\n", i / 1000000);*/
 		if (i % 3 == 0) {
 			lst = fu_cons(mm, lst, lst);
@@ -27,7 +21,26 @@ void test_mm()
 		}
 		/*printf("nalloc: %llu gc_threshold: %llu\n", mm->nalloc, mm->gc_threshold);*/
 	}
-	fu_mm_end(mm);
+	return NULL;
+}
+
+void test_mm()
+{
+	Fu_MM _mm;
+	Fu_MM *mm = &_mm;
+
+	fu_mm_init(mm);
+
+	pthread_t worker_thread;
+	pthread_create(&worker_thread, NULL, test_mm_worker, (void *)mm);
+
+	pthread_t gc_thread;
+	pthread_create(&gc_thread, NULL, fu_mm_gc_mainloop, (void *)mm);
+
+	void *res;
+	pthread_join(worker_thread, &res);
+
+	/*fu_mm_end(mm);*/ /* TODO: when should we run this? */
 }
 
 void test_lexer()
@@ -164,11 +177,11 @@ void test_protocomp()
 
 int main()
 {
-	/*test_mm();*/
+	test_mm();
 	/*test_lexer();*/
 	/*test_dict();*/
 	/*test_vm();*/
-	test_protocomp();
+	/*test_protocomp();*/
 	return 0;
 }
 

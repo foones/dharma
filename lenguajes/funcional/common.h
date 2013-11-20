@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
+#include <pthread.h>
 
 #define	Fu_KB	1024
 #define	Fu_MB	(1024 * Fu_KB)

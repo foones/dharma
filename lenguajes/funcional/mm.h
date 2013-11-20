@@ -103,12 +103,16 @@ typedef struct _Fu_MM {
 	Fu_MMObject *root;			/* For marking the root */
 	Fu_MMColor graycol;			/* Current gray color, (1 - graycol) is white
 						 * color */
+
+	pthread_mutex_t allocate_mtx;
 } Fu_MM;
 
 void fu_mm_gc(Fu_MM *mm);
 void fu_mm_init(Fu_MM *mm);
 Fu_MMObject *fu_mm_allocate(Fu_MM *mm, Fu_MMTag *tag, Fu_MMSize size);
 void fu_mm_end(Fu_MM *mm);
+
+void *fu_mm_gc_mainloop(void *mmptr);
 
 /* Fu_Object is just an alias for Fu_MMObject */
 

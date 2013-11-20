@@ -79,12 +79,10 @@ Fu_Object *fu_vm_execute(Fu_MM *mm, Fu_Object *vmobj, uint supercombinator_id)
  * as a result.
  */
 {
-	printf("ejecutando supercombinators %u\n", supercombinator_id);
 	assert(Fu_IS_VM(vmobj));
 	Fu_VM *vm = Fu_OBJ_AS_VM(vmobj);
 	int i, j;
 	Fu_VMSupercombinator *sc = vm->env->defs[supercombinator_id];
-	printf("len %u\n", sc->code_len);
 
 	vm->stack_index = 0;
 

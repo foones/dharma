@@ -4,6 +4,7 @@ all : co
 
 CC=clang
 #CC=gcc
+LDFLAGS+= -pthread
 CFLAGS+= -Wall -ansi -O2 -fno-strict-aliasing
 
 ## Debugging
@@ -15,7 +16,7 @@ CFLAGS+= -g -ggdb
 OBJS=co.o mm.o objects/cons.o lexer.o dict.o vm.o protocomp.o
 INCS=mm.h common.h objects/cons.h lexer.h dict.h vm.h
 co : ${OBJS} $(INCS)
-	$(CC) -o co $(OBJS)
+	$(CC) -o co $(OBJS) $(LDFLAGS)
 
 clean :
 	rm -f *.o objects/*.o gmon.out
