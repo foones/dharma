@@ -25,49 +25,72 @@
 #define grayen(X)	(X)->flags = Fu_MM_FLAGS_SET_COLOR((X)->flags, GRAY(mm))
 
 #define forn(I, N)	for (I = 0; I < (N); i++)
-#define foreach(X, L)	for (X = (L); X != NULL; X = X->next)
+#define foreach(X, L)	for (X = (L)->first; X != NULL; X = X->next)
 
 #define GRAY(mm)	(mm)->graycol
 #define WHITE(mm)	(1 - GRAY(mm))
 
 #define IS_WHITE(MM, X)	(Fu_MM_FLAGS_COLOR((X)->flags) == WHITE(MM))
 
-static void list_remove(Fu_MMObject **list, Fu_MMObject *obj)
+#define list_is_empty(LST) ((LST)->first == NULL)
+
+static void list_set_empty(Fu_MMList *list)
 {
-	if (*list == obj) {
-		*list = obj->next;
-	}
-	if (obj->prev != NULL) {
+	list->first = NULL;
+	list->last = NULL;
+}
+
+static void list_set_copy(Fu_MMList *list1, Fu_MMList *list2)
+{
+	list1->first = list2->first;
+	list1->last = list2->last;
+}
+
+static void list_remove(Fu_MMList *list, Fu_MMObject *obj)
+{
+	if (obj->prev == NULL) {
+		list->first = obj->next;
+	} else {
 		obj->prev->next = obj->next;
 	}
-	if (obj->next != NULL) {
+	if (obj->next == NULL) {
+		list->last = obj->prev;
+	} else {
 		obj->next->prev = obj->prev;
 	}
 	obj->prev = NULL;
 	obj->next = NULL;
 }
 
-static Fu_MMObject *list_pop(Fu_MMObject **list)
+static Fu_MMObject *list_pop(Fu_MMList *list)
 {
-	Fu_MMObject *obj = *list;
+	Fu_MMObject *obj = list->first;
 	list_remove(list, obj);
 	return obj;
 }
 
-static void list_add_front(Fu_MMObject **list, Fu_MMObject *obj)
+static void list_add_front(Fu_MMList *list, Fu_MMObject *obj)
 {
 	obj->prev = NULL;
-	obj->next = *list;
-	if (*list != NULL) {
-		(*list)->prev = obj;
+	obj->next = list->first;
+	if (list->first == NULL) {
+		list->last = obj;
+	} else {
+		list->first->prev = obj;
 	}
-	*list = obj;
+	list->first = obj;
 }
 
-static void list_concat(Fu_MMObject **list1, Fu_MMObject **list2)
+static void list_concat(Fu_MMList *list1, Fu_MMList *list2)
 {
-	while (*list2 != NULL) {
-		list_add_front(list1, list_pop(list2));
+	if (list1->last == NULL) {
+		list1->first = list2->first;
+		list1->last = list2->last;
+	} else {
+		if (list2->first != NULL) {
+			list2->first->prev = list1->last;
+		}
+		list1->last = list2->first;
 	}
 }
 
@@ -84,7 +107,7 @@ static void gc_check_invariant(Fu_MM *mm)
 {
 	pthread_mutex_lock(&mm->allocate_mtx);
 	Fu_MMObject *p;
-	for (p = mm->black; p != NULL; p = p->next) {
+	foreach (p, &mm->black) {
 		p->tag->ref_iterator(mm, p, callback_check_not_white);
 	}
 	pthread_mutex_unlock(&mm->allocate_mtx);
@@ -95,9 +118,9 @@ static void gc_check_invariant(Fu_MM *mm)
 void fu_mm_init(Fu_MM *mm)
 {
 	int i;
-	mm->black = NULL;
-	mm->gray = NULL;
-	mm->white = NULL;
+	list_set_empty(&mm->black);
+	list_set_empty(&mm->gray);
+	list_set_empty(&mm->white);
 	forn (i, Fu_MM_NUM_ROOTS) {
 		mm->root[i] = NULL;
 	}
@@ -105,7 +128,7 @@ void fu_mm_init(Fu_MM *mm)
 	mm->graycol = 0;
 	mm->working = 1;
 	forn (i, Fu_MM_MAX_FREELIST) {
-		mm->freelist[i] = NULL;
+		list_set_empty(&mm->freelist[i]);
 	}
 
 	pthread_mutex_init(&mm->allocate_mtx, NULL);
@@ -128,7 +151,7 @@ void fu_mm_allocate(Fu_MM *mm, Fu_MMTag *tag, Fu_MMSize size, void *init, Fu_MMO
 	Fu_MMObject *obj;
 
 	/* Get memory for the object */
-	if (sz < Fu_MM_MAX_FREELIST && mm->freelist[sz] != NULL) {
+	if (sz < Fu_MM_MAX_FREELIST && !list_is_empty(&mm->freelist[sz])) {
 		obj = list_pop(&mm->freelist[sz]);
 	} else {
 		obj = (Fu_MMObject *)malloc(sz);
@@ -186,11 +209,11 @@ Fu_MMObject *fu_mm_store(Fu_MM *mm, Fu_Object *parent, Fu_Object **dst, Fu_Objec
 static void whiten_all(Fu_MM *mm)
 {
 	mm->graycol = 1 - mm->graycol;
-	assert(mm->white == NULL);
-	mm->white = mm->black;
+	assert(list_is_empty(&mm->white));
+	list_set_copy(&mm->white, &mm->black);
 	list_concat(&mm->white, &mm->gray);
-	mm->gray = NULL;
-	mm->black = NULL;
+	list_set_empty(&mm->gray);
+	list_set_empty(&mm->black);
 }
 
 /*
@@ -210,10 +233,10 @@ static void whiten_all(Fu_MM *mm)
  *
  */
 
-static void list_deallocate(Fu_MMObject *list)
+static void list_deallocate(Fu_MMList *list)
 {
 	Fu_MMObject *p;
-	for (p = list; p != NULL;) {
+	for (p = list->first; p != NULL;) {
 		Fu_MMObject *obj = p;
 		p = p->next;
 		free(obj);
@@ -224,10 +247,10 @@ static void list_deallocate(Fu_MMObject *list)
  * Free the big objects, and add the small objects to the
  * corresponding freelist.
  */
-static void list_free(Fu_MM *mm, Fu_MMObject **list)
+static void list_free(Fu_MM *mm, Fu_MMList *list)
 {
 	Fu_MMObject *p;
-	for (p = *list; p != NULL;) {
+	for (p = list->first; p != NULL;) {
 		Fu_MMObject *obj = p;
 		Fu_MMSize sz = sizeof(Fu_MMObject) + Fu_MM_FLAGS_SIZE(obj->flags);
 		p = p->next;
@@ -241,7 +264,7 @@ static void list_free(Fu_MM *mm, Fu_MMObject **list)
 			free(obj);
 		}
 	}
-	*list = NULL;
+	list_set_empty(list);
 }
 
 /* Sweep */
@@ -249,7 +272,8 @@ static void list_free(Fu_MM *mm, Fu_MMObject **list)
 static void sweep(Fu_MM *mm)
 {
 	list_free(mm, &mm->white);
-	assert(mm->gray == NULL);
+	assert(list_is_empty(&mm->gray));
+	mm->gc_threshold = 2 * mm->nalloc;
 }
 
 static void mark_sweep(Fu_MM *mm)
@@ -257,7 +281,7 @@ static void mark_sweep(Fu_MM *mm)
 	pthread_mutex_lock(&mm->allocate_mtx);
 
 	/* Whiten all objects */
-	assert(mm->white == NULL);
+	assert(list_is_empty(&mm->white));
 	whiten_all(mm);
 
 	/* Set the root gray */
@@ -271,14 +295,16 @@ static void mark_sweep(Fu_MM *mm)
 	pthread_mutex_unlock(&mm->allocate_mtx);
 
 	/* While there are gray nodes */
+	int break_outer = 0;
 	for (;;) {
 		pthread_mutex_lock(&mm->allocate_mtx);
 
-		if (mm->gray == NULL) {
+		if (list_is_empty(&mm->gray)) {
 			/* If no more gray nodes, sweep */
 			sweep(mm);
-			assert(mm->white == NULL);
+			assert(list_is_empty(&mm->white));
 			pthread_mutex_unlock(&mm->allocate_mtx);
+			break_outer = 1;
 			break;
 		}
 
@@ -301,26 +327,26 @@ void fu_mm_end(Fu_MM *mm)
 	mm->working = 0;
 }
 
+#include <unistd.h>
 /* Main concurrent garbage collector loop */
 void *fu_mm_mainloop(void *mmptr)
 {
-	printf("empieza mainloop\n");
-
 	/* Main loop */
 	Fu_MM *mm = (Fu_MM *)mmptr;
 	while (mm->working) {
 		/*printf("gc\n");*/
-		gc_check_invariant(mm);
-		mark_sweep(mm);
-		gc_check_invariant(mm);
+		if (mm->nalloc > mm->gc_threshold) {
+			mark_sweep(mm);
+			sleep(1);
+		}
 	}
 
 	/* Deallocate everything */
 	int i;
-	list_deallocate(mm->black);
+	list_deallocate(&mm->black);
 	forn (i, Fu_MM_MAX_FREELIST) {
-		if (mm->freelist[i] != NULL) {
-			list_deallocate(mm->freelist[i]);
+		if (!list_is_empty(&mm->freelist[i])) {
+			list_deallocate(&mm->freelist[i]);
 		}
 	}
 	pthread_mutex_destroy(&mm->allocate_mtx);

@@ -8,6 +8,13 @@ void *test_mm_worker(void *mmptr)
 	fu_mm_set_gc_root(mm, 0, &lst);
 	for (int i = 0; i < 10000000; i++) {
 		/*if (i % 1000000 == 0) printf("%u\n", i / 1000000);*/
+		/*
+		printf("%u %llu\n", i, mm->nalloc);
+		printf("%u %lu **\n", i,
+						(2 * i * (sizeof(Fu_MMObject) +
+						      sizeof(Fu_Cons)) / 3));
+						      */
+
 		if (i % 3 == 0) {
 			fu_cons(mm, lst, lst, &lst);
 		} else if (i % 3 == 1) {
