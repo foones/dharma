@@ -55,12 +55,14 @@ Fu_Object *fu_vm(Fu_MM *mm)
  * set for the garbage collector makes sense.
  */
 {
-	Fu_Object *vmobj = fu_mm_allocate(mm, &fu_vm_tag, sizeof(Fu_VM));
-	Fu_VM *vm = Fu_OBJ_AS_VM(vmobj);
-
+	Fu_VM _vm, *vm = &_vm;
 	Fu_DEF_STACK(vm->stack, Fu_Object *);
 	Fu_DEF_STACK(vm->spine, Fu_Object **);
-	mm->root = vmobj;
+
+	Fu_Object *vmobj = fu_mm_allocate(mm, &fu_vm_tag, sizeof(Fu_VM), vm);
+
+	/* TODO: set the root right! */
+	fu_mm_set_gc_root(mm, 1, vmobj);
 	return vmobj;
 }
 
@@ -213,7 +215,7 @@ void fu_vm_weak_head_normalize(Fu_MM *mm, Fu_Object *vmobj, Fu_Object **obj)
 		Fu_Object *res = fu_vm_execute(mm, vmobj, supercomb_id);
 
 		/* Overwrite root with result */
-		*root = res;
+		*root = res; /* TODO: write barrier */
 		obj = root;
 	}
 }

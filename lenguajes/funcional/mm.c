@@ -1,8 +1,23 @@
 #include <assert.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 
 #include "mm.h"
+
+/*
+ * Main idea of garbage collection:
+ * - Newly allocated objects are colored black.
+ * - For the mark phase:
+ *       - set all nodes white
+ *       - mark all reachable nodes black
+ *       - gray nodes are known to be reachable but haven't been visited yet
+ * - For the sweep phase:
+ *       - erase all white nodes
+ *
+ * Invariant:
+ * - Black nodes do not point to white nodes.
+ */
 
 /* Helpers */
 
@@ -14,6 +29,8 @@
 
 #define GRAY(mm)	(mm)->graycol
 #define WHITE(mm)	(1 - GRAY(mm))
+
+#define IS_WHITE(MM, X)	(Fu_MM_FLAGS_COLOR((X)->flags) == WHITE(MM))
 
 static void list_remove(Fu_MMObject **list, Fu_MMObject *obj)
 {
@@ -47,6 +64,32 @@ static void list_add_front(Fu_MMObject **list, Fu_MMObject *obj)
 	*list = obj;
 }
 
+static void list_concat(Fu_MMObject **list1, Fu_MMObject **list2)
+{
+	while (*list2 != NULL) {
+		list_add_front(list1, list_pop(list2));
+	}
+}
+
+/* Invariant checker */
+
+static void callback_check_not_white(Fu_MM *mm, Fu_Object *referenced)
+{
+	if (Fu_MM_IS_REFERENCE(referenced) && Fu_MM_FLAGS_COLOR(referenced->flags) == WHITE(mm)) {
+		fprintf(stderr, "GC invariant broken; %p is white\n", referenced);
+	}
+}
+
+static void gc_check_invariant(Fu_MM *mm)
+{
+	pthread_mutex_lock(&mm->allocate_mtx);
+	Fu_MMObject *p;
+	for (p = mm->black; p != NULL; p = p->next) {
+		p->tag->ref_iterator(mm, p, callback_check_not_white);
+	}
+	pthread_mutex_unlock(&mm->allocate_mtx);
+}
+
 /* Fu_MM functions */
 
 void fu_mm_init(Fu_MM *mm)
@@ -55,10 +98,11 @@ void fu_mm_init(Fu_MM *mm)
 	mm->black = NULL;
 	mm->gray = NULL;
 	mm->white = NULL;
-	mm->root = NULL;
+	forn (i, Fu_MM_NUM_ROOTS) {
+		mm->root[i] = NULL;
+	}
 	mm->nalloc = 0;
 	mm->graycol = 0;
-	mm->gc_threshold = Fu_MM_FIRST_GC_THRESHOLD;
 	forn (i, Fu_MM_MAX_FREELIST) {
 		mm->freelist[i] = NULL;
 	}
@@ -66,22 +110,17 @@ void fu_mm_init(Fu_MM *mm)
 	pthread_mutex_init(&mm->allocate_mtx, NULL);
 }
 
-/*
- * If the allocation of an object would exceed the
- * current GC threshold, trigger GC.
- */
-Fu_MMObject *fu_mm_allocate(Fu_MM *mm, Fu_MMTag *tag, Fu_MMSize size)
+static void callback_init_barrier(Fu_MM *mm, Fu_MMObject *referenced)
+{
+	if (Fu_MM_IS_REFERENCE(referenced) && Fu_MM_FLAGS_COLOR(referenced->flags) == WHITE(mm)) {
+		/* TODO: ??? */
+	}
+}
+
+Fu_MMObject *fu_mm_allocate(Fu_MM *mm, Fu_MMTag *tag, Fu_MMSize size, void *init)
 {
 	pthread_mutex_lock(&mm->allocate_mtx);
-
 	Fu_MMSize sz = sizeof(Fu_MMObject) + size;
-
-	char reach_gc_threshold = mm->nalloc > mm->gc_threshold;
-
-	if (reach_gc_threshold) {
-		/* TODO: wait until GC finishes (?) */
-		/*fu_mm_gc(mm);*/
-	}
 
 	Fu_MMObject *obj;
 
@@ -100,57 +139,73 @@ Fu_MMObject *fu_mm_allocate(Fu_MM *mm, Fu_MMTag *tag, Fu_MMSize size)
 
 	assert(!Fu_MM_IS_IMMEDIATE(obj));
 
+	/* Copy the initial data */
+	memcpy(&obj->data, init, size);
+
+	/*
+	 * Ensure the garbage collector invariant is kept, i.e.
+	 * grayen all the white nodes directly referenced from
+	 * this one.
+	 */
+	tag->ref_iterator(mm, obj, callback_init_barrier);
+
 	pthread_mutex_unlock(&mm->allocate_mtx);
 	return obj;
 }
+
+void fu_mm_set_gc_root(Fu_MM *mm, uint i, Fu_Object *root)
+{
+	pthread_mutex_lock(&mm->allocate_mtx);
+	mm->root[i] = root;
+	pthread_mutex_unlock(&mm->allocate_mtx);
+}
+
+#if 0
+Fu_MMObject *fu_mm_store(Fu_MM *mm, Fu_Object *parent, Fu_Object **dst, Fu_Object *src)
+{
+	if (!Fu_MM_IS_REFERENCE(src)) {
+		*dst = src;
+		return;
+	}
+
+	assert(Fu_MM_IS_REFERENCE(parent));
+	pthread_mutex_lock(...);
+	if (Fu_MM_FLAGS_COLOR(parent->tag->flags) == GRAY(mm)
+		&& Fu_MM_FLAGS_COLOR(src->tag->flags) == WHITE(mm)) {
+
+	}
+	pthread_mutex_unlock(...);
+}
+#endif
 
 /* Mark all the objects white in O(1) */
 
 static void whiten_all(Fu_MM *mm)
 {
 	mm->graycol = 1 - mm->graycol;
+	assert(mm->white == NULL);
 	mm->white = mm->black;
+	list_concat(&mm->white, &mm->gray);
+	mm->gray = NULL;
 	mm->black = NULL;
 }
 
-/* Mark */
-
-static void mark_as_gray(Fu_MM *mm, Fu_MMObject *referenced)
-{
-	if (Fu_MM_IS_REFERENCE(referenced) && Fu_MM_FLAGS_COLOR(referenced->flags) == WHITE(mm)) {
-		list_remove(&mm->white, referenced);
-		grayen(referenced);
-		list_add_front(&mm->gray, referenced);
-	}
-}
-
-static void mark(Fu_MM *mm)
-{
-	assert(mm->root != NULL);
-	assert(mm->white == NULL);
-	assert(mm->gray == NULL);
-
-	/* Whiten all objects */
-	whiten_all(mm);
-
-	/* Set the root gray */
-	assert(Fu_MM_FLAGS_COLOR(mm->root->flags) == WHITE(mm));
-	mark_as_gray(mm, mm->root);
-
-	/* While there are gray nodes */
-	while (mm->gray != NULL) {
-		/* Blacken the first gray object */
-		Fu_MMObject *obj = list_pop(&mm->gray);
-		assert(Fu_MM_FLAGS_COLOR(obj->flags) == GRAY(mm));
-
-		pthread_mutex_lock(&mm->allocate_mtx);
-		list_add_front(&mm->black, obj);
-		pthread_mutex_unlock(&mm->allocate_mtx);
-
-		/* Grayen the white objects referenced by it */
-		obj->tag->ref_iterator(mm, obj, mark_as_gray);
-	}
-}
+/*
+ * Sketch of the GC algorithm:
+ *
+ * Mark:
+ *
+ * - Invert graycol, so all the objects are now colored white.
+ *
+ * - By DFS, mark all the reachable objects as gray, and
+ *   put them in the <black> list.
+ *
+ * Sweep:
+ *
+ * - Free the objects remaining in the <white> list, for
+ *   they are unreachable.
+ *
+ */
 
 static void list_deallocate(Fu_MMObject *list)
 {
@@ -174,15 +229,11 @@ static void list_free(Fu_MM *mm, Fu_MMObject **list)
 		Fu_MMSize sz = sizeof(Fu_MMObject) + Fu_MM_FLAGS_SIZE(obj->flags);
 		p = p->next;
 
-		pthread_mutex_lock(&mm->allocate_mtx);
 		assert(mm->nalloc >= sz);
 		mm->nalloc -= sz;
-		pthread_mutex_unlock(&mm->allocate_mtx);
 
 		if (sz < Fu_MM_MAX_FREELIST) {
-			pthread_mutex_lock(&mm->allocate_mtx);
 			list_add_front(&mm->freelist[sz], obj);
-			pthread_mutex_unlock(&mm->allocate_mtx);
 		} else {
 			free(obj);
 		}
@@ -195,32 +246,57 @@ static void list_free(Fu_MM *mm, Fu_MMObject **list)
 static void sweep(Fu_MM *mm)
 {
 	list_free(mm, &mm->white);
-	mm->gc_threshold = MAX(2 * mm->nalloc, Fu_MM_FIRST_GC_THRESHOLD);
-	assert(mm->black != NULL);
 	assert(mm->gray == NULL);
 }
 
-/*
- * Sketch of the GC algorithm:
- *
- * Mark:
- *
- * - Invert graycol, so all the objects are now colored white.
- *
- * - By DFS, mark all the reachable objects as gray, and
- *   put them in the <black> list.
- *
- * Sweep:
- *
- * - Free the objects remaining in the <white> list, for
- *   they are unreachable.
- *
- */
-void fu_mm_gc(Fu_MM *mm)
+static void mark_as_gray(Fu_MM *mm, Fu_MMObject *referenced)
 {
-	printf("gc\n");
-	mark(mm);
-	sweep(mm);
+	if (Fu_MM_IS_REFERENCE(referenced) && Fu_MM_FLAGS_COLOR(referenced->flags) == WHITE(mm)) {
+		list_remove(&mm->white, referenced);
+		grayen(referenced);
+		list_add_front(&mm->gray, referenced);
+	}
+}
+
+static void mark_sweep(Fu_MM *mm)
+{
+	pthread_mutex_lock(&mm->allocate_mtx);
+
+	/* Whiten all objects */
+	assert(mm->white == NULL);
+	whiten_all(mm);
+
+	/* Set the root gray */
+	int i;
+	forn (i, Fu_MM_NUM_ROOTS) {
+		if (mm->root[i] == NULL) continue;
+		assert(Fu_MM_FLAGS_COLOR(mm->root[i]->flags) == WHITE(mm));
+		mark_as_gray(mm, mm->root[i]);
+	}
+
+	pthread_mutex_unlock(&mm->allocate_mtx);
+
+	/* While there are gray nodes */
+	while (mm->gray != NULL) {
+		pthread_mutex_lock(&mm->allocate_mtx);
+
+		/* Blacken the first gray object */
+		Fu_MMObject *obj = list_pop(&mm->gray);
+		assert(Fu_MM_FLAGS_COLOR(obj->flags) == GRAY(mm));
+
+		list_add_front(&mm->black, obj);
+
+		/* Grayen the white objects referenced by it */
+		obj->tag->ref_iterator(mm, obj, mark_as_gray);
+
+		/* If no more gray nodes, sweep */
+		if (mm->gray == NULL) {
+			sweep(mm);
+			pthread_mutex_unlock(&mm->allocate_mtx);
+			break;
+		}
+		pthread_mutex_unlock(&mm->allocate_mtx);
+	}
 }
 
 /* Free all the remaining objects. */
@@ -242,9 +318,9 @@ void *fu_mm_gc_mainloop(void *mmptr)
 {
 	Fu_MM *mm = (Fu_MM *)mmptr;
 	while (1) {
-		if (mm->nalloc > mm->gc_threshold) {
-			fu_mm_gc(mm);
-		}
+		/*printf("gc\n");*/
+		mark_sweep(mm);
+		gc_check_invariant(mm);
 	}
 	return NULL;
 }

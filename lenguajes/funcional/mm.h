@@ -18,10 +18,6 @@ typedef uchar Fu_MMData;
  */
 #define Fu_MM_IS_REFERENCE(X)		((X) != NULL && !Fu_MM_IS_IMMEDIATE(X))
 
-/* Fu_MM_FIRST_GC_THRESHOLD is the amount of allocated bytes that,
- * when reached, triggers GC for the very first time.
- */
-#define Fu_MM_FIRST_GC_THRESHOLD	Fu_MB
 #define MAX(X, Y)			((X) < (Y) ? (Y) : (X))
 
 /* The Fu_MMFlags type is used to represent both the size and the color
@@ -69,6 +65,8 @@ typedef struct _Fu_MMObject {
 
 /* Memory manager */
 
+#define Fu_MM_NUM_ROOTS		1
+
 typedef struct _Fu_MM {
 	/*
 	 * Representation of the memory manager:
@@ -98,24 +96,26 @@ typedef struct _Fu_MM {
 	Fu_MMObject *freelist[Fu_MM_MAX_FREELIST];	/* Linked list for the free cells,
 						 	 * indexed by the allocation size */
 	Fu_MMSize nalloc;				/* Amount of allocated memory in the black list */
-	Fu_MMSize gc_threshold;			/* GC triggers when the allocated memory reaches
-						 * this number of bytes */
-	Fu_MMObject *root;			/* For marking the root */
 	Fu_MMColor graycol;			/* Current gray color, (1 - graycol) is white
 						 * color */
+	Fu_MMObject *root[Fu_MM_NUM_ROOTS];	/* For marking the roots */
 
 	pthread_mutex_t allocate_mtx;
 } Fu_MM;
 
-void fu_mm_gc(Fu_MM *mm);
+/* Fu_Object is just an alias for Fu_MMObject */
+typedef Fu_MMObject Fu_Object;
+
 void fu_mm_init(Fu_MM *mm);
-Fu_MMObject *fu_mm_allocate(Fu_MM *mm, Fu_MMTag *tag, Fu_MMSize size);
+Fu_Object *fu_mm_allocate(Fu_MM *mm, Fu_MMTag *tag, Fu_MMSize size, void *init);
+void fu_mm_set_gc_root(Fu_MM *mm, uint i, Fu_MMObject *root);
 void fu_mm_end(Fu_MM *mm);
+
+#if 0
+void fu_mm_store(Fu_MM *mm, Fu_Object **dst, Fu_Object *src);
+#endif
 
 void *fu_mm_gc_mainloop(void *mmptr);
 
-/* Fu_Object is just an alias for Fu_MMObject */
-
-typedef Fu_MMObject Fu_Object;
 
 #endif

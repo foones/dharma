@@ -4,7 +4,7 @@
 void *test_mm_worker(void *mmptr)
 {
 	Fu_MM *mm = (Fu_MM *)mmptr;
-	mm->root = fu_cons(mm, NULL, NULL);
+	fu_mm_set_gc_root(mm, 0, fu_cons(mm, NULL, NULL));
 
 	Fu_MMObject *lst = NULL;
 
@@ -12,10 +12,10 @@ void *test_mm_worker(void *mmptr)
 		/*if (i % 1000000 == 0) printf("%u\n", i / 1000000);*/
 		if (i % 3 == 0) {
 			lst = fu_cons(mm, lst, lst);
-			mm->root = lst;
+			fu_mm_set_gc_root(mm, 0, lst);
 		} else if (i % 3 == 1) {
 			lst = fu_cons(mm, lst, Fu_MM_MK_IMMEDIATE(32982, 1));
-			mm->root = lst;
+			fu_mm_set_gc_root(mm, 0, lst);
 		} else {
 			fu_cons(mm, lst, lst);
 		}
@@ -24,7 +24,7 @@ void *test_mm_worker(void *mmptr)
 	return NULL;
 }
 
-void test_mm()
+void test_mm(void)
 {
 	Fu_MM _mm;
 	Fu_MM *mm = &_mm;
@@ -43,7 +43,7 @@ void test_mm()
 	/*fu_mm_end(mm);*/ /* TODO: when should we run this? */
 }
 
-void test_lexer()
+void test_lexer(void)
 {
 	FILE *f = fopen("test.txt", "r");
 	if (!f) {
@@ -63,7 +63,7 @@ void test_lexer()
 
 #include <stdlib.h>
 #include <time.h>
-void test_dict()
+void test_dict(void)
 {
 #define M	1000
 	int i;
@@ -85,7 +85,7 @@ void test_dict()
 	fu_free_dict(&dict);
 }
 
-void test_vm()
+void test_vm(void)
 {
 	Fu_MM _mm; Fu_MM *mm = &_mm;
 	fu_mm_init(mm);
@@ -154,7 +154,7 @@ void test_vm()
 	fu_mm_end(mm);
 }
 
-void test_protocomp()
+void test_protocomp(void)
 {
 	Fu_MM _mm; Fu_MM *mm = &_mm;
 	fu_mm_init(mm);
