@@ -10,6 +10,6 @@
 
 #define Fu_PROTO_MK_ABSTRACTION(MM, ID, BODY)	(fu_cons((MM), Fu_PROTO_MK_LAMBDA_VAR(ID), (BODY)))
 
-Fu_Object *fu_proto_compile_definition(Fu_MM *mm, Fu_Object *body);
+Fu_VM *fu_proto_compile_definition(Fu_MM *mm, Fu_VM *vm, Fu_Object *body);
 
 #endif

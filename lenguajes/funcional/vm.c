@@ -19,6 +19,7 @@
 }
 
 
+#if 0
 static void vm_ref_iterator(Fu_MM *mm, Fu_Object *vmobj, Fu_MMRefCallback callback)
 /*
  * The objects which the callback is fed here constitute the
@@ -47,42 +48,35 @@ static void vm_ref_iterator(Fu_MM *mm, Fu_Object *vmobj, Fu_MMRefCallback callba
 }
 
 Fu_MMTag fu_vm_tag = { vm_ref_iterator };
+#endif
 
-Fu_Object *fu_vm(Fu_MM *mm)
+void fu_vm_init(Fu_VM *vm)
 /*
  * Initializes the stacks for the virtual machine.
  * It also initializes the memory manager, so that the root
  * set for the garbage collector makes sense.
  */
 {
-	Fu_VM _vm, *vm = &_vm;
 	Fu_DEF_STACK(vm->stack, Fu_Object *);
 	Fu_DEF_STACK(vm->spine, Fu_Object **);
 
-	Fu_Object *vmobj = fu_mm_allocate(mm, &fu_vm_tag, sizeof(Fu_VM), vm);
-
 	/* TODO: set the root right! */
-	fu_mm_set_gc_root(mm, 1, vmobj);
-	return vmobj;
+	/**fu_mm_set_gc_root(mm, 1, vm);**/
 }
 
-void fu_vm_end(Fu_Object *vmobj)
+void fu_vm_end(Fu_VM *vm)
 {
-	assert(Fu_IS_VM(vmobj));
-	Fu_VM *vm = Fu_OBJ_AS_VM(vmobj);
 	Fu_STACK_FREE(vm->stack);
 	Fu_STACK_FREE(vm->spine);
 }
 
-Fu_Object *fu_vm_execute(Fu_MM *mm, Fu_Object *vmobj, uint supercombinator_id)
+Fu_Object *fu_vm_execute(Fu_MM *mm, Fu_VM *vm, uint supercombinator_id)
 /*
  * Execute the VM code of the given supercombinator,
  * building a tree of applications, supercombinators and constructors
  * as a result.
  */
 {
-	assert(Fu_IS_VM(vmobj));
-	Fu_VM *vm = Fu_OBJ_AS_VM(vmobj);
 	int i, j;
 	Fu_VMSupercombinator *sc = vm->env->defs[supercombinator_id];
 
@@ -125,7 +119,7 @@ Fu_Object *fu_vm_execute(Fu_MM *mm, Fu_Object *vmobj, uint supercombinator_id)
 			assert(vm->stack_index >= 2);
 			Fu_Object *arg = vm->stack[vm->stack_index - 1];
 			Fu_Object *fun = vm->stack[vm->stack_index - 2];
-			vm->stack[vm->stack_index - 1] = fu_cons(mm, fun, arg);
+			fu_cons(mm, fun, arg, &vm->stack[vm->stack_index - 1]);
 			vm->stack_index--;
 			break;
 			}
@@ -162,7 +156,7 @@ void fu_vm_print_object(FILE *out, Fu_Object *obj)
 
 #define IS_SUPERCOMBINATOR(X)	(Fu_MM_IS_IMMEDIATE(X) && Fu_MM_IMMEDIATE_TAG(X) == Fu_VM_TAG_SUPERCOMBINATOR)
 
-void fu_vm_weak_head_normalize(Fu_MM *mm, Fu_Object *vmobj, Fu_Object **obj)
+void fu_vm_weak_head_normalize(Fu_MM *mm, Fu_VM *vm, Fu_Object **obj)
 /*
  * Evaluate a tree made out of:
  * - applications
@@ -173,8 +167,6 @@ void fu_vm_weak_head_normalize(Fu_MM *mm, Fu_Object *vmobj, Fu_Object **obj)
  * overwrites parts of the graph.
  */
 {
-	assert(Fu_IS_VM(vmobj));
-	Fu_VM *vm = Fu_OBJ_AS_VM(vmobj);
 	/* The spine is a stack of (Fu_Object **) */
 	uint nargs = 0;
 
@@ -212,7 +204,7 @@ void fu_vm_weak_head_normalize(Fu_MM *mm, Fu_Object *vmobj, Fu_Object **obj)
 		nargs -= sc->nparams;
 
 		/* Call supercombinator */
-		Fu_Object *res = fu_vm_execute(mm, vmobj, supercomb_id);
+		Fu_Object *res = fu_vm_execute(mm, vm, supercomb_id);
 
 		/* Overwrite root with result */
 		*root = res; /* TODO: write barrier */

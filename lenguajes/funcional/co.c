@@ -4,20 +4,17 @@
 void *test_mm_worker(void *mmptr)
 {
 	Fu_MM *mm = (Fu_MM *)mmptr;
-	fu_mm_set_gc_root(mm, 0, fu_cons(mm, NULL, NULL));
-
 	Fu_MMObject *lst = NULL;
-
-	for (int i = 0; i < 1000000; i++) {
+	fu_mm_set_gc_root(mm, 0, &lst);
+	for (int i = 0; i < 10000000; i++) {
 		/*if (i % 1000000 == 0) printf("%u\n", i / 1000000);*/
 		if (i % 3 == 0) {
-			lst = fu_cons(mm, lst, lst);
-			fu_mm_set_gc_root(mm, 0, lst);
+			fu_cons(mm, lst, lst, &lst);
 		} else if (i % 3 == 1) {
-			lst = fu_cons(mm, lst, Fu_MM_MK_IMMEDIATE(32982, 1));
-			fu_mm_set_gc_root(mm, 0, lst);
+			fu_cons(mm, lst, Fu_MM_MK_IMMEDIATE(32982, 1), &lst);
 		} else {
-			fu_cons(mm, lst, lst);
+			Fu_Object *tmp;
+			fu_cons(mm, lst, lst, &tmp);
 		}
 		/*printf("nalloc: %llu gc_threshold: %llu\n", mm->nalloc, mm->gc_threshold);*/
 	}
@@ -35,12 +32,13 @@ void test_mm(void)
 	pthread_create(&worker_thread, NULL, test_mm_worker, (void *)mm);
 
 	pthread_t gc_thread;
-	pthread_create(&gc_thread, NULL, fu_mm_gc_mainloop, (void *)mm);
+	pthread_create(&gc_thread, NULL, fu_mm_mainloop, (void *)mm);
 
 	void *res;
 	pthread_join(worker_thread, &res);
 
-	/*fu_mm_end(mm);*/ /* TODO: when should we run this? */
+	fu_mm_end(mm);
+	pthread_join(gc_thread, &res);
 }
 
 void test_lexer(void)
@@ -85,6 +83,7 @@ void test_dict(void)
 	fu_free_dict(&dict);
 }
 
+#if 0
 void test_vm(void)
 {
 	Fu_MM _mm; Fu_MM *mm = &_mm;
@@ -153,7 +152,9 @@ void test_vm(void)
 	fu_vm_end(vmobj);
 	fu_mm_end(mm);
 }
+#endif
 
+#if 0
 void test_protocomp(void)
 {
 	Fu_MM _mm; Fu_MM *mm = &_mm;
@@ -174,6 +175,7 @@ void test_protocomp(void)
 	fu_vm_end(vmobj);
 	fu_mm_end(mm);
 }
+#endif
 
 int main()
 {

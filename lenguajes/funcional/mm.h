@@ -98,24 +98,24 @@ typedef struct _Fu_MM {
 	Fu_MMSize nalloc;				/* Amount of allocated memory in the black list */
 	Fu_MMColor graycol;			/* Current gray color, (1 - graycol) is white
 						 * color */
-	Fu_MMObject *root[Fu_MM_NUM_ROOTS];	/* For marking the roots */
+	Fu_MMObject **root[Fu_MM_NUM_ROOTS];	/* For marking the roots */
 
 	pthread_mutex_t allocate_mtx;
+
+	int working;				/* Flag that is set to zero to finish mainloop */
 } Fu_MM;
 
 /* Fu_Object is just an alias for Fu_MMObject */
 typedef Fu_MMObject Fu_Object;
 
 void fu_mm_init(Fu_MM *mm);
-Fu_Object *fu_mm_allocate(Fu_MM *mm, Fu_MMTag *tag, Fu_MMSize size, void *init);
-void fu_mm_set_gc_root(Fu_MM *mm, uint i, Fu_MMObject *root);
+void fu_mm_allocate(Fu_MM *mm, Fu_MMTag *tag, Fu_MMSize size, void *init, Fu_Object **out);
+void fu_mm_set_gc_root(Fu_MM *mm, uint i, Fu_MMObject **root);
+void *fu_mm_mainloop(void *mmptr);
 void fu_mm_end(Fu_MM *mm);
 
 #if 0
 void fu_mm_store(Fu_MM *mm, Fu_Object **dst, Fu_Object *src);
 #endif
-
-void *fu_mm_gc_mainloop(void *mmptr);
-
 
 #endif

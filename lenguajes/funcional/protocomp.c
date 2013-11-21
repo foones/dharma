@@ -51,7 +51,7 @@ void compile_expression(Fu_MM *mm, Fu_Object *exp, Supercombinator *sc)
 	}
 }
 
-Fu_Object *fu_proto_compile_definition(Fu_MM *mm, Fu_Object *exp)
+Fu_VM *fu_proto_compile_definition(Fu_MM *mm, Fu_VM *vm, Fu_Object *exp)
 /*
  * Compile an expression in proto-Funes into virtual machine
  * code with supercombinators.
@@ -62,8 +62,7 @@ Fu_Object *fu_proto_compile_definition(Fu_MM *mm, Fu_Object *exp)
 	compile_expression(mm, exp, sc);
 
 	/* Initialize the VM */
-	Fu_Object *vmobj = fu_vm(mm);
-	Fu_VM *vm = Fu_OBJ_AS_VM(vmobj);
+	fu_vm_init(vm);
 	vm->env = (Fu_VMEnvironment *)malloc(sizeof(Fu_VMEnvironment) + 1);
 	vm->env->ndefs = 1;
 	vm->env->defs[0] = (Fu_VMSupercombinator *)malloc(sizeof(Fu_VMSupercombinator *) + sc->code_index);
@@ -73,6 +72,6 @@ Fu_Object *fu_proto_compile_definition(Fu_MM *mm, Fu_Object *exp)
 	vm->env->defs[0]->code_len = sc->code_index;
 
 	Fu_STACK_FREE(sc->code);
-	return vmobj;
+	return vm;
 }
 

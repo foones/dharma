@@ -103,6 +103,7 @@ void fu_mm_init(Fu_MM *mm)
 	}
 	mm->nalloc = 0;
 	mm->graycol = 0;
+	mm->working = 1;
 	forn (i, Fu_MM_MAX_FREELIST) {
 		mm->freelist[i] = NULL;
 	}
@@ -110,14 +111,16 @@ void fu_mm_init(Fu_MM *mm)
 	pthread_mutex_init(&mm->allocate_mtx, NULL);
 }
 
-static void callback_init_barrier(Fu_MM *mm, Fu_MMObject *referenced)
+static void mark_as_gray(Fu_MM *mm, Fu_MMObject *referenced)
 {
 	if (Fu_MM_IS_REFERENCE(referenced) && Fu_MM_FLAGS_COLOR(referenced->flags) == WHITE(mm)) {
-		/* TODO: ??? */
+		list_remove(&mm->white, referenced);
+		grayen(referenced);
+		list_add_front(&mm->gray, referenced);
 	}
 }
 
-Fu_MMObject *fu_mm_allocate(Fu_MM *mm, Fu_MMTag *tag, Fu_MMSize size, void *init)
+void fu_mm_allocate(Fu_MM *mm, Fu_MMTag *tag, Fu_MMSize size, void *init, Fu_MMObject **out)
 {
 	pthread_mutex_lock(&mm->allocate_mtx);
 	Fu_MMSize sz = sizeof(Fu_MMObject) + size;
@@ -147,13 +150,13 @@ Fu_MMObject *fu_mm_allocate(Fu_MM *mm, Fu_MMTag *tag, Fu_MMSize size, void *init
 	 * grayen all the white nodes directly referenced from
 	 * this one.
 	 */
-	tag->ref_iterator(mm, obj, callback_init_barrier);
+	tag->ref_iterator(mm, obj, mark_as_gray);
+	*out = obj;
 
 	pthread_mutex_unlock(&mm->allocate_mtx);
-	return obj;
 }
 
-void fu_mm_set_gc_root(Fu_MM *mm, uint i, Fu_Object *root)
+void fu_mm_set_gc_root(Fu_MM *mm, uint i, Fu_Object **root)
 {
 	pthread_mutex_lock(&mm->allocate_mtx);
 	mm->root[i] = root;
@@ -249,15 +252,6 @@ static void sweep(Fu_MM *mm)
 	assert(mm->gray == NULL);
 }
 
-static void mark_as_gray(Fu_MM *mm, Fu_MMObject *referenced)
-{
-	if (Fu_MM_IS_REFERENCE(referenced) && Fu_MM_FLAGS_COLOR(referenced->flags) == WHITE(mm)) {
-		list_remove(&mm->white, referenced);
-		grayen(referenced);
-		list_add_front(&mm->gray, referenced);
-	}
-}
-
 static void mark_sweep(Fu_MM *mm)
 {
 	pthread_mutex_lock(&mm->allocate_mtx);
@@ -269,16 +263,24 @@ static void mark_sweep(Fu_MM *mm)
 	/* Set the root gray */
 	int i;
 	forn (i, Fu_MM_NUM_ROOTS) {
-		if (mm->root[i] == NULL) continue;
-		assert(Fu_MM_FLAGS_COLOR(mm->root[i]->flags) == WHITE(mm));
-		mark_as_gray(mm, mm->root[i]);
+		if (mm->root[i] == NULL || *mm->root[i] == NULL) continue;
+		assert(Fu_MM_FLAGS_COLOR((*mm->root[i])->flags) == WHITE(mm));
+		mark_as_gray(mm, *mm->root[i]);
 	}
 
 	pthread_mutex_unlock(&mm->allocate_mtx);
 
 	/* While there are gray nodes */
-	while (mm->gray != NULL) {
+	for (;;) {
 		pthread_mutex_lock(&mm->allocate_mtx);
+
+		if (mm->gray == NULL) {
+			/* If no more gray nodes, sweep */
+			sweep(mm);
+			assert(mm->white == NULL);
+			pthread_mutex_unlock(&mm->allocate_mtx);
+			break;
+		}
 
 		/* Blacken the first gray object */
 		Fu_MMObject *obj = list_pop(&mm->gray);
@@ -289,12 +291,6 @@ static void mark_sweep(Fu_MM *mm)
 		/* Grayen the white objects referenced by it */
 		obj->tag->ref_iterator(mm, obj, mark_as_gray);
 
-		/* If no more gray nodes, sweep */
-		if (mm->gray == NULL) {
-			sweep(mm);
-			pthread_mutex_unlock(&mm->allocate_mtx);
-			break;
-		}
 		pthread_mutex_unlock(&mm->allocate_mtx);
 	}
 }
@@ -302,6 +298,24 @@ static void mark_sweep(Fu_MM *mm)
 /* Free all the remaining objects. */
 void fu_mm_end(Fu_MM *mm)
 {
+	mm->working = 0;
+}
+
+/* Main concurrent garbage collector loop */
+void *fu_mm_mainloop(void *mmptr)
+{
+	printf("empieza mainloop\n");
+
+	/* Main loop */
+	Fu_MM *mm = (Fu_MM *)mmptr;
+	while (mm->working) {
+		/*printf("gc\n");*/
+		gc_check_invariant(mm);
+		mark_sweep(mm);
+		gc_check_invariant(mm);
+	}
+
+	/* Deallocate everything */
 	int i;
 	list_deallocate(mm->black);
 	forn (i, Fu_MM_MAX_FREELIST) {
@@ -310,18 +324,7 @@ void fu_mm_end(Fu_MM *mm)
 		}
 	}
 	pthread_mutex_destroy(&mm->allocate_mtx);
-}
 
-#include <unistd.h>
-/* Main concurrent garbage collector loop */
-void *fu_mm_gc_mainloop(void *mmptr)
-{
-	Fu_MM *mm = (Fu_MM *)mmptr;
-	while (1) {
-		/*printf("gc\n");*/
-		mark_sweep(mm);
-		gc_check_invariant(mm);
-	}
 	return NULL;
 }
 

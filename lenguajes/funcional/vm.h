@@ -72,10 +72,10 @@ extern Fu_MMTag fu_vm_tag;
 
 /* Functions */
 
-Fu_Object *fu_vm(Fu_MM *mm);
-void fu_vm_end(Fu_Object *vmobj);
-Fu_Object *fu_vm_execute(Fu_MM *mm, Fu_Object *vmobj, uint supercombinator_id);
-void fu_vm_weak_head_normalize(Fu_MM *mm, Fu_Object *vmobj, Fu_Object **obj);
+void fu_vm_init(Fu_VM *vm);
+void fu_vm_end(Fu_VM *vm);
+Fu_Object *fu_vm_execute(Fu_MM *mm, Fu_VM *vm, uint supercombinator_id);
+void fu_vm_weak_head_normalize(Fu_MM *mm, Fu_VM *vm, Fu_Object **obj);
 
 void fu_vm_print_object(FILE *out, Fu_Object *obj);
 

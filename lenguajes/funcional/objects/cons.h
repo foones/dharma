@@ -8,7 +8,7 @@ typedef struct _Fu_Cons {
 	Fu_Object *tail;
 } Fu_Cons;
 
-Fu_Object *fu_cons(Fu_MM *mm, Fu_Object *head, Fu_Object *tail);
+void fu_cons(Fu_MM *mm, Fu_Object *head, Fu_Object *tail, Fu_Object **out);
 
 #define Fu_IS_CONS(X)		Fu_MM_IS_OF_TYPE(X, fu_cons_tag)
 #define Fu_OBJ_AS_CONS(X)	Fu_MM_OBJ_AS_OF_TYPE(X, Fu_Cons)
