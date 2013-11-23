@@ -179,8 +179,6 @@ void fu_mm_allocate(Fu_MM *mm, Fu_MMTag *tag, Fu_MMSize size, void *init, Fu_MMO
 	assert(!Fu_MM_IS_IMMEDIATE(obj));
 
 	/* Copy the initial data */
-	printf("size to copy: %llu\n", size);
-	printf("full size: %llu\n", full_size);
 	memcpy(obj->data, init, size);
 
 	/*
@@ -346,15 +344,12 @@ void fu_mm_end(Fu_MM *mm)
 /* Main concurrent garbage collector loop */
 void *fu_mm_mainloop(void *mmptr)
 {
-	return NULL; /* TODO  ERASE! */
-
 	/* Main loop */
 	Fu_MM *mm = (Fu_MM *)mmptr;
 	while (mm->working) {
 		if (mm->nalloc > mm->gc_threshold) {
 			printf("gc\n");
 			mark_sweep(mm);
-			sleep(1);
 		}
 	}
 

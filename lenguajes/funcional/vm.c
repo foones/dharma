@@ -106,43 +106,35 @@ Fu_Object *fu_vm_execute(Fu_Object *vmobj, uint supercombinator_id)
 		switch (sc->code[i]) {
 		case Fu_OP_PUSH_CONS_64:
 			{
-			printf("push cons\n");
 			i++;
 			uint64 constructor_id;
 			READ_UINT64(i, j, constructor_id);
 
 			Fu_Object *constructor = Fu_VM_MK_CONSTRUCTOR(constructor_id);
 			Fu_STACK_PUSH(vm->stack, constructor);
-			printf("(push cons %llu)\n", constructor_id);
 			break;
 			}
 		case Fu_OP_PUSH_COMB_64:
 			{
-			printf("push comb\n");
 			i++;
 			uint64 supercombinator_id;
 			READ_UINT64(i, j, supercombinator_id);
 			Fu_Object *supercombinator = Fu_VM_MK_SUPERCOMBINATOR(supercombinator_id);
 			Fu_STACK_PUSH(vm->stack, supercombinator);
-			printf("(push comb %llu)\n", supercombinator_id);
 			break;
 			}
 		case Fu_OP_PUSH_ARG_8:
 			{
-			printf("push arg\n");
 			i++;
 			uchar arg_id;
 			READ_UINT8(i, arg_id);
 			assert(arg_id < sc->nparams);
 			Fu_Object *arg = vm->args[arg_id];
 			Fu_STACK_PUSH(vm->stack, arg);
-			printf("(push arg %u)\n", arg_id);
 			break;
 			}
 		case Fu_OP_APP:
 			{
-			printf("-------------------------------------------\n");
-			printf("app |%u|\n", vm->stack_index);
 			i++;
 			assert(vm->stack_index >= 2);
 			Fu_Object *arg = vm->stack[vm->stack_index - 1];
@@ -223,7 +215,6 @@ void fu_vm_weak_head_normalize(Fu_Object *vmobj, Fu_Object **obj)
 		}
 
 		uint supercomb_id = Fu_MM_IMMEDIATE_VALUE(*obj);
-		printf("supercombid: %u\n", supercomb_id);
 		Fu_VMSupercombinator *sc = vm->env->defs[supercomb_id];
 		if (nargs < sc->nparams) {
 			/* Not enough arguments: already in WHNF */

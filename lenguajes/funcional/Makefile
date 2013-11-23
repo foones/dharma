@@ -6,6 +6,7 @@ all : co
 CC=gcc
 LDFLAGS+= -pthread
 CFLAGS+= -Wall -ansi -O2 -fno-strict-aliasing -std=c99
+#CFLAGS+= -Wall -ansi -fno-strict-aliasing -std=c99
 
 ## Debugging
 CFLAGS+= -g -ggdb
