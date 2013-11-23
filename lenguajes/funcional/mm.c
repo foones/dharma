@@ -24,7 +24,6 @@
 #define whiten(X)	(X)->flags = Fu_MM_FLAGS_SET_COLOR((X)->flags, WHITE(mm))
 #define grayen(X)	(X)->flags = Fu_MM_FLAGS_SET_COLOR((X)->flags, GRAY(mm))
 
-#define forn(I, N)	for (I = 0; I < (N); i++)
 #define foreach(X, L)	for (X = (L)->first; X != NULL; X = X->next)
 
 #define GRAY(mm)	(mm)->graycol
@@ -48,9 +47,11 @@ static void list_set_copy(Fu_MMList *list1, Fu_MMList *list2)
 
 static void list_remove(Fu_MMList *list, Fu_MMObject *obj)
 {
+	assert(!list_is_empty(list));
 	if (obj->prev == NULL) {
 		list->first = obj->next;
 	} else {
+		printf("%p %p %p\n", obj, obj->prev, obj->next); fflush(stdout);
 		obj->prev->next = obj->next;
 	}
 	if (obj->next == NULL) {
@@ -94,6 +95,7 @@ static void list_concat(Fu_MMList *list1, Fu_MMList *list2)
 	}
 }
 
+#if 0
 /* Invariant checker */
 
 static void callback_check_not_white(Fu_MM *mm, Fu_Object *referenced)
@@ -112,6 +114,7 @@ static void gc_check_invariant(Fu_MM *mm)
 	}
 	pthread_mutex_unlock(&mm->allocate_mtx);
 }
+#endif
 
 /* Fu_MM functions */
 
@@ -143,30 +146,42 @@ static void mark_as_gray(Fu_MM *mm, Fu_MMObject *referenced)
 	}
 }
 
+Fu_Object *fu_mm_allocate_unmanaged(Fu_MMTag *tag, Fu_MMSize size)
+{
+	Fu_MMObject *obj = (Fu_MMObject *)malloc(size);
+	obj->flags = 0;
+	obj->tag = tag;
+	obj->prev = NULL;
+	obj->next = NULL;
+	return obj;
+}
+
 void fu_mm_allocate(Fu_MM *mm, Fu_MMTag *tag, Fu_MMSize size, void *init, Fu_MMObject **out)
 {
 	pthread_mutex_lock(&mm->allocate_mtx);
-	Fu_MMSize sz = sizeof(Fu_MMObject) + size;
+	Fu_MMSize full_size = sizeof(Fu_MMObject) + size;
 
 	Fu_MMObject *obj;
 
 	/* Get memory for the object */
-	if (sz < Fu_MM_MAX_FREELIST && !list_is_empty(&mm->freelist[sz])) {
-		obj = list_pop(&mm->freelist[sz]);
+	if (full_size < Fu_MM_MAX_FREELIST && !list_is_empty(&mm->freelist[full_size])) {
+		obj = list_pop(&mm->freelist[full_size]);
 	} else {
-		obj = (Fu_MMObject *)malloc(sz);
+		obj = (Fu_MMObject *)malloc(full_size);
 	}
 
 	obj->flags = Fu_MM_FLAGS(size, GRAY(mm));
 	obj->tag = tag;
 	obj->prev = NULL;
 	list_add_front(&mm->black, obj);
-	mm->nalloc += sz;
+	mm->nalloc += full_size;
 
 	assert(!Fu_MM_IS_IMMEDIATE(obj));
 
 	/* Copy the initial data */
-	memcpy(&obj->data, init, size);
+	printf("size to copy: %llu\n", size);
+	printf("full size: %llu\n", full_size);
+	memcpy(obj->data, init, size);
 
 	/*
 	 * Ensure the garbage collector invariant is kept, i.e.
@@ -174,7 +189,8 @@ void fu_mm_allocate(Fu_MM *mm, Fu_MMTag *tag, Fu_MMSize size, void *init, Fu_MMO
 	 * this one.
 	 */
 	tag->ref_iterator(mm, obj, mark_as_gray);
-	*out = obj;
+	//*out = obj;
+	*out = (Fu_Object *)0x4242424242424242;
 
 	pthread_mutex_unlock(&mm->allocate_mtx);
 }
@@ -252,14 +268,14 @@ static void list_free(Fu_MM *mm, Fu_MMList *list)
 	Fu_MMObject *p;
 	for (p = list->first; p != NULL;) {
 		Fu_MMObject *obj = p;
-		Fu_MMSize sz = sizeof(Fu_MMObject) + Fu_MM_FLAGS_SIZE(obj->flags);
+		Fu_MMSize full_size = sizeof(Fu_MMObject) + Fu_MM_FLAGS_SIZE(obj->flags);
 		p = p->next;
 
-		assert(mm->nalloc >= sz);
-		mm->nalloc -= sz;
+		assert(mm->nalloc >= full_size);
+		mm->nalloc -= full_size;
 
-		if (sz < Fu_MM_MAX_FREELIST) {
-			list_add_front(&mm->freelist[sz], obj);
+		if (full_size < Fu_MM_MAX_FREELIST) {
+			list_add_front(&mm->freelist[full_size], obj);
 		} else {
 			free(obj);
 		}
@@ -334,8 +350,8 @@ void *fu_mm_mainloop(void *mmptr)
 	/* Main loop */
 	Fu_MM *mm = (Fu_MM *)mmptr;
 	while (mm->working) {
-		/*printf("gc\n");*/
 		if (mm->nalloc > mm->gc_threshold) {
+			printf("gc\n");
 			mark_sweep(mm);
 			sleep(1);
 		}

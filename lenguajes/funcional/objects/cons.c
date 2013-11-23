@@ -14,6 +14,6 @@ void fu_cons(Fu_MM *mm, Fu_Object *head, Fu_Object *tail, Fu_Object **out)
 	Fu_Cons cons;
 	cons.head = head;
 	cons.tail = tail;
-	return fu_mm_allocate(mm, &fu_cons_tag, sizeof(Fu_Cons), &cons, out);
+	fu_mm_allocate(mm, &fu_cons_tag, sizeof(Fu_Cons), &cons, out);
 }
 

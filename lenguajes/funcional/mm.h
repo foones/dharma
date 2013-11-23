@@ -56,8 +56,10 @@ typedef struct _Fu_MMTag {
 
 typedef struct _Fu_MMObject {
 	struct _Fu_MMObject *prev, *next;	/* Most objects belong to a doubly linked list. */
-	Fu_MMFlags flags;			/* The flags for an object indicate its color and
-						 * size. */
+	Fu_MMFlags flags;			/* The flags for an object indicate:
+						 * - size of the data[] region in bytes
+						 * - color of the object
+						 */
 	Fu_MMTag *tag;			/* Tag indicating the type of the object.
 					 * The main reason for the tag is
 					 * being able to know which parts of an object data are
@@ -121,6 +123,7 @@ typedef struct _Fu_MM {
 typedef Fu_MMObject Fu_Object;
 
 void fu_mm_init(Fu_MM *mm);
+Fu_Object *fu_mm_allocate_unmanaged(Fu_MMTag *tag, Fu_MMSize size);
 void fu_mm_allocate(Fu_MM *mm, Fu_MMTag *tag, Fu_MMSize size, void *init, Fu_Object **out);
 void fu_mm_set_gc_root(Fu_MM *mm, uint i, Fu_MMObject **root);
 void *fu_mm_mainloop(void *mmptr);

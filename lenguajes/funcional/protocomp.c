@@ -58,7 +58,7 @@ Fu_VM *fu_proto_compile_definition(Fu_MM *mm, Fu_VM *vm, Fu_Object *exp)
  */
 {
 	Supercombinator _sc, *sc = &_sc;
-	Fu_DEF_STACK(sc->code, Fu_VMOpcode);
+	Fu_DEF_STACK(sc->code);
 	compile_expression(mm, exp, sc);
 
 	/* Initialize the VM */

@@ -90,76 +90,96 @@ void test_dict(void)
 	fu_free_dict(&dict);
 }
 
-#if 0
 void test_vm(void)
 {
-	Fu_MM _mm; Fu_MM *mm = &_mm;
-	fu_mm_init(mm);
-
-	Fu_Object *vmobj = fu_vm(mm);
+	Fu_Object *vmobj = fu_vm();
 	Fu_VM *vm = Fu_OBJ_AS_VM(vmobj);
 
 	int ndefs = 3;
 	vm->env = (Fu_VMEnvironment *)malloc(sizeof(Fu_VMEnvironment) + ndefs * sizeof(Fu_VMSupercombinator));
 
 	/* Supercombinators */
-
 	vm->env->ndefs = ndefs;
 
-	int d;
-	int code_len;
-
-	/* def 0 omitted */
+	int d, c;
+	int max_code_len = 1024;
 
 	/* def 1 ==> I */
 	d = 1;
-	code_len = 2;
-	vm->env->defs[d] = (Fu_VMSupercombinator *)malloc(sizeof(Fu_VMSupercombinator) + code_len * sizeof(Fu_VMOpcode));
+	c = 0;
+	vm->env->defs[d] = (Fu_VMSupercombinator *)malloc(sizeof(Fu_VMSupercombinator) + max_code_len * sizeof(Fu_VMOpcode));
 	vm->env->defs[d]->nparams = 1;
-	vm->env->defs[d]->code_len = code_len;
-	vm->env->defs[d]->code[0] = Fu_OP_PUSH_ARG_8;
-	vm->env->defs[d]->code[1] = 0x00;
+	vm->env->defs[d]->code[c++] = Fu_OP_PUSH_ARG_8;
+	vm->env->defs[d]->code[c++] = 0x00;
+	vm->env->defs[d]->code_len = c;
 
 	/* def 2 ==> K */
 	d = 2;
-	code_len = 2;
-	vm->env->defs[d] = (Fu_VMSupercombinator *)malloc(sizeof(Fu_VMSupercombinator) + code_len * sizeof(Fu_VMOpcode));
+	c = 0;
+	vm->env->defs[d] = (Fu_VMSupercombinator *)malloc(sizeof(Fu_VMSupercombinator) + max_code_len * sizeof(Fu_VMOpcode));
 	vm->env->defs[d]->nparams = 2;
-	vm->env->defs[d]->code_len = code_len;
-	vm->env->defs[d]->code[0] = Fu_OP_PUSH_ARG_8;
-	vm->env->defs[d]->code[1] = 0x00;
+	vm->env->defs[d]->code[c++] = Fu_OP_PUSH_ARG_8;
+	vm->env->defs[d]->code[c++] = 0x00;
+	vm->env->defs[d]->code_len = c;
 
 	/* def 3 ==> S */
 	d = 3;
-	code_len = 11;
-	vm->env->defs[d] = (Fu_VMSupercombinator *)malloc(sizeof(Fu_VMSupercombinator) + code_len * sizeof(Fu_VMOpcode));
+	c = 0;
+	vm->env->defs[d] = (Fu_VMSupercombinator *)malloc(sizeof(Fu_VMSupercombinator) + max_code_len * sizeof(Fu_VMOpcode));
 	vm->env->defs[d]->nparams = 3;
-	vm->env->defs[d]->code_len = code_len;
-	vm->env->defs[d]->code[0] = Fu_OP_PUSH_ARG_8;
-	vm->env->defs[d]->code[1] = 0x00;
-	vm->env->defs[d]->code[2] = Fu_OP_PUSH_ARG_8;
-	vm->env->defs[d]->code[3] = 0x02;
-	vm->env->defs[d]->code[4] = Fu_OP_APP;
-	vm->env->defs[d]->code[5] = Fu_OP_PUSH_ARG_8;
-	vm->env->defs[d]->code[6] = 0x01;
-	vm->env->defs[d]->code[7] = Fu_OP_PUSH_ARG_8;
-	vm->env->defs[d]->code[8] = 0x02;
-	vm->env->defs[d]->code[9] = Fu_OP_APP;
-	vm->env->defs[d]->code[10] = Fu_OP_APP;
+	vm->env->defs[d]->code[c++] = Fu_OP_PUSH_ARG_8;
+	vm->env->defs[d]->code[c++] = 0x00;
+	vm->env->defs[d]->code[c++] = Fu_OP_PUSH_ARG_8;
+	vm->env->defs[d]->code[c++] = 0x02;
+	vm->env->defs[d]->code[c++] = Fu_OP_APP;
+	vm->env->defs[d]->code[c++] = Fu_OP_PUSH_ARG_8;
+	vm->env->defs[d]->code[c++] = 0x01;
+	vm->env->defs[d]->code[c++] = Fu_OP_PUSH_ARG_8;
+	vm->env->defs[d]->code[c++] = 0x02;
+	vm->env->defs[d]->code[c++] = Fu_OP_APP;
+	vm->env->defs[d]->code[c++] = Fu_OP_APP;
+	vm->env->defs[d]->code_len = c;
 
-	Fu_Object *I = Fu_VM_MK_SUPERCOMBINATOR(0x1);
-	Fu_Object *K = Fu_VM_MK_SUPERCOMBINATOR(0x2);
-	Fu_Object *S = Fu_VM_MK_SUPERCOMBINATOR(0x3);
+	/* def 0 ==> KISS */
+	d = 0;
+	c = 0;
+	vm->env->defs[d] = (Fu_VMSupercombinator *)malloc(sizeof(Fu_VMSupercombinator) + max_code_len * sizeof(Fu_VMOpcode));
+	vm->env->defs[d]->nparams = 0;
+	vm->env->defs[d]->code[c++] = Fu_OP_PUSH_COMB_64;
+	vm->env->defs[d]->code[c++] = 0; vm->env->defs[d]->code[c++] = 0;
+	vm->env->defs[d]->code[c++] = 0; vm->env->defs[d]->code[c++] = 0;
+	vm->env->defs[d]->code[c++] = 0; vm->env->defs[d]->code[c++] = 0;
+	vm->env->defs[d]->code[c++] = 0; vm->env->defs[d]->code[c++] = 2;
 
-	Fu_Object *res = fu_cons(mm, fu_cons(mm, fu_cons(mm, K, I), S), S);
+	vm->env->defs[d]->code[c++] = Fu_OP_PUSH_COMB_64;
+	vm->env->defs[d]->code[c++] = 0; vm->env->defs[d]->code[c++] = 0;
+	vm->env->defs[d]->code[c++] = 0; vm->env->defs[d]->code[c++] = 0;
+	vm->env->defs[d]->code[c++] = 0; vm->env->defs[d]->code[c++] = 0;
+	vm->env->defs[d]->code[c++] = 0; vm->env->defs[d]->code[c++] = 1;
+	vm->env->defs[d]->code[c++] = Fu_OP_APP;
+
+	vm->env->defs[d]->code[c++] = Fu_OP_PUSH_COMB_64;
+	vm->env->defs[d]->code[c++] = 0; vm->env->defs[d]->code[c++] = 0;
+	vm->env->defs[d]->code[c++] = 0; vm->env->defs[d]->code[c++] = 0;
+	vm->env->defs[d]->code[c++] = 0; vm->env->defs[d]->code[c++] = 0;
+	vm->env->defs[d]->code[c++] = 0; vm->env->defs[d]->code[c++] = 3;
+	vm->env->defs[d]->code[c++] = Fu_OP_APP;
+
+	vm->env->defs[d]->code[c++] = Fu_OP_PUSH_COMB_64;
+	vm->env->defs[d]->code[c++] = 0; vm->env->defs[d]->code[c++] = 0;
+	vm->env->defs[d]->code[c++] = 0; vm->env->defs[d]->code[c++] = 0;
+	vm->env->defs[d]->code[c++] = 0; vm->env->defs[d]->code[c++] = 0;
+	vm->env->defs[d]->code[c++] = 0; vm->env->defs[d]->code[c++] = 3;
+	vm->env->defs[d]->code[c++] = Fu_OP_APP;
+	vm->env->defs[d]->code_len = c;
+
+	Fu_Object *res = Fu_VM_MK_SUPERCOMBINATOR(0x0);
 	printf("tree: "); fu_vm_print_object(stdout, res); printf("\n");
-	fu_vm_weak_head_normalize(mm, vmobj, &res);
+	fu_vm_weak_head_normalize(vmobj, &res);
 	printf("tree whnf: "); fu_vm_print_object(stdout, res); printf("\n");
 
 	fu_vm_end(vmobj);
-	fu_mm_end(mm);
 }
-#endif
 
 #if 0
 void test_protocomp(void)
@@ -186,10 +206,10 @@ void test_protocomp(void)
 
 int main()
 {
-	test_mm();
+	/*test_mm();*/
 	/*test_lexer();*/
 	/*test_dict();*/
-	/*test_vm();*/
+	test_vm();
 	/*test_protocomp();*/
 	return 0;
 }

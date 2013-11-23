@@ -49,16 +49,19 @@ typedef struct _Fu_VM_Environment {
 } Fu_VMEnvironment;
 
 typedef struct _Fu_VM {
-	Fu_VMEnvironment *env;
+	Fu_MM mm;			/* Memory manager */
+	pthread_t mm_thread;
+
+	Fu_VMEnvironment *env;		/* Definitions of supercombinators */
 	
-	int nargs;
+	int nargs;			/* Arguments passed to a supercombinator */
 	Fu_Object *args[Fu_VM_MAX_ARGS];
 
-	Fu_Object **stack;
+	Fu_Object **stack;		/* Stack of values */
 	uint stack_capacity;
 	uint stack_index;
 
-	Fu_Object ***spine;
+	Fu_Object ***spine;		/* Spine */
 	uint spine_capacity;
 	uint spine_index;
 } Fu_VM;
@@ -72,10 +75,10 @@ extern Fu_MMTag fu_vm_tag;
 
 /* Functions */
 
-void fu_vm_init(Fu_VM *vm);
-void fu_vm_end(Fu_VM *vm);
-Fu_Object *fu_vm_execute(Fu_MM *mm, Fu_VM *vm, uint supercombinator_id);
-void fu_vm_weak_head_normalize(Fu_MM *mm, Fu_VM *vm, Fu_Object **obj);
+Fu_Object *fu_vm(void);
+void fu_vm_end(Fu_Object *vmobj);
+Fu_Object *fu_vm_execute(Fu_Object *vmobj, uint supercombinator_id);
+void fu_vm_weak_head_normalize(Fu_Object *vmobj, Fu_Object **obj);
 
 void fu_vm_print_object(FILE *out, Fu_Object *obj);
 

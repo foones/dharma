@@ -18,19 +18,23 @@ typedef unsigned long long int uint64;
 #define TRUE	1
 #define FALSE	0
 
+#define forn(I, N)	for (I = 0; I < (N); I++)
+
 /* Simple growable stack implementation */
 
 #define Fu_MIN_STACK_SIZE	1024
-#define Fu_DEF_STACK(S, T) \
-	S = (T *)malloc(sizeof(T) * Fu_MIN_STACK_SIZE); \
+#define Fu_DEF_STACK(S) \
+	S = (__typeof__(S))malloc(sizeof(__typeof__(*S)) * Fu_MIN_STACK_SIZE); \
 	S##_capacity = Fu_MIN_STACK_SIZE; \
 	S##_index = 0;
 #define Fu_STACK_GROW(S) { \
+	printf("growing stack\n");\
 	__typeof__(S) __temp = (__typeof__(S))malloc(sizeof(__typeof__(*S)) * 2 * (S##_capacity)); \
 	memcpy(__temp, (S), sizeof(__typeof__(*S)) * (S##_capacity)); \
 	free(S); \
 	(S) = __temp; \
 	(S##_capacity) *= 2; \
+	printf("end grow\n");\
 }
 #define Fu_STACK_PUSH(S, X) { \
 	if ((S##_index) == (S##_capacity)) { \
