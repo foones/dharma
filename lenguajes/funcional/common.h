@@ -24,17 +24,15 @@ typedef unsigned long long int uint64;
 
 #define Fu_MIN_STACK_SIZE	1024
 #define Fu_DEF_STACK(S) \
-	S = (__typeof__(S))malloc(sizeof(__typeof__(*S)) * Fu_MIN_STACK_SIZE); \
+	S = (__typeof__(S))malloc(sizeof(__typeof__(*(S))) * Fu_MIN_STACK_SIZE); \
 	S##_capacity = Fu_MIN_STACK_SIZE; \
 	S##_index = 0;
 #define Fu_STACK_GROW(S) { \
-	printf("growing stack\n");\
-	__typeof__(S) __temp = (__typeof__(S))malloc(sizeof(__typeof__(*S)) * 2 * (S##_capacity)); \
-	memcpy(__temp, (S), sizeof(__typeof__(*S)) * (S##_capacity)); \
+	__typeof__(S) __temp = (__typeof__(S))malloc(sizeof(__typeof__(*(S))) * 2 * (S##_capacity)); \
+	memcpy(__temp, (S), sizeof(__typeof__(*(S))) * (S##_capacity)); \
 	free(S); \
 	(S) = __temp; \
 	(S##_capacity) *= 2; \
-	printf("end grow\n");\
 }
 #define Fu_STACK_PUSH(S, X) { \
 	if ((S##_index) == (S##_capacity)) { \

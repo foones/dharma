@@ -149,10 +149,8 @@ Fu_Object *fu_vm_execute(Fu_Object *vmobj, uint supercombinator_id)
 			Fu_Object *fun = vm->stack[vm->stack_index - 2];
 			vm->stack_index = vm->stack_index - 1;
 
-			printf("pre |%u|\n", vm->stack_index);
 			assert(vm->stack_index >= 1);
 			fu_cons(mm, fun, arg, &vm->stack[vm->stack_index - 1]);
-			printf("(post |%u| |0x%x|)\n", vm->stack_index, vm->stack_index);
 			assert(vm->stack_index >= 1);
 			break;
 			}

@@ -148,7 +148,7 @@ static void mark_as_gray(Fu_MM *mm, Fu_MMObject *referenced)
 
 Fu_Object *fu_mm_allocate_unmanaged(Fu_MMTag *tag, Fu_MMSize size)
 {
-	Fu_MMObject *obj = (Fu_MMObject *)malloc(size);
+	Fu_MMObject *obj = (Fu_MMObject *)malloc(sizeof(Fu_MMObject) + size);
 	obj->flags = 0;
 	obj->tag = tag;
 	obj->prev = NULL;
@@ -189,8 +189,7 @@ void fu_mm_allocate(Fu_MM *mm, Fu_MMTag *tag, Fu_MMSize size, void *init, Fu_MMO
 	 * this one.
 	 */
 	tag->ref_iterator(mm, obj, mark_as_gray);
-	//*out = obj;
-	*out = (Fu_Object *)0x4242424242424242;
+	*out = obj;
 
 	pthread_mutex_unlock(&mm->allocate_mtx);
 }
@@ -347,6 +346,8 @@ void fu_mm_end(Fu_MM *mm)
 /* Main concurrent garbage collector loop */
 void *fu_mm_mainloop(void *mmptr)
 {
+	return NULL; /* TODO  ERASE! */
+
 	/* Main loop */
 	Fu_MM *mm = (Fu_MM *)mmptr;
 	while (mm->working) {
