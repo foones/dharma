@@ -109,7 +109,7 @@ typedef struct _Fu_MM {
 	uint64 nalloc_objs;				/* Number of managed allocated objects */
 	Fu_MMColor graycol;			/* Current gray color, (1 - graycol) is white
 						 * color */
-	Fu_MMObject **root[Fu_MM_NUM_ROOTS];	/* For marking the roots */
+	Fu_MMObject *root[Fu_MM_NUM_ROOTS];	/* For marking the roots */
 
 	pthread_mutex_t allocate_mtx;
 
@@ -120,12 +120,17 @@ typedef struct _Fu_MM {
 
 void fu_mm_init(Fu_MM *mm);
 Fu_Object *fu_mm_allocate_unmanaged(Fu_MMTag *tag, Fu_MMSize size);
+
+/* Precondition: the data in the init region should *still* be
+ * reachable
+ */
 void fu_mm_allocate(Fu_MM *mm, Fu_MMTag *tag, Fu_MMSize size, void *init, Fu_Object **out);
-void fu_mm_set_gc_root(Fu_MM *mm, uint i, Fu_MMObject **root);
+
+void fu_mm_set_gc_root(Fu_MM *mm, uint i, Fu_MMObject *root);
 void *fu_mm_mainloop(void *mmptr);
 void fu_mm_end(Fu_MM *mm);
 
-/* Precondition: src should *still* be reachable!
+/* Precondition: src should *still* be reachable.
  * If the parent is null, we consider it as being gray.
  */
 void fu_mm_store(Fu_MM *mm, Fu_Object *parent, Fu_Object **location, Fu_Object *value);

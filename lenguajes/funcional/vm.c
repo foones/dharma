@@ -27,31 +27,14 @@ static void vm_ref_iterator(Fu_MM *mm, Fu_Object *vmobj, Fu_MMRefCallback callba
 	assert(Fu_IS_VM(vmobj));
 	Fu_VM *vm = Fu_OBJ_AS_VM(vmobj);
 
-	int i;
-
-	/* Arguments */
-	for (i = 0; i < vm->nargs; i++) {
-		Fu_Object *obj = vm->args[i];
-		callback(mm, obj);
-
-		if (Fu_MM_IS_REFERENCE(obj)) { printf("-- tag 1: %s\n", obj->tag->name); }
-	}
-
-	/* Objects in the stack */
-	for (i = 0; i < vm->stack_index; i++) {
-		Fu_Object *obj = vm->stack[i];
-		callback(mm, obj);
-
-		if (Fu_MM_IS_REFERENCE(obj)) { printf("-- tag 2: %s\n", obj->tag->name); }
-	}
+	pthread_mutex_lock(&vm->execute_mtx);
 
 	/* Root of the spine */
 	if (vm->spine_index > 0) {
 		Fu_Object *obj = *vm->spine[0];
 		callback(mm, obj);
-
-		if (Fu_MM_IS_REFERENCE(obj)) { printf("-- tag 3: %s\n", obj->tag->name); }
 	}
+	pthread_mutex_unlock(&vm->execute_mtx);
 }
 
 Fu_MMTag fu_vm_tag = { "vm", vm_ref_iterator };
@@ -69,8 +52,9 @@ Fu_Object *fu_vm(void)
 	Fu_MM *mm = &vm->mm;
 
 	fu_mm_init(mm);
-	fu_mm_set_gc_root(mm, 0, &vmobj);
+	fu_mm_set_gc_root(mm, 0, vmobj);
 
+	pthread_mutex_init(&vm->execute_mtx, NULL);
 	vm->env = NULL;
 	vm->nargs = 0;
 	Fu_DEF_STACK(vm->stack);
@@ -87,12 +71,15 @@ void fu_vm_end(Fu_Object *vmobj)
 	assert(Fu_IS_VM(vmobj));
 	Fu_VM *vm = Fu_OBJ_AS_VM(vmobj);
 	
-	Fu_STACK_FREE(vm->stack);
-	Fu_STACK_FREE(vm->spine);
 	fu_mm_end(&vm->mm);
 
 	void *res = NULL;
 	pthread_join(vm->mm_thread, &res);
+
+	pthread_mutex_lock(&vm->execute_mtx);
+	Fu_STACK_FREE(vm->stack);
+	Fu_STACK_FREE(vm->spine);
+	pthread_mutex_unlock(&vm->execute_mtx);
 
 	free(vmobj);
 }
@@ -175,7 +162,7 @@ void fu_vm_print_object(FILE *out, Fu_Object *obj)
 		fu_vm_print_object(out, Fu_CONS_TAIL(obj));
 		fprintf(out, ")");
 	} else {
-		fprintf(out, "<REF %s %p>", obj->tag->name, obj);
+		fprintf(out, "<REF %p>", obj);
 	}
 }
 
@@ -202,6 +189,8 @@ void fu_vm_weak_head_normalize(Fu_Object *vmobj, Fu_Object **obj)
 	assert(vm->spine_index == 0);
 
 	while (1) {
+		pthread_mutex_lock(&vm->execute_mtx);
+
 		/* Unwind the spine */
 		while (Fu_IS_CONS(*obj)) {
 			Fu_STACK_PUSH(vm->spine, obj);
@@ -213,6 +202,7 @@ void fu_vm_weak_head_normalize(Fu_Object *vmobj, Fu_Object **obj)
 			/*
 			 * The leftmost atom is not a supercombinator: already in WHNF
 			 */
+			pthread_mutex_unlock(&vm->execute_mtx);
 			return;
 		}
 
@@ -220,6 +210,7 @@ void fu_vm_weak_head_normalize(Fu_Object *vmobj, Fu_Object **obj)
 		Fu_VMSupercombinator *sc = vm->env->defs[supercomb_id];
 		if (nargs < sc->nparams) {
 			/* Not enough arguments: already in WHNF */
+			pthread_mutex_unlock(&vm->execute_mtx);
 			return;
 		}
 
@@ -248,6 +239,7 @@ void fu_vm_weak_head_normalize(Fu_Object *vmobj, Fu_Object **obj)
 		fu_mm_store(mm, parent, root, res);
 
 		obj = root;
+		pthread_mutex_unlock(&vm->execute_mtx);
 	}
 }
 

@@ -14,20 +14,6 @@ void fu_list_set_copy(Fu_LinkedList *list_dst, Fu_LinkedList *list_src)
 
 void fu_list_remove(Fu_LinkedList *list, Fu_Object *obj)
 {
-	int xx_prelen = 0, xx_poslen = 0;
-	Fu_Object *xx;
-	printf("[\n");
-	foreach (xx, list) {
-		printf("\t%p -- ", xx); fu_vm_print_object(stdout, xx); printf("\n");
-		xx_prelen++;
-	}
-	printf("]\n");
-	printf("%p -- ", obj); fu_vm_print_object(stdout, obj); printf("\n");
-	printf("%u %u\n", obj->prev == NULL, obj->next == NULL);
-	if (obj->prev == NULL && obj->next == NULL) {
-		assert(xx_prelen == 1);
-	}
-
 	assert(!Fu_LIST_IS_EMPTY(list));
 	if (obj->prev == NULL) {
 		list->first = obj->next;
@@ -41,9 +27,6 @@ void fu_list_remove(Fu_LinkedList *list, Fu_Object *obj)
 	}
 	obj->prev = NULL;
 	obj->next = NULL;
-
-	foreach (xx, list) { xx_poslen++; }
-	assert(xx_poslen == xx_prelen - 1);
 }
 
 Fu_Object *fu_list_pop(Fu_LinkedList *list)

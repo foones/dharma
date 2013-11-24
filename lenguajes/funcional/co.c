@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include "Fu.h"
 
+#if 0
 void *test_mm_worker(void *mmptr)
 {
 	Fu_MM *mm = (Fu_MM *)mmptr;
@@ -47,6 +48,7 @@ void test_mm(void)
 	fu_mm_end(mm);
 	pthread_join(gc_thread, &res);
 }
+#endif
 
 void test_lexer(void)
 {
@@ -151,7 +153,7 @@ void test_vm(void)
 	vm->env->defs[d]->code[c++] = Fu_OP_APP;
 	vm->env->defs[d]->code_len = c;
 
-	/* def 0 ==> KISS */
+	/* def 0 ==> SII(SII) */
 	d = 0;
 	c = 0;
 	vm->env->defs[d] = (Fu_VMSupercombinator *)malloc(sizeof(Fu_VMSupercombinator) + max_code_len * sizeof(Fu_VMOpcode));
@@ -160,7 +162,14 @@ void test_vm(void)
 	vm->env->defs[d]->code[c++] = 0; vm->env->defs[d]->code[c++] = 0;
 	vm->env->defs[d]->code[c++] = 0; vm->env->defs[d]->code[c++] = 0;
 	vm->env->defs[d]->code[c++] = 0; vm->env->defs[d]->code[c++] = 0;
-	vm->env->defs[d]->code[c++] = 0; vm->env->defs[d]->code[c++] = 2;
+	vm->env->defs[d]->code[c++] = 0; vm->env->defs[d]->code[c++] = 3;
+
+	vm->env->defs[d]->code[c++] = Fu_OP_PUSH_COMB_64;
+	vm->env->defs[d]->code[c++] = 0; vm->env->defs[d]->code[c++] = 0;
+	vm->env->defs[d]->code[c++] = 0; vm->env->defs[d]->code[c++] = 0;
+	vm->env->defs[d]->code[c++] = 0; vm->env->defs[d]->code[c++] = 0;
+	vm->env->defs[d]->code[c++] = 0; vm->env->defs[d]->code[c++] = 1;
+	vm->env->defs[d]->code[c++] = Fu_OP_APP;
 
 	vm->env->defs[d]->code[c++] = Fu_OP_PUSH_COMB_64;
 	vm->env->defs[d]->code[c++] = 0; vm->env->defs[d]->code[c++] = 0;
@@ -174,13 +183,21 @@ void test_vm(void)
 	vm->env->defs[d]->code[c++] = 0; vm->env->defs[d]->code[c++] = 0;
 	vm->env->defs[d]->code[c++] = 0; vm->env->defs[d]->code[c++] = 0;
 	vm->env->defs[d]->code[c++] = 0; vm->env->defs[d]->code[c++] = 3;
+
+	vm->env->defs[d]->code[c++] = Fu_OP_PUSH_COMB_64;
+	vm->env->defs[d]->code[c++] = 0; vm->env->defs[d]->code[c++] = 0;
+	vm->env->defs[d]->code[c++] = 0; vm->env->defs[d]->code[c++] = 0;
+	vm->env->defs[d]->code[c++] = 0; vm->env->defs[d]->code[c++] = 0;
+	vm->env->defs[d]->code[c++] = 0; vm->env->defs[d]->code[c++] = 1;
 	vm->env->defs[d]->code[c++] = Fu_OP_APP;
 
 	vm->env->defs[d]->code[c++] = Fu_OP_PUSH_COMB_64;
 	vm->env->defs[d]->code[c++] = 0; vm->env->defs[d]->code[c++] = 0;
 	vm->env->defs[d]->code[c++] = 0; vm->env->defs[d]->code[c++] = 0;
 	vm->env->defs[d]->code[c++] = 0; vm->env->defs[d]->code[c++] = 0;
-	vm->env->defs[d]->code[c++] = 0; vm->env->defs[d]->code[c++] = 3;
+	vm->env->defs[d]->code[c++] = 0; vm->env->defs[d]->code[c++] = 1;
+	vm->env->defs[d]->code[c++] = Fu_OP_APP;
+
 	vm->env->defs[d]->code[c++] = Fu_OP_APP;
 	vm->env->defs[d]->code_len = c;
 

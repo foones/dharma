@@ -96,7 +96,6 @@ static void mark_as_gray(Fu_MM *mm, Fu_MMObject *referenced)
 		grayen(referenced);
 		fu_list_add_front(&mm->gray, referenced);
 	}
-	assert(gc_check_summary(mm));
 }
 
 Fu_Object *fu_mm_allocate_unmanaged(Fu_MMTag *tag, Fu_MMSize size)
@@ -146,7 +145,7 @@ void fu_mm_allocate(Fu_MM *mm, Fu_MMTag *tag, Fu_MMSize size, void *init, Fu_MMO
 	pthread_mutex_unlock(&mm->allocate_mtx);
 }
 
-void fu_mm_set_gc_root(Fu_MM *mm, uint i, Fu_Object **root)
+void fu_mm_set_gc_root(Fu_MM *mm, uint i, Fu_Object *root)
 {
 	pthread_mutex_lock(&mm->allocate_mtx);
 	mm->root[i] = root;
@@ -154,6 +153,7 @@ void fu_mm_set_gc_root(Fu_MM *mm, uint i, Fu_Object **root)
 }
 
 void fu_mm_store(Fu_MM *mm, Fu_Object *parent, Fu_Object **location, Fu_Object *value)
+/* Write barrier */
 {
 	pthread_mutex_lock(&mm->allocate_mtx);
 	if (!Fu_MM_IS_REFERENCE(value)) {
@@ -254,20 +254,16 @@ static void mark_sweep(Fu_MM *mm)
 	/* Set the root gray */
 	int i;
 	forn (i, Fu_MM_NUM_ROOTS) {
-		if (mm->root[i] == NULL || *mm->root[i] == NULL) continue;
-		assert(Fu_MM_FLAGS_COLOR((*mm->root[i])->flags) == WHITE(mm));
-		Fu_Object *obj = *mm->root[i];
+		if (mm->root[i] == NULL) continue;
+		Fu_Object *obj = mm->root[i];
 
 		/* The root is *unmanaged*, hence we don't mark it gray.
 		 * (Unmanaged nodes are never in the lists or freelists).
 		 * We do mark all of its children gray. */
-		printf("PASO\n");
 		assert(obj->tag == &fu_vm_tag);
 		obj->tag->ref_iterator(mm, obj, mark_as_gray);
 		/*mark_as_gray(mm, obj);*/
 	}
-
-	assert(gc_check_summary(mm));
 
 	pthread_mutex_unlock(&mm->allocate_mtx);
 
@@ -311,10 +307,10 @@ void *fu_mm_mainloop(void *mmptr)
 	/* Main loop */
 	Fu_MM *mm = (Fu_MM *)mmptr;
 	while (mm->working) {
-		if (mm->nalloc > mm->gc_threshold) {
+		//if (mm->nalloc > mm->gc_threshold) {
 			printf("gc\n");
 			mark_sweep(mm);
-		}
+		//}
 	}
 
 	/* Deallocate everything */

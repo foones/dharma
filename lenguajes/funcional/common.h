@@ -22,7 +22,7 @@ typedef unsigned long long int uint64;
 
 /* Simple growable stack implementation */
 
-#define Fu_MIN_STACK_SIZE	1024
+#define Fu_MIN_STACK_SIZE	1
 #define Fu_DEF_STACK(S) \
 	S = (__typeof__(S))malloc(sizeof(__typeof__(*(S))) * Fu_MIN_STACK_SIZE); \
 	S##_capacity = Fu_MIN_STACK_SIZE; \

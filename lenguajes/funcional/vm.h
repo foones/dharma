@@ -64,6 +64,8 @@ typedef struct _Fu_VM {
 	Fu_Object ***spine;		/* Spine */
 	uint spine_capacity;
 	uint spine_index;
+
+	pthread_mutex_t execute_mtx;
 } Fu_VM;
 
 /* For the Fu_Object wrapper */
