@@ -3,6 +3,7 @@
 
 #include "common.h"
 
+#include "linkedlist.h"
 #include "mm.h"
 #include "lexer.h"
 #include "dict.h"

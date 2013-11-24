@@ -7,7 +7,7 @@ static void cons_ref_iterator(Fu_MM *mm, Fu_Object *obj, Fu_MMRefCallback callba
 	callback(mm, Fu_CONS_TAIL(obj));
 }
 
-Fu_MMTag fu_cons_tag = { cons_ref_iterator };
+Fu_MMTag fu_cons_tag = { "cons", cons_ref_iterator };
 
 void fu_cons(Fu_MM *mm, Fu_Object *head, Fu_Object *tail, Fu_Object **out)
 {

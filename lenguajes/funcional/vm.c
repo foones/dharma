@@ -31,21 +31,30 @@ static void vm_ref_iterator(Fu_MM *mm, Fu_Object *vmobj, Fu_MMRefCallback callba
 
 	/* Arguments */
 	for (i = 0; i < vm->nargs; i++) {
-		callback(mm, vm->args[i]);
+		Fu_Object *obj = vm->args[i];
+		callback(mm, obj);
+
+		if (Fu_MM_IS_REFERENCE(obj)) { printf("-- tag 1: %s\n", obj->tag->name); }
 	}
 
 	/* Objects in the stack */
 	for (i = 0; i < vm->stack_index; i++) {
-		callback(mm, vm->stack[i]);
+		Fu_Object *obj = vm->stack[i];
+		callback(mm, obj);
+
+		if (Fu_MM_IS_REFERENCE(obj)) { printf("-- tag 2: %s\n", obj->tag->name); }
 	}
 
 	/* Root of the spine */
 	if (vm->spine_index > 0) {
-		callback(mm, *vm->spine[0]);
+		Fu_Object *obj = *vm->spine[0];
+		callback(mm, obj);
+
+		if (Fu_MM_IS_REFERENCE(obj)) { printf("-- tag 3: %s\n", obj->tag->name); }
 	}
 }
 
-Fu_MMTag fu_vm_tag = { vm_ref_iterator };
+Fu_MMTag fu_vm_tag = { "vm", vm_ref_iterator };
 
 Fu_Object *fu_vm(void)
 /*
@@ -56,6 +65,7 @@ Fu_Object *fu_vm(void)
 {
 	Fu_Object *vmobj = fu_mm_allocate_unmanaged(&fu_vm_tag, sizeof(Fu_VM));
 	Fu_VM *vm = Fu_OBJ_AS_VM(vmobj);
+
 	Fu_MM *mm = &vm->mm;
 
 	fu_mm_init(mm);
@@ -66,6 +76,7 @@ Fu_Object *fu_vm(void)
 	Fu_DEF_STACK(vm->stack);
 	Fu_DEF_STACK(vm->spine);
 
+	/* Main loop */
 	pthread_create(&vm->mm_thread, NULL, fu_mm_mainloop, (void *)mm);
 
 	return vmobj;
@@ -139,11 +150,8 @@ Fu_Object *fu_vm_execute(Fu_Object *vmobj, uint supercombinator_id)
 			assert(vm->stack_index >= 2);
 			Fu_Object *arg = vm->stack[vm->stack_index - 1];
 			Fu_Object *fun = vm->stack[vm->stack_index - 2];
+			fu_cons(mm, fun, arg, &vm->stack[vm->stack_index - 2]);
 			vm->stack_index = vm->stack_index - 1;
-
-			assert(vm->stack_index >= 1);
-			fu_cons(mm, fun, arg, &vm->stack[vm->stack_index - 1]);
-			assert(vm->stack_index >= 1);
 			break;
 			}
 		default:
@@ -151,6 +159,7 @@ Fu_Object *fu_vm_execute(Fu_Object *vmobj, uint supercombinator_id)
 			break;
 		}
 	}
+	assert(vm->stack_index == 1);
 	return Fu_STACK_TOP(vm->stack);
 }
 
@@ -160,23 +169,13 @@ void fu_vm_print_object(FILE *out, Fu_Object *obj)
 	if (Fu_MM_IS_IMMEDIATE(obj)) {
 		fprintf(out, "<IMM tag=0x%llx value=0x%llx>", Fu_MM_IMMEDIATE_TAG(obj), Fu_MM_IMMEDIATE_VALUE(obj));
 	} else if (Fu_IS_CONS(obj)) {
-		int first = 1;
 		fprintf(out, "(");
-		while (Fu_IS_CONS(obj)) {
-			if (!first) {
-				fprintf(out, " ");
-			}
-			first = 0;
-			fu_vm_print_object(out, Fu_CONS_HEAD(obj));
-			obj = Fu_CONS_TAIL(obj);
-		}
-		if (obj != NULL) {
-			fprintf(out, " . ");
-			fu_vm_print_object(out, obj);
-		}
+		fu_vm_print_object(out, Fu_CONS_HEAD(obj));
+		fprintf(out, " . ");
+		fu_vm_print_object(out, Fu_CONS_TAIL(obj));
 		fprintf(out, ")");
 	} else {
-		fprintf(out, "<REF %p>", obj);
+		fprintf(out, "<REF %s %p>", obj->tag->name, obj);
 	}
 }
 
@@ -195,9 +194,12 @@ void fu_vm_weak_head_normalize(Fu_Object *vmobj, Fu_Object **obj)
 {
 	assert(Fu_IS_VM(vmobj));
 	Fu_VM *vm = Fu_OBJ_AS_VM(vmobj);
+	Fu_MM *mm = &vm->mm;
 
 	/* The spine is a stack of (Fu_Object **) */
 	uint nargs = 0;
+
+	assert(vm->spine_index == 0);
 
 	while (1) {
 		/* Unwind the spine */
@@ -225,18 +227,26 @@ void fu_vm_weak_head_normalize(Fu_Object *vmobj, Fu_Object **obj)
 
 		/* Read arguments from spine */
 		Fu_Object **root = obj;
-		vm->nargs = sc->nparams;
 		for (int i = 0; i < sc->nparams; i++) {
 			root = Fu_STACK_POP(vm->spine);
 			vm->args[i] = Fu_CONS_TAIL(*root);
 		}
+		vm->nargs = sc->nparams;
 		nargs -= sc->nparams;
 
 		/* Call supercombinator */
 		Fu_Object *res = fu_vm_execute(vmobj, supercomb_id);
+		vm->nargs = 0;
 
+		Fu_Object *parent;
+		if (vm->spine_index == 0) {
+			parent = NULL;
+		} else {
+			parent = *vm->spine[vm->spine_index - 1];
+		}
 		/* Overwrite root with result */
-		*root = res; /* TODO: write barrier */
+		fu_mm_store(mm, parent, root, res);
+
 		obj = root;
 	}
 }

@@ -30,8 +30,9 @@ typedef unsigned long long int uint64;
 #define Fu_STACK_GROW(S) { \
 	__typeof__(S) __temp = (__typeof__(S))malloc(sizeof(__typeof__(*(S))) * 2 * (S##_capacity)); \
 	memcpy(__temp, (S), sizeof(__typeof__(*(S))) * (S##_capacity)); \
-	free(S); \
+	__typeof__(S) __old = (S); \
 	(S) = __temp; \
+	free(__old); \
 	(S##_capacity) *= 2; \
 }
 #define Fu_STACK_PUSH(S, X) { \
@@ -44,5 +45,8 @@ typedef unsigned long long int uint64;
 #define Fu_STACK_TOP(S) ((S)[(S##_index) - 1])
 #define Fu_STACK_POP(S) ((S)[--(S##_index)])
 #define Fu_STACK_FREE(S) free(S)
+
+/* Fu_Object is just an alias for Fu_MMObject */
+typedef struct _Fu_MMObject Fu_Object;
 
 #endif

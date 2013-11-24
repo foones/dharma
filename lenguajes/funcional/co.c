@@ -90,10 +90,21 @@ void test_dict(void)
 	fu_free_dict(&dict);
 }
 
+#include <time.h>
+#include <stdlib.h>
 void test_vm(void)
 {
 	Fu_Object *vmobj = fu_vm();
 	Fu_VM *vm = Fu_OBJ_AS_VM(vmobj);
+
+	/*
+	{
+	srand(time(NULL));
+	int ii, j, c = 0;
+	forn(ii, 250) { forn(j, 100000) { c += rand(); } }
+	printf("si %u\n", c);
+	}
+	*/
 
 	int ndefs = 3;
 	vm->env = (Fu_VMEnvironment *)malloc(sizeof(Fu_VMEnvironment) + ndefs * sizeof(Fu_VMSupercombinator));

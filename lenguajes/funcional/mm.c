@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "mm.h"
+#include "Fu.h"
 
 /*
  * Main idea of garbage collection:
@@ -24,80 +24,15 @@
 #define whiten(X)	(X)->flags = Fu_MM_FLAGS_SET_COLOR((X)->flags, WHITE(mm))
 #define grayen(X)	(X)->flags = Fu_MM_FLAGS_SET_COLOR((X)->flags, GRAY(mm))
 
-#define foreach(X, L)	for (X = (L)->first; X != NULL; X = X->next)
-
 #define GRAY(mm)	(mm)->graycol
 #define WHITE(mm)	(1 - GRAY(mm))
 
 #define IS_WHITE(MM, X)	(Fu_MM_FLAGS_COLOR((X)->flags) == WHITE(MM))
+#define IS_GRAY(MM, X)	(Fu_MM_FLAGS_COLOR((X)->flags) == GRAY(MM))
 
-#define list_is_empty(LST) ((LST)->first == NULL)
-
-static void list_set_empty(Fu_MMList *list)
-{
-	list->first = NULL;
-	list->last = NULL;
-}
-
-static void list_set_copy(Fu_MMList *list1, Fu_MMList *list2)
-{
-	list1->first = list2->first;
-	list1->last = list2->last;
-}
-
-static void list_remove(Fu_MMList *list, Fu_MMObject *obj)
-{
-	assert(!list_is_empty(list));
-	if (obj->prev == NULL) {
-		list->first = obj->next;
-	} else {
-		printf("%p %p %p\n", obj, obj->prev, obj->next); fflush(stdout);
-		obj->prev->next = obj->next;
-	}
-	if (obj->next == NULL) {
-		list->last = obj->prev;
-	} else {
-		obj->next->prev = obj->prev;
-	}
-	obj->prev = NULL;
-	obj->next = NULL;
-}
-
-static Fu_MMObject *list_pop(Fu_MMList *list)
-{
-	Fu_MMObject *obj = list->first;
-	list_remove(list, obj);
-	return obj;
-}
-
-static void list_add_front(Fu_MMList *list, Fu_MMObject *obj)
-{
-	obj->prev = NULL;
-	obj->next = list->first;
-	if (list->first == NULL) {
-		list->last = obj;
-	} else {
-		list->first->prev = obj;
-	}
-	list->first = obj;
-}
-
-static void list_concat(Fu_MMList *list1, Fu_MMList *list2)
-{
-	if (list1->last == NULL) {
-		list1->first = list2->first;
-		list1->last = list2->last;
-	} else {
-		if (list2->first != NULL) {
-			list2->first->prev = list1->last;
-		}
-		list1->last = list2->first;
-	}
-}
-
-#if 0
 /* Invariant checker */
 
+#if 0
 static void callback_check_not_white(Fu_MM *mm, Fu_Object *referenced)
 {
 	if (Fu_MM_IS_REFERENCE(referenced) && Fu_MM_FLAGS_COLOR(referenced->flags) == WHITE(mm)) {
@@ -112,26 +47,42 @@ static void gc_check_invariant(Fu_MM *mm)
 	foreach (p, &mm->black) {
 		p->tag->ref_iterator(mm, p, callback_check_not_white);
 	}
+	foreach (p, &mm->black) { assert(!IS_WHITE(mm, p)); }
+	foreach (p, &mm->gray)  { assert(!IS_WHITE(mm, p)); }
+	foreach (p, &mm->white) { assert(IS_WHITE(mm, p)); }
 	pthread_mutex_unlock(&mm->allocate_mtx);
 }
 #endif
+
+int gc_check_summary(Fu_MM *mm)
+{
+	Fu_Object *p;
+	uint nobjs = 0;
+	foreach (p, &mm->black) { assert(!IS_WHITE(mm, p)); nobjs++; }
+	foreach (p, &mm->gray)  { assert(!IS_WHITE(mm, p)); nobjs++; }
+	foreach (p, &mm->white) { assert(IS_WHITE(mm, p)); nobjs++; }
+	printf("nobjs: %u\n", nobjs);
+	printf("nalloc_objs: %llu\n", mm->nalloc_objs);
+	return nobjs == mm->nalloc_objs;
+}
 
 /* Fu_MM functions */
 
 void fu_mm_init(Fu_MM *mm)
 {
 	int i;
-	list_set_empty(&mm->black);
-	list_set_empty(&mm->gray);
-	list_set_empty(&mm->white);
+	fu_list_set_empty(&mm->black);
+	fu_list_set_empty(&mm->gray);
+	fu_list_set_empty(&mm->white);
 	forn (i, Fu_MM_NUM_ROOTS) {
 		mm->root[i] = NULL;
 	}
 	mm->nalloc = 0;
+	mm->nalloc_objs = 0;
 	mm->graycol = 0;
 	mm->working = 1;
 	forn (i, Fu_MM_MAX_FREELIST) {
-		list_set_empty(&mm->freelist[i]);
+		fu_list_set_empty(&mm->freelist[i]);
 	}
 
 	pthread_mutex_init(&mm->allocate_mtx, NULL);
@@ -140,16 +91,18 @@ void fu_mm_init(Fu_MM *mm)
 static void mark_as_gray(Fu_MM *mm, Fu_MMObject *referenced)
 {
 	if (Fu_MM_IS_REFERENCE(referenced) && Fu_MM_FLAGS_COLOR(referenced->flags) == WHITE(mm)) {
-		list_remove(&mm->white, referenced);
+		assert(!Fu_LIST_IS_EMPTY(&mm->white));
+		fu_list_remove(&mm->white, referenced);
 		grayen(referenced);
-		list_add_front(&mm->gray, referenced);
+		fu_list_add_front(&mm->gray, referenced);
 	}
+	assert(gc_check_summary(mm));
 }
 
 Fu_Object *fu_mm_allocate_unmanaged(Fu_MMTag *tag, Fu_MMSize size)
 {
 	Fu_MMObject *obj = (Fu_MMObject *)malloc(sizeof(Fu_MMObject) + size);
-	obj->flags = 0;
+	obj->flags = Fu_MM_FLAGS(size, 0);
 	obj->tag = tag;
 	obj->prev = NULL;
 	obj->next = NULL;
@@ -164,8 +117,8 @@ void fu_mm_allocate(Fu_MM *mm, Fu_MMTag *tag, Fu_MMSize size, void *init, Fu_MMO
 	Fu_MMObject *obj;
 
 	/* Get memory for the object */
-	if (full_size < Fu_MM_MAX_FREELIST && !list_is_empty(&mm->freelist[full_size])) {
-		obj = list_pop(&mm->freelist[full_size]);
+	if (full_size < Fu_MM_MAX_FREELIST && !Fu_LIST_IS_EMPTY(&mm->freelist[full_size])) {
+		obj = fu_list_pop(&mm->freelist[full_size]);
 	} else {
 		obj = (Fu_MMObject *)malloc(full_size);
 	}
@@ -173,8 +126,9 @@ void fu_mm_allocate(Fu_MM *mm, Fu_MMTag *tag, Fu_MMSize size, void *init, Fu_MMO
 	obj->flags = Fu_MM_FLAGS(size, GRAY(mm));
 	obj->tag = tag;
 	obj->prev = NULL;
-	list_add_front(&mm->black, obj);
+	fu_list_add_front(&mm->black, obj);
 	mm->nalloc += full_size;
+	mm->nalloc_objs++;
 
 	assert(!Fu_MM_IS_IMMEDIATE(obj));
 
@@ -199,34 +153,31 @@ void fu_mm_set_gc_root(Fu_MM *mm, uint i, Fu_Object **root)
 	pthread_mutex_unlock(&mm->allocate_mtx);
 }
 
-#if 0
-Fu_MMObject *fu_mm_store(Fu_MM *mm, Fu_Object *parent, Fu_Object **dst, Fu_Object *src)
+void fu_mm_store(Fu_MM *mm, Fu_Object *parent, Fu_Object **location, Fu_Object *value)
 {
-	if (!Fu_MM_IS_REFERENCE(src)) {
-		*dst = src;
-		return;
+	pthread_mutex_lock(&mm->allocate_mtx);
+	if (!Fu_MM_IS_REFERENCE(value)) {
+		*location = value;
+	} else {
+		assert(parent == NULL || Fu_MM_IS_REFERENCE(parent));
+		if ((parent == NULL || IS_GRAY(mm, parent)) && IS_WHITE(mm, value)) {
+			mark_as_gray(mm, value);
+		}
+		*location = value;
 	}
-
-	assert(Fu_MM_IS_REFERENCE(parent));
-	pthread_mutex_lock(...);
-	if (Fu_MM_FLAGS_COLOR(parent->tag->flags) == GRAY(mm)
-		&& Fu_MM_FLAGS_COLOR(src->tag->flags) == WHITE(mm)) {
-
-	}
-	pthread_mutex_unlock(...);
+	pthread_mutex_unlock(&mm->allocate_mtx);
 }
-#endif
 
 /* Mark all the objects white in O(1) */
 
 static void whiten_all(Fu_MM *mm)
 {
 	mm->graycol = 1 - mm->graycol;
-	assert(list_is_empty(&mm->white));
-	list_set_copy(&mm->white, &mm->black);
-	list_concat(&mm->white, &mm->gray);
-	list_set_empty(&mm->gray);
-	list_set_empty(&mm->black);
+	assert(Fu_LIST_IS_EMPTY(&mm->white));
+	fu_list_set_copy(&mm->white, &mm->black);
+	fu_list_concat(&mm->white, &mm->gray);
+	fu_list_set_empty(&mm->gray);
+	fu_list_set_empty(&mm->black);
 }
 
 /*
@@ -246,7 +197,7 @@ static void whiten_all(Fu_MM *mm)
  *
  */
 
-static void list_deallocate(Fu_MMList *list)
+static void list_deallocate(Fu_LinkedList *list)
 {
 	Fu_MMObject *p;
 	for (p = list->first; p != NULL;) {
@@ -260,7 +211,7 @@ static void list_deallocate(Fu_MMList *list)
  * Free the big objects, and add the small objects to the
  * corresponding freelist.
  */
-static void list_free(Fu_MM *mm, Fu_MMList *list)
+static void list_free(Fu_MM *mm, Fu_LinkedList *list)
 {
 	Fu_MMObject *p;
 	for (p = list->first; p != NULL;) {
@@ -270,14 +221,16 @@ static void list_free(Fu_MM *mm, Fu_MMList *list)
 
 		assert(mm->nalloc >= full_size);
 		mm->nalloc -= full_size;
+		assert(mm->nalloc_objs >= 1);
+		mm->nalloc_objs--;
 
 		if (full_size < Fu_MM_MAX_FREELIST) {
-			list_add_front(&mm->freelist[full_size], obj);
+			fu_list_add_front(&mm->freelist[full_size], obj);
 		} else {
 			free(obj);
 		}
 	}
-	list_set_empty(list);
+	fu_list_set_empty(list);
 }
 
 /* Sweep */
@@ -285,7 +238,7 @@ static void list_free(Fu_MM *mm, Fu_MMList *list)
 static void sweep(Fu_MM *mm)
 {
 	list_free(mm, &mm->white);
-	assert(list_is_empty(&mm->gray));
+	assert(Fu_LIST_IS_EMPTY(&mm->gray));
 	mm->gc_threshold = 2 * mm->nalloc;
 }
 
@@ -294,7 +247,8 @@ static void mark_sweep(Fu_MM *mm)
 	pthread_mutex_lock(&mm->allocate_mtx);
 
 	/* Whiten all objects */
-	assert(list_is_empty(&mm->white));
+	assert(Fu_LIST_IS_EMPTY(&mm->white));
+
 	whiten_all(mm);
 
 	/* Set the root gray */
@@ -302,8 +256,18 @@ static void mark_sweep(Fu_MM *mm)
 	forn (i, Fu_MM_NUM_ROOTS) {
 		if (mm->root[i] == NULL || *mm->root[i] == NULL) continue;
 		assert(Fu_MM_FLAGS_COLOR((*mm->root[i])->flags) == WHITE(mm));
-		mark_as_gray(mm, *mm->root[i]);
+		Fu_Object *obj = *mm->root[i];
+
+		/* The root is *unmanaged*, hence we don't mark it gray.
+		 * (Unmanaged nodes are never in the lists or freelists).
+		 * We do mark all of its children gray. */
+		printf("PASO\n");
+		assert(obj->tag == &fu_vm_tag);
+		obj->tag->ref_iterator(mm, obj, mark_as_gray);
+		/*mark_as_gray(mm, obj);*/
 	}
+
+	assert(gc_check_summary(mm));
 
 	pthread_mutex_unlock(&mm->allocate_mtx);
 
@@ -312,20 +276,19 @@ static void mark_sweep(Fu_MM *mm)
 	for (;;) {
 		pthread_mutex_lock(&mm->allocate_mtx);
 
-		if (list_is_empty(&mm->gray)) {
+		if (Fu_LIST_IS_EMPTY(&mm->gray)) {
 			/* If no more gray nodes, sweep */
 			sweep(mm);
-			assert(list_is_empty(&mm->white));
+			assert(Fu_LIST_IS_EMPTY(&mm->white));
 			pthread_mutex_unlock(&mm->allocate_mtx);
 			break_outer = 1;
 			break;
 		}
 
 		/* Blacken the first gray object */
-		Fu_MMObject *obj = list_pop(&mm->gray);
+		Fu_MMObject *obj = fu_list_pop(&mm->gray);
 		assert(Fu_MM_FLAGS_COLOR(obj->flags) == GRAY(mm));
-
-		list_add_front(&mm->black, obj);
+		fu_list_add_front(&mm->black, obj);
 
 		/* Grayen the white objects referenced by it */
 		obj->tag->ref_iterator(mm, obj, mark_as_gray);
@@ -340,6 +303,7 @@ void fu_mm_end(Fu_MM *mm)
 	mm->working = 0;
 }
 
+#include <stdlib.h>
 #include <unistd.h>
 /* Main concurrent garbage collector loop */
 void *fu_mm_mainloop(void *mmptr)
@@ -357,7 +321,7 @@ void *fu_mm_mainloop(void *mmptr)
 	int i;
 	list_deallocate(&mm->black);
 	forn (i, Fu_MM_MAX_FREELIST) {
-		if (!list_is_empty(&mm->freelist[i])) {
+		if (!Fu_LIST_IS_EMPTY(&mm->freelist[i])) {
 			list_deallocate(&mm->freelist[i]);
 		}
 	}
