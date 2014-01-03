@@ -1,6 +1,7 @@
 
 Require Import Arith.
 Require Import FunctionalExtensionality.
+Require Import ProofIrrelevance.
 
 Structure partial_order :=
   mk_partial_order {
@@ -273,9 +274,114 @@ Definition d_continuous D E f (f_monotonic : d_monotonic D E f) :=
     forall lubD, d_least_upper_bound D F lubD ->
       forall lubE, d_least_upper_bound E (fun x => exists y, F y /\ f y = x) lubE ->
         lubE = f lubD.
- 
-Check stream_domain.
 
+Definition d_function_space (D E : domain) :=
+  { f : d_set D -> d_set E |
+    { f_monotonic : d_monotonic D E f & d_continuous D E f f_monotonic }
+  }.
+
+Notation "D =>> E" := (d_function_space D E) (at level 35).
+
+Definition d_function_ap D E (f : D =>> E) (x : d_set D) := proj1_sig f x.
+
+Notation "f $ x" := (d_function_ap _ _ f x) (at level 25).
+
+Definition d_function_le D E (f g : D =>> E) := forall x, f $ x << g $ x.
+
+Lemma d_function_le_refl D E (f : D =>> E) : d_function_le D E f f.
+Proof.
+  intro.
+  apply po_refl.
+Qed.
+
+Lemma d_functional_extensionality :
+  forall D E (f g : D =>> E),
+    (forall x, f $ x = g $ x) -> f = g.
+Proof.
+  intros D E f g fx_eq_gx.
+  case_eq f. intros f_function f_continuous f_shape.
+  case_eq g. intros g_function g_continuous g_shape.
+  cut (f_function = g_function); [ intro H; destruct H | ].
+  cut (f_continuous = g_continuous); [ intro H; destruct H | ].
+  reflexivity.
+  apply proof_irrelevance.
+  rewrite f_shape in fx_eq_gx.
+  rewrite g_shape in fx_eq_gx.
+  simpl in fx_eq_gx.
+  apply functional_extensionality.
+  assumption.
+Qed.
+
+Lemma d_function_le_antisym D E (f g : D =>> E) :
+  d_function_le D E f g ->
+  d_function_le D E g f ->
+  f = g.
+Proof.
+  unfold d_function_le.
+  intros f_le_g g_le_f.
+  apply d_functional_extensionality.
+  intro x.
+  apply po_antisym.
+  specialize f_le_g with x.
+  assumption.
+  specialize g_le_f with x.
+  assumption.
+Qed.
+
+Lemma d_function_le_trans D E (f g h : D =>> E) :
+  d_function_le D E f g ->
+  d_function_le D E g h ->
+  d_function_le D E f h.
+Proof.
+  intros f_le_g g_le_h.
+  unfold d_function_le in *.
+  intro x.
+  specialize f_le_g with x.
+  specialize g_le_h with x.
+  apply po_trans with (g $ x).
+  assumption.
+  assumption.
+Qed.
+
+Definition d_function_space_partial_order (D E : domain) : partial_order :=
+  mk_partial_order
+    (d_function_space D E)
+    (d_function_le D E)
+    (d_function_le_refl D E)
+    (d_function_le_antisym D E)
+    (d_function_le_trans D E).
+
+Definition d_function_domain_bot_function D E : d_set D -> d_set E :=
+  fun _ : d_set D => d_bot E.
+
+Lemma d_function_domain_bot_monotonic D E :
+  d_monotonic D E (d_function_domain_bot_function D E).
+Proof.
+  unfold d_monotonic.
+  unfold po_monotonic.
+  intros x y x_le_y.
+  apply po_refl. 
+Qed.
+
+Lemma d_function_domain_bot_continuous D E :
+  d_continuous D E
+               (d_function_domain_bot_function D E)
+               (d_function_domain_bot_monotonic D E).
+Proof.
+  unfold d_continuous. 
+  intros F F_filter lubD lubD_lub lubE lubE_lub.
+
+
+
+Definition d_continuous D E f (f_monotonic : d_monotonic D E f) :=
+
+Definition d_function_domain_bot D E : po_set (d_function_space_partial_order D E).
+  apply exist with (fun _ : d_set D => d_bot E).
+  apply d_function_domain_bot_continuous.
+ 
+Definition d_function_domain (D E : domain) :=
+  mk_domain
+    (d_function_space_partial_order D E).
 
 
 
