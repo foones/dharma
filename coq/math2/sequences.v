@@ -490,18 +490,12 @@ Section Sequences.
   Qed.
 
 End Sequences.
-  
+
 Lemma infinitely_many_iff_subsequence_variant :
-  forall (A : Type) (P : nat -> sequence A -> Prop) (s : sequence A), (
+  forall A (P : nat -> sequence A -> Prop) (s : sequence A), (
     (forall (n0 : nat), exists n : nat_ge n0, P (proj1_sig n) s)
     <->
-    (exists sub : sequence A, is_subsequence A s sub /\ forall k : nat, P k sub) 
- (**
-     (exists (n_ : nat -> nat),
-       strictly_increasing n_ /\
-       forall k : nat, P (n_ k) s)
-    **)     
-
+    (exists sub : sequence A, is_subsequence A s sub /\ forall k : nat, P k sub)      
   ).
 Proof.
   intros A P s.
@@ -531,10 +525,16 @@ Proof.
         intro k.
         reflexivity.
     intro k.
+
     rewrite <- f_holds.
     apply sub_holds.
   (* <- *)
 
+(**
+     (exists (n_ : nat -> nat),
+       strictly_increasing n_ /\
+       forall k : nat, P (n_ k) s)
+    **)
 
 
 (**** Real sequences ****)
