@@ -45,7 +45,7 @@ operators = [
   (LAssoc, [(AddOp, "+"), (SubOp, "-")]),
   (LAssoc, [(MulOp, "*"), (DivOp, "/"), (ModOp, "%")]),
   (RAssoc, [(PowOp, "^")]),
-  (Unary,  [(NegOp, "-"), (DerefOp, "*")]),
+  (Unary,  [(NegOp, "-")]),
   (Unary,  [(NewOp, "new")])
   ]
 
@@ -62,7 +62,9 @@ expr     = foldr comb iexpr operators
           | (str !! 0) `elem` alpha = const op <$> kw str
           | otherwise               = const op <$> tok str
 iexpr    = app
-app      = foldl1 AppE <$> many1P atom
+app      = foldl1 AppE <$> many1P deref
+deref    = (UnaryE DerefOp <$> (tok "!" /\\ deref))
+       \./ atom
 atom     = lam \./ letexp \./ letrec \./ ifte \./ boolean \./ callcc \./ var \./ number \./ unit \./ pexpr
 unit     = const unitE <$> (tok "(" /\ tok ")")
 pexpr    = mkexpr <$> (tok "(" /\\ expr /\ manyP (tok "," /\\ expr) //\ tok ")")
@@ -84,7 +86,7 @@ letrec   = mkletrec <$> (kw "let" /\\ kw "rec" /\\ idents //\ tok "=" /\ expr //
   where mkletrec ((x:xs, a), b) = AppE (LamE x b) (AppE (VarE "%fix%") (LamE x (foldr LamE a xs)))
 ifte     = mkifte <$> (kw "if" /\\ expr //\ kw "then" /\ expr //\ kw "else" /\ expr)
   where mkifte ((c, t), e) = IfE c t e
-callcc   = CallccE <$> (kw "callcc" /\\ atom)
+callcc   = CallccE <$> (kw "callcc" /\\ deref)
 boolean  = (const (ConstE (BoolC True))  <$> kw "true")
        \./ (const (ConstE (BoolC False)) <$> kw "false")
 tok      = wrap ignore . matchWord
