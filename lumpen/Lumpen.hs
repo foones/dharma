@@ -4,6 +4,7 @@ type Id = String
 
 data Op = SeqOp
         | AssOp
+        | ConsOp
         | OrOp
         | AndOp
         | NotOp             -- unary
@@ -30,6 +31,7 @@ data Expr = VarE Id
           | CallccE Expr
           | IfE Expr Expr Expr
           | TupleE [Expr]
+          | ListE [Expr]
           | BinopE Op Expr Expr
           | UnaryE Op Expr
   deriving Show

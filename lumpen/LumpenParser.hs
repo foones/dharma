@@ -38,10 +38,11 @@ operators :: [(OpType, [(Op, String)])]
 operators = [
   (LAssoc, [(SeqOp, ";")]),
   (LAssoc, [(AssOp, ":=")]),
+  (RAssoc, [(ConsOp, ":")]),
   (LAssoc, [(OrOp, "||")]),
   (LAssoc, [(AndOp, "&&")]),
   (Unary,  [(NotOp, "not")]),
-  (LAssoc, [(EqOp, "=="), (NeOp, "/="), (LtOp, "<"), (LeOp, "<="), (GtOp, ">"), (GeOp, ">=")]),
+  (LAssoc, [(EqOp, "=="), (NeOp, "/="), (NeOp, "!="), (LtOp, "<"), (LeOp, "<="), (GtOp, ">"), (GeOp, ">=")]),
   (LAssoc, [(AddOp, "+"), (SubOp, "-")]),
   (LAssoc, [(MulOp, "*"), (DivOp, "/"), (ModOp, "%")]),
   (RAssoc, [(PowOp, "^")]),
@@ -50,7 +51,7 @@ operators = [
   ]
 
 -- Grammar
-alpha    = "abcdefghijklmnopqrstuvwxyz"
+alpha    = "_abcdefghijklmnopqrstuvwxyz"
 digit    = "0123456789"
 reserved = ["let", "rec", "in", "if", "then", "else", "true", "false", "new", "callcc"]
 isIdent  = (`elem` alpha)
@@ -65,11 +66,15 @@ iexpr    = app
 app      = foldl1 AppE <$> many1P deref
 deref    = (UnaryE DerefOp <$> (tok "!" /\\ deref))
        \./ atom
-atom     = lam \./ letexp \./ letrec \./ ifte \./ boolean \./ callcc \./ var \./ number \./ unit \./ pexpr
+atom     = lam \./ letexp \./ letrec \./ ifte \./ boolean \./ callcc \./ var \./ number \./ unit \./ pexpr \./ list
 unit     = const unitE <$> (tok "(" /\ tok ")")
 pexpr    = mkexpr <$> (tok "(" /\\ expr /\ manyP (tok "," /\\ expr) //\ tok ")")
   where mkexpr (x, []) = x
         mkexpr (x, xs) = TupleE (x:xs)
+list    = emptyList \./ nonEmptyList
+  where emptyList = const (ListE []) <$> (tok "[" /\ tok "]")
+        nonEmptyList = mklist <$> (tok "[" /\\ expr /\ manyP (tok "," /\\ expr) //\ tok "]")
+        mklist (x, xs) = ListE (x:xs)
 ignore   = manyPred (`elem` " \t\r\n")
 ident    = do
   id <- tokof isIdent

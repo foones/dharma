@@ -43,6 +43,7 @@ assignStore (Store l f) r0 v = Store l g
 data Value = ConstV Constant
            | FunV (Value -> Store -> Cont -> Result)
            | TupleV [Value]
+           | ListV [Value]
            | RefV Ref
            | ErrV String
 
@@ -52,6 +53,7 @@ instance Show Value where
   show (ConstV c)        = show c
   show (FunV _)          = "<function>"
   show (TupleV vs)       = "(" ++ joinS ", " (map show vs) ++ ")"
+  show (ListV vs)        = "[" ++ joinS ", " (map show vs) ++ "]"
   show (RefV ref)        = "<ref " ++ show ref ++ ">"
   show (ErrV msg)        = "<error: " ++ msg ++ ">"
 
@@ -70,10 +72,16 @@ sem (IfE a b c)     e s0 k = sem a e s0 (\ (s1, va) ->
                                case va of
                                  ConstV (BoolC False) -> sem c e s1 k
                                  _                    -> sem b e s1 k)
+-- tuples
 sem (TupleE [])     _ s0 k = k (s0, TupleV [])
 sem (TupleE (a:as)) e s0 k = sem a e s0 (\ (s1, va) ->
                              sem (TupleE as) e s1 (\ (s2, TupleV vas) ->
                              k (s2, TupleV (va:vas))))
+-- lists
+sem (ListE [])     _ s0 k = k (s0, ListV [])
+sem (ListE (a:as)) e s0 k = sem a e s0 (\ (s1, va) ->
+                            sem (ListE as) e s1 (\ (s2, ListV vas) ->
+                            k (s2, ListV (va:vas))))
 -- call/cc
 sem (CallccE a)     e s0 k = sem a e s0 (\ (s1, va) ->
                                case va of
@@ -111,18 +119,23 @@ sem (UnaryE op a)   e s0 k = sem a e s0 (\ (s1, va) ->
                              k (s1, semunop op va))
 
 sembinop :: Op -> Value -> Value -> Value
-sembinop EqOp  = liftNumBinop boolVal (==)
-sembinop NeOp  = liftNumBinop boolVal (/=)
-sembinop LtOp  = liftNumBinop boolVal (<)
-sembinop LeOp  = liftNumBinop boolVal (<=)
-sembinop GtOp  = liftNumBinop boolVal (>)
-sembinop GeOp  = liftNumBinop boolVal (>=)
-sembinop AddOp = liftNumBinop numVal  (+)
-sembinop SubOp = liftNumBinop numVal  (-)
-sembinop MulOp = liftNumBinop numVal  (*)
-sembinop DivOp = liftNumBinop numVal  div
-sembinop ModOp = liftNumBinop numVal  mod
-sembinop PowOp = liftNumBinop numVal  (^)
+sembinop ConsOp = consVal
+sembinop EqOp   = liftNumBinop boolVal (==)
+sembinop NeOp   = liftNumBinop boolVal (/=)
+sembinop LtOp   = liftNumBinop boolVal (<)
+sembinop LeOp   = liftNumBinop boolVal (<=)
+sembinop GtOp   = liftNumBinop boolVal (>)
+sembinop GeOp   = liftNumBinop boolVal (>=)
+sembinop AddOp  = liftNumBinop numVal  (+)
+sembinop SubOp  = liftNumBinop numVal  (-)
+sembinop MulOp  = liftNumBinop numVal  (*)
+sembinop DivOp  = liftNumBinop numVal  div
+sembinop ModOp  = liftNumBinop numVal  mod
+sembinop PowOp  = liftNumBinop numVal  (^)
+
+consVal :: Value -> Value -> Value
+consVal v (ListV vs) = ListV (v : vs)
+consVal _ _          = ErrV "cons should take a list"
 
 semunop :: Op -> Value -> Value
 semunop NotOp   = liftBoolUnop boolVal not
@@ -178,11 +191,32 @@ sndVal = FunV (\ v s0 k ->
                    TupleV (_:y:[]) -> k (s0, y)
                    _               -> k (s0, ErrV "argument of snd must be a pair"))
 
+hdVal :: Value
+hdVal = FunV (\ v s0 k ->
+                 case v of
+                   ListV (v:_) -> k (s0, v)
+                   _           -> k (s0, ErrV "argument of hd should be a non-empty list"))
+
+tlVal :: Value
+tlVal = FunV (\ v s0 k ->
+                 case v of
+                   ListV (_:vs) -> k (s0, ListV vs)
+                   _            -> k (s0, ErrV "argument of tl should be a non-empty list"))
+
+nullVal :: Value
+nullVal = FunV (\ v s0 k ->
+                 case v of
+                   ListV [] -> k (s0, ConstV (BoolC True))
+                   _        -> k (s0, ConstV (BoolC False)))
+
 globalEnv :: Env
 globalEnv = foldr (uncurry extendEnv) emptyEnv [
               ("%fix%", fixpoint),
               ("fst", fstVal),
-              ("snd", sndVal)
+              ("snd", sndVal),
+              ("null", nullVal),
+              ("hd", hdVal),
+              ("tl", tlVal)
             ]
 
 eval :: Expr -> Result

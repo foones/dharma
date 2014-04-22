@@ -3,7 +3,7 @@ let fact = \n.
   let loop = new () in
   let n = new n in
   let r = new 1 in
-    callcc(\k. loop := \x. k k);
+    callcc(\k. loop := \_. k k);
     if !n == 1
       then !r
       else (r := !r * !n ;
