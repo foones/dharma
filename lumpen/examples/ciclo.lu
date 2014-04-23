@@ -1,0 +1,3 @@
+let c = new () in
+  callcc(\k. c := k);
+  !c ()

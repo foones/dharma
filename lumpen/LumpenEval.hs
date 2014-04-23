@@ -209,6 +209,11 @@ nullVal = FunV (\ v s0 k ->
                    ListV [] -> k (s0, ConstV (BoolC True))
                    _        -> k (s0, ConstV (BoolC False)))
 
+printVal :: Value
+printVal = FunV (\ v s0 k ->
+                   do putStr (show v);
+                      k (s0, unitV))
+
 globalEnv :: Env
 globalEnv = foldr (uncurry extendEnv) emptyEnv [
               ("%fix%", fixpoint),
@@ -216,7 +221,8 @@ globalEnv = foldr (uncurry extendEnv) emptyEnv [
               ("snd", sndVal),
               ("null", nullVal),
               ("hd", hdVal),
-              ("tl", tlVal)
+              ("tl", tlVal),
+              ("print", printVal)
             ]
 
 eval :: Expr -> Result

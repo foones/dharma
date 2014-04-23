@@ -51,7 +51,7 @@ operators = [
   ]
 
 -- Grammar
-alpha    = "_abcdefghijklmnopqrstuvwxyz"
+alpha    = "_abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 digit    = "0123456789"
 reserved = ["let", "rec", "in", "if", "then", "else", "true", "false", "new", "callcc"]
 isIdent  = (`elem` alpha)
