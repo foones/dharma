@@ -1,8 +1,8 @@
 
 let fact = \n.
-  let loop = new () in
   let n = new n in
   let r = new 1 in
+  let loop = new () in
     callcc(\k. loop := k);
     if !n == 1
       then !r

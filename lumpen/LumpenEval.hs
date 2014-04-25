@@ -179,39 +179,42 @@ fixpoint = FunV (\ v s0 k ->
                         (VarE "f"))
                       (VarE "y")))))
 
+liftFun :: (Value -> Value) -> Value
+liftFun f = FunV (\v s0 k -> k (s0, f v))
+
 fstVal :: Value
-fstVal = FunV (\ v s0 k ->
-                 case v of
-                   TupleV (x:_:[]) -> k (s0, x)
-                   _               -> k (s0, ErrV "argument of fst must be a pair"))
+fstVal = liftFun f
+  where f (TupleV (x:_:[])) = x
+        f _                 = ErrV "argument of fst must be a pair"
 
 sndVal :: Value
-sndVal = FunV (\ v s0 k ->
-                 case v of
-                   TupleV (_:y:[]) -> k (s0, y)
-                   _               -> k (s0, ErrV "argument of snd must be a pair"))
+sndVal = liftFun f
+  where f (TupleV (_:y:[])) = y
+        f _                 = ErrV "argument of snd must be a pair"
 
 hdVal :: Value
-hdVal = FunV (\ v s0 k ->
-                 case v of
-                   ListV (v:_) -> k (s0, v)
-                   _           -> k (s0, ErrV "argument of hd should be a non-empty list"))
+hdVal = liftFun f
+  where f (ListV (v:_)) = v
+        f _             = ErrV "argument of hd should be a non-empty list"
 
 tlVal :: Value
-tlVal = FunV (\ v s0 k ->
-                 case v of
-                   ListV (_:vs) -> k (s0, ListV vs)
-                   _            -> k (s0, ErrV "argument of tl should be a non-empty list"))
+tlVal = liftFun f
+  where f (ListV (_:vs)) = ListV vs
+        f _              = ErrV "argument of tl should be a non-empty list"
 
 nullVal :: Value
-nullVal = FunV (\ v s0 k ->
-                 case v of
-                   ListV [] -> k (s0, ConstV (BoolC True))
-                   _        -> k (s0, ConstV (BoolC False)))
+nullVal = liftFun f
+  where f (ListV []) = ConstV $ BoolC True
+        f _          = ConstV $ BoolC False
 
 printVal :: Value
 printVal = FunV (\ v s0 k ->
                    do putStr (show v);
+                      k (s0, unitV))
+
+printlnVal :: Value
+printlnVal = FunV (\ v s0 k ->
+                   do putStr (show v ++ "\n");
                       k (s0, unitV))
 
 globalEnv :: Env
@@ -222,7 +225,8 @@ globalEnv = foldr (uncurry extendEnv) emptyEnv [
               ("null", nullVal),
               ("hd", hdVal),
               ("tl", tlVal),
-              ("print", printVal)
+              ("print", printVal),
+              ("println", printlnVal)
             ]
 
 eval :: Expr -> Result
